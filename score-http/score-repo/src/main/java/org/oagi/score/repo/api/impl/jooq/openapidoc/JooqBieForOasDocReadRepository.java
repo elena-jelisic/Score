@@ -35,7 +35,7 @@ public class JooqBieForOasDocReadRepository extends JooqScoreRepository
     }
 
     private SelectOnConditionStep selectForRequest() {
-        return dslContext().select(
+        return (SelectOnConditionStep) dslContext().select(
                         TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID,
                         TOP_LEVEL_ASBIEP.STATE,
                         TOP_LEVEL_ASBIEP.VERSION,
@@ -84,11 +84,12 @@ public class JooqBieForOasDocReadRepository extends JooqScoreRepository
                 .leftJoin(ASCCP).on(ASCCP_MANIFEST.ASCCP_ID.eq(ASCCP.ASCCP_ID))
                 .join(APP_USER.as("owner")).on(TOP_LEVEL_ASBIEP.OWNER_USER_ID.eq(APP_USER.as("owner").APP_USER_ID))
                 .join(APP_USER.as("creator")).on(OAS_MESSAGE_BODY.CREATED_BY.eq(APP_USER.as("creator").APP_USER_ID))
-                .join(APP_USER.as("updater")).on(OAS_MESSAGE_BODY.LAST_UPDATED_BY.eq(APP_USER.as("updater").APP_USER_ID));
+                .join(APP_USER.as("updater")).on(OAS_MESSAGE_BODY.LAST_UPDATED_BY.eq(APP_USER.as("updater").APP_USER_ID))
+                .orderBy(OAS_TAG.NAME.asc(), OAS_OPERATION.OPERATION_ID.asc());
     }
 
     private SelectOnConditionStep selectForResponse() {
-        return dslContext().select(
+        return (SelectOnConditionStep) dslContext().select(
                         TOP_LEVEL_ASBIEP.TOP_LEVEL_ASBIEP_ID,
                         TOP_LEVEL_ASBIEP.STATE,
                         TOP_LEVEL_ASBIEP.VERSION,
@@ -137,7 +138,8 @@ public class JooqBieForOasDocReadRepository extends JooqScoreRepository
                 .leftJoin(ASCCP).on(ASCCP_MANIFEST.ASCCP_ID.eq(ASCCP.ASCCP_ID))
                 .join(APP_USER.as("owner")).on(TOP_LEVEL_ASBIEP.OWNER_USER_ID.eq(APP_USER.as("owner").APP_USER_ID))
                 .join(APP_USER.as("creator")).on(OAS_MESSAGE_BODY.CREATED_BY.eq(APP_USER.as("creator").APP_USER_ID))
-                .join(APP_USER.as("updater")).on(OAS_MESSAGE_BODY.LAST_UPDATED_BY.eq(APP_USER.as("updater").APP_USER_ID));
+                .join(APP_USER.as("updater")).on(OAS_MESSAGE_BODY.LAST_UPDATED_BY.eq(APP_USER.as("updater").APP_USER_ID))
+                .orderBy(OAS_TAG.NAME.asc(), OAS_OPERATION.OPERATION_ID.asc());
     }
 
     private RecordMapper<Record, BieForOasDoc> mapper() {
