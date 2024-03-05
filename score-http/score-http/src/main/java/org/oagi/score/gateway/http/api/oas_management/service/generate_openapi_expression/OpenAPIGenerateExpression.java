@@ -348,28 +348,27 @@ public class OpenAPIGenerateExpression implements BieGenerateOpenApiExpression, 
             String patchTemplateKey = "PATCH-" + option.getResourceName();
             String putTemplateKey = "PUT-" + option.getResourceName();
             String deleteTemplateKey = "DELETE-" + option.getResourceName();
+            String genericKey = option.getVerb() + "-" + option.getResourceName();
+
+            boolean isArray = option.getOpenAPI30TemplateMap().get(genericKey).isArrayForJsonExpression();
+            String schemaName = ((isArray) ? bieName + "List" : bieName);
+            String prefix = "";
+            if (option.getMessageBodyType().equals("Request")) {
+                prefix = "create";
+                schemaName = schemaName + "Request";
+            } else if (option.getMessageBodyType().equals("Response")) {
+                prefix = "query";
+                schemaName = schemaName + "Response";
+            }
 
             if (existingPath.size() > 0) {
-                if (option.getOpenAPI30TemplateMap().containsKey(postTemplateKey)) {
-                    String schemaName;
-                    String prefix = "";
-                    if (option.getMessageBodyType().equals("Request")) {
-                        prefix = "create";
-                    } else if (option.getMessageBodyType().equals("Response")) {
-                        prefix = "query";
-                    }
 
-                    schemaName = prefix + Character.toUpperCase(bieName.charAt(0)) + bieName.substring(1);
-                    boolean isArray = option.getOpenAPI30TemplateMap().get(postTemplateKey).isArrayForJsonExpression();
-                    if (schemas.containsKey(((isArray) ? schemaName + "List" : schemaName))) {
-                        schemaName = schemaName + topLevelAsbiep.getTopLevelAsbiepId();
-                    }
+                if (option.getOpenAPI30TemplateMap().containsKey(postTemplateKey)) {
                     boolean isSuppressRoot = option.getOpenAPI30TemplateMap().get(postTemplateKey).isSuppressRootProperty();
                     if (option.getTagName() != null && !existingPath.containsKey("tags")) {
                         existingPath.put("tags", Arrays.asList(option.getTagName()));
                     }
                     if (option.getMessageBodyType().equals("Request")) {
-                        schemaName = ((isArray) ? schemaName + "List" : schemaName);
                         existingPath.put("requestBody", ImmutableMap.<String, Object>builder()
                                 .put("description", "")
                                 .put("content", ImmutableMap.<String, Object>builder()
@@ -382,7 +381,6 @@ public class OpenAPIGenerateExpression implements BieGenerateOpenApiExpression, 
                                 .build());
                     }
                     if (option.getMessageBodyType().equals("Response")) {
-                        schemaName = ((isArray) ? schemaName + "List" : schemaName);
                         existingPath.put("responses", ImmutableMap.<String, Object>builder()
                                 .put("200", ImmutableMap.<String, Object>builder()
                                         .put("description", "")
@@ -401,19 +399,6 @@ public class OpenAPIGenerateExpression implements BieGenerateOpenApiExpression, 
                 }//end option.getOpenAPI30TemplateMap().containsKey(postTemplateKey)
 
                 if (option.getOpenAPI30TemplateMap().containsKey(putTemplateKey)) {
-                    String schemaName;
-                    String prefix = "";
-                    if (option.getMessageBodyType().equals("Request")) {
-                        prefix = "replace";
-                    } else if (option.getMessageBodyType().equals("Response")) {
-                        prefix = "query";
-                    }
-
-                    schemaName = prefix + Character.toUpperCase(bieName.charAt(0)) + bieName.substring(1);
-                    boolean isArray = option.getOpenAPI30TemplateMap().get(putTemplateKey).isArrayForJsonExpression();
-                    if (schemas.containsKey(((isArray) ? schemaName + "List" : schemaName))) {
-                        schemaName = schemaName + topLevelAsbiep.getTopLevelAsbiepId();
-                    }
                     boolean isSuppressRoot = option.getOpenAPI30TemplateMap().get(putTemplateKey).isSuppressRootProperty();
                     if (option.getTagName() != null && !existingPath.containsKey("tags")) {
                         existingPath.put("tags", Arrays.asList(option.getTagName()));
@@ -424,14 +409,13 @@ public class OpenAPIGenerateExpression implements BieGenerateOpenApiExpression, 
                                 .put("content", ImmutableMap.<String, Object>builder()
                                         .put("application/json", ImmutableMap.<String, Object>builder()
                                                 .put("schema", ImmutableMap.<String, Object>builder()
-                                                        .put("$ref", "#/components/schemas/" + ((isArray) ? schemaName + "List" : schemaName))
+                                                        .put("$ref", "#/components/schemas/" + schemaName)
                                                         .build())
                                                 .build())
                                         .build())
                                 .build());
                     }
                     if (option.getMessageBodyType().equals("Response")) {
-                        schemaName = ((isArray) ? schemaName + "List" : schemaName);
                         existingPath.put("responses", ImmutableMap.<String, Object>builder()
                                 .put("200", ImmutableMap.<String, Object>builder()
                                         .put("description", "")
@@ -450,25 +434,11 @@ public class OpenAPIGenerateExpression implements BieGenerateOpenApiExpression, 
                 }//end option.getOpenAPI30TemplateMap().containsKey(putTemplateKey)
 
                 if (option.getOpenAPI30TemplateMap().containsKey(patchTemplateKey)) {
-                    String schemaName;
-                    String prefix = "";
-                    if (option.getMessageBodyType().equals("Request")) {
-                        prefix = "update";
-                    } else if (option.getMessageBodyType().equals("Response")) {
-                        prefix = "query";
-                    }
-
-                    schemaName = prefix + Character.toUpperCase(bieName.charAt(0)) + bieName.substring(1);
-                    boolean isArray = option.getOpenAPI30TemplateMap().get(patchTemplateKey).isArrayForJsonExpression();
-                    if (schemas.containsKey(((isArray) ? schemaName + "List" : schemaName))) {
-                        schemaName = schemaName + topLevelAsbiep.getTopLevelAsbiepId();
-                    }
                     boolean isSuppressRoot = option.getOpenAPI30TemplateMap().get(patchTemplateKey).isSuppressRootProperty();
                     if (option.getTagName() != null && !existingPath.containsKey("tags")) {
                         existingPath.put("tags", Arrays.asList(option.getTagName()));
                     }
                     if (option.getMessageBodyType().equals("Request")) {
-                        schemaName = ((isArray) ? schemaName + "List" : schemaName);
                         existingPath.put("requestBody", ImmutableMap.<String, Object>builder()
                                 .put("description", "")
                                 .put("content", ImmutableMap.<String, Object>builder()
@@ -481,7 +451,6 @@ public class OpenAPIGenerateExpression implements BieGenerateOpenApiExpression, 
                                 .build());
                     }
                     if (option.getMessageBodyType().equals("Response")) {
-                        schemaName = ((isArray) ? schemaName + "List" : schemaName);
                         existingPath.put("responses", ImmutableMap.<String, Object>builder()
                                 .put("200", ImmutableMap.<String, Object>builder()
                                         .put("description", "")
@@ -500,18 +469,6 @@ public class OpenAPIGenerateExpression implements BieGenerateOpenApiExpression, 
                 } // end option.getOpenAPI30TemplateMap().containsKey(patchTemplateKey)
             } else {//existingPath == null
                 if (option.getOpenAPI30TemplateMap().containsKey(getTemplateKey)) {
-                    String schemaName;
-                    String prefix = "query";
-                    // Issue #1302
-                    if (isDifferentForGetAndPost) {
-                        prefix = "query";
-                    }
-
-                    schemaName = prefix + Character.toUpperCase(bieName.charAt(0)) + bieName.substring(1);
-                    boolean isArray = option.getOpenAPI30TemplateMap().get(getTemplateKey).isArrayForJsonExpression();
-                    if (schemas.containsKey(((isArray) ? schemaName + "List" : schemaName))) {
-                        schemaName = schemaName + topLevelAsbiep.getTopLevelAsbiepId();
-                    }
                     boolean isSuppressRoot = option.getOpenAPI30TemplateMap().get(getTemplateKey).isSuppressRootProperty();
                     boolean hasId = pathName.contains("{id}");
                     path.put("summary", "");
@@ -525,7 +482,6 @@ public class OpenAPIGenerateExpression implements BieGenerateOpenApiExpression, 
                     path.put("operationId", option.getOperationId());
                     path.put("parameters", buildParameters(GET, isArray, hasId));
                     if (option.getMessageBodyType().equals("Response")) {
-                        schemaName = ((isArray) ? schemaName + "List" : schemaName);
                         path.put("responses", ImmutableMap.<String, Object>builder()
                                 .put("200", ImmutableMap.<String, Object>builder()
                                         .put("description", "")
@@ -549,19 +505,6 @@ public class OpenAPIGenerateExpression implements BieGenerateOpenApiExpression, 
                 }
 
                 if (option.getOpenAPI30TemplateMap().containsKey(postTemplateKey)) {
-                    String schemaName;
-                    String prefix = "";
-                    if (option.getMessageBodyType().equals("Request")) {
-                        prefix = "create";
-                    } else if (option.getMessageBodyType().equals("Response")) {
-                        prefix = "query";
-                    }
-
-                    schemaName = prefix + Character.toUpperCase(bieName.charAt(0)) + bieName.substring(1);
-                    boolean isArray = option.getOpenAPI30TemplateMap().get(postTemplateKey).isArrayForJsonExpression();
-                    if (schemas.containsKey(((isArray) ? schemaName + "List" : schemaName))) {
-                        schemaName = schemaName + topLevelAsbiep.getTopLevelAsbiepId();
-                    }
                     boolean isSuppressRoot = option.getOpenAPI30TemplateMap().get(postTemplateKey).isSuppressRootProperty();
                     path.put("summary", "");
                     path.put("description", "");
@@ -573,7 +516,6 @@ public class OpenAPIGenerateExpression implements BieGenerateOpenApiExpression, 
                     }
                     path.put("operationId", option.getOperationId());
                     if (option.getMessageBodyType().equals("Request")) {
-                        schemaName = ((isArray) ? schemaName + "List" : schemaName);
                         path.put("requestBody", ImmutableMap.<String, Object>builder()
                                 .put("description", "")
                                 .put("content", ImmutableMap.<String, Object>builder()
@@ -586,14 +528,13 @@ public class OpenAPIGenerateExpression implements BieGenerateOpenApiExpression, 
                                 .build());
 
                         if (!path.containsKey("responses")) {
-                            String responseSchemaName = "query" + Character.toUpperCase(bieName.charAt(0)) + bieName.substring(1);
                             path.put("responses", ImmutableMap.<String, Object>builder()
                                     .put("200", ImmutableMap.<String, Object>builder()
                                             .put("description", "")
                                             .put("content", ImmutableMap.<String, Object>builder()
                                                     .put("application/json", ImmutableMap.<String, Object>builder()
                                                             .put("schema", ImmutableMap.<String, Object>builder()
-                                                                    .put("$ref", "#/components/schemas/" + ((isArray) ? responseSchemaName + "List" : responseSchemaName))
+                                                                    .put("$ref", "#/components/schemas/" + schemaName)
                                                                     .build())
                                                             .build())
                                                     .build())
@@ -602,7 +543,6 @@ public class OpenAPIGenerateExpression implements BieGenerateOpenApiExpression, 
                         }
                     }
                     if (option.getMessageBodyType().equals("Response")) {
-                        schemaName = ((isArray) ? schemaName + "List" : schemaName);
                         path.put("responses", ImmutableMap.<String, Object>builder()
                                 .put("200", ImmutableMap.<String, Object>builder()
                                         .put("description", "")
@@ -621,23 +561,6 @@ public class OpenAPIGenerateExpression implements BieGenerateOpenApiExpression, 
                 }
 
                 if (option.getOpenAPI30TemplateMap().containsKey(putTemplateKey)) {
-                    String schemaName;
-                    String prefix = "";
-                    if (option.getMessageBodyType().equals("Request")) {
-                        prefix = "replace";
-                    } else if (option.getMessageBodyType().equals("Response")) {
-                        prefix = "query";
-                    }
-                    // Issue #1302
-                    if (isDifferentForGetAndPut) {
-                        prefix = "replace";
-                    }
-
-                    schemaName = prefix + Character.toUpperCase(bieName.charAt(0)) + bieName.substring(1);
-                    boolean isArray = option.getOpenAPI30TemplateMap().get(putTemplateKey).isArrayForJsonExpression();
-                    if (schemas.containsKey(((isArray) ? schemaName + "List" : schemaName))) {
-                        schemaName = schemaName + topLevelAsbiep.getTopLevelAsbiepId();
-                    }
                     boolean isSuppressRoot = option.getOpenAPI30TemplateMap().get(putTemplateKey).isSuppressRootProperty();
                     path.put("summary", "");
                     path.put("description", "");
@@ -649,7 +572,6 @@ public class OpenAPIGenerateExpression implements BieGenerateOpenApiExpression, 
                     }
                     path.put("operationId", option.getOperationId());
                     if (option.getMessageBodyType().equals("Request")) {
-                        schemaName = ((isArray) ? schemaName + "List" : schemaName);
                         path.put("requestBody", ImmutableMap.<String, Object>builder()
                                 .put("description", "")
                                 .put("content", ImmutableMap.<String, Object>builder()
@@ -661,15 +583,13 @@ public class OpenAPIGenerateExpression implements BieGenerateOpenApiExpression, 
                                         .build())
                                 .build());
                         if (!path.containsKey("responses")) {
-                            String responseSchemaName = "query" + Character.toUpperCase(bieName.charAt(0)) + bieName.substring(1);
-                            responseSchemaName = ((isArray) ? responseSchemaName + "List" : responseSchemaName);
                             path.put("responses", ImmutableMap.<String, Object>builder()
                                     .put("200", ImmutableMap.<String, Object>builder()
                                             .put("description", "")
                                             .put("content", ImmutableMap.<String, Object>builder()
                                                     .put("application/json", ImmutableMap.<String, Object>builder()
                                                             .put("schema", ImmutableMap.<String, Object>builder()
-                                                                    .put("$ref", "#/components/schemas/" + responseSchemaName)
+                                                                    .put("$ref", "#/components/schemas/" + schemaName)
                                                                     .build())
                                                             .build())
                                                     .build())
@@ -678,7 +598,6 @@ public class OpenAPIGenerateExpression implements BieGenerateOpenApiExpression, 
                         }
                     }
                     if (option.getMessageBodyType().equals("Response")) {
-                        schemaName = ((isArray) ? schemaName + "List" : schemaName);
                         path.put("responses", ImmutableMap.<String, Object>builder()
                                 .put("200", ImmutableMap.<String, Object>builder()
                                         .put("description", "")
@@ -697,22 +616,6 @@ public class OpenAPIGenerateExpression implements BieGenerateOpenApiExpression, 
                 }
 
                 if (option.getOpenAPI30TemplateMap().containsKey(patchTemplateKey)) {
-                    String schemaName;
-                    String prefix = "";
-                    if (option.getMessageBodyType().equals("Request")) {
-                        prefix = "update";
-                    } else if (option.getMessageBodyType().equals("Response")) {
-                        prefix = "query";
-                    }
-                    if (isDifferentForGetAndPatch) {
-                        prefix = "update";
-                    }
-
-                    schemaName = prefix + Character.toUpperCase(bieName.charAt(0)) + bieName.substring(1);
-                    boolean isArray = option.getOpenAPI30TemplateMap().get(patchTemplateKey).isArrayForJsonExpression();
-                    if (schemas.containsKey(((isArray) ? schemaName + "List" : schemaName))) {
-                        schemaName = schemaName + topLevelAsbiep.getTopLevelAsbiepId();
-                    }
                     boolean isSuppressRoot = option.getOpenAPI30TemplateMap().get(patchTemplateKey).isSuppressRootProperty();
                     boolean hasId = pathName.contains("{id}");
                     path.put("summary", "");
@@ -726,7 +629,6 @@ public class OpenAPIGenerateExpression implements BieGenerateOpenApiExpression, 
                     path.put("operationId", option.getOperationId());
                     path.put("parameters", buildParameters(PATCH, isArray, hasId));
                     if (option.getMessageBodyType().equals("Request")) {
-                        schemaName = ((isArray) ? schemaName + "List" : schemaName);
                         path.put("requestBody", ImmutableMap.<String, Object>builder()
                                 .put("description", "")
                                 .put("content", ImmutableMap.<String, Object>builder()
@@ -738,15 +640,13 @@ public class OpenAPIGenerateExpression implements BieGenerateOpenApiExpression, 
                                         .build())
                                 .build());
                         if (!path.containsKey("responses")) {
-                            String responseSchemaName = "query" + Character.toUpperCase(bieName.charAt(0)) + bieName.substring(1);
-                            responseSchemaName = ((isArray) ? responseSchemaName + "List" : responseSchemaName);
                             path.put("responses", ImmutableMap.<String, Object>builder()
                                     .put("200", ImmutableMap.<String, Object>builder()
                                             .put("description", "")
                                             .put("content", ImmutableMap.<String, Object>builder()
                                                     .put("application/json", ImmutableMap.<String, Object>builder()
                                                             .put("schema", ImmutableMap.<String, Object>builder()
-                                                                    .put("$ref", "#/components/schemas/" + responseSchemaName)
+                                                                    .put("$ref", "#/components/schemas/" + schemaName)
                                                                     .build())
                                                             .build())
                                                     .build())
@@ -755,7 +655,6 @@ public class OpenAPIGenerateExpression implements BieGenerateOpenApiExpression, 
                         }
                     }
                     if (option.getMessageBodyType().equals("Response")) {
-                        schemaName = ((isArray) ? schemaName + "List" : schemaName);
                         path.put("responses", ImmutableMap.<String, Object>builder()
                                 .put("200", ImmutableMap.<String, Object>builder()
                                         .put("description", "")
@@ -774,19 +673,6 @@ public class OpenAPIGenerateExpression implements BieGenerateOpenApiExpression, 
                 }
 
                 if (option.getOpenAPI30TemplateMap().containsKey(deleteTemplateKey)) {
-                    String schemaName;
-                    String prefix = "delete";
-                    if (option.getMessageBodyType().equals("Request")) {
-                        prefix = "delete";
-                    } else if (option.getMessageBodyType().equals("Response")) {
-                        prefix = "query";
-                    }
-
-                    schemaName = prefix + Character.toUpperCase(bieName.charAt(0)) + bieName.substring(1);
-                    boolean isArray = option.getOpenAPI30TemplateMap().get(deleteTemplateKey).isArrayForJsonExpression();
-                    if (schemas.containsKey(((isArray) ? schemaName + "List" : schemaName))) {
-                        schemaName = schemaName + topLevelAsbiep.getTopLevelAsbiepId();
-                    }
                     boolean isSuppressRoot = option.getOpenAPI30TemplateMap().get(deleteTemplateKey).isSuppressRootProperty();
                     path.put("summary", "");
                     path.put("description", "");
@@ -798,7 +684,6 @@ public class OpenAPIGenerateExpression implements BieGenerateOpenApiExpression, 
                     }
                     path.put("operationId", option.getOperationId());
                     if (option.getMessageBodyType().equals("Response")) {
-                        schemaName = ((isArray) ? schemaName + "List" : schemaName);
                         path.put("responses", ImmutableMap.<String, Object>builder()
                                 .put("200", ImmutableMap.<String, Object>builder()
                                         .put("description", "")
