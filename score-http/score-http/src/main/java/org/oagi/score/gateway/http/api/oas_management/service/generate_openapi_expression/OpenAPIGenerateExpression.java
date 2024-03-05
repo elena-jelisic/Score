@@ -715,6 +715,8 @@ public class OpenAPIGenerateExpression implements BieGenerateOpenApiExpression, 
         properties.put("x-oagis-bie-version", StringUtils.hasLength(topLevelAsbiep.getVersion()) ? topLevelAsbiep.getVersion() : "");
         // Issue #1574
         Release release = generationContext.findRelease(topLevelAsbiep.getReleaseId());
+        ASCCP basedAsccp = generationContext.findASCCP(asbiep.getBasedAsccpManifestId());
+        properties.put("x-oagis-den", basedAsccp.getPropertyTerm());
         properties.put("x-oagis-bie-uri", option.getScheme() + "://" + option.getHost() + "/profile_bie/" + topLevelAsbiep.getTopLevelAsbiepId().toString());
         properties.put("x-oagis-release", release.getReleaseNum());
         properties.put("x-oagis-release-date", new SimpleDateFormat("yyyy-MM-dd").format(release.getLastUpdateTimestamp()));
