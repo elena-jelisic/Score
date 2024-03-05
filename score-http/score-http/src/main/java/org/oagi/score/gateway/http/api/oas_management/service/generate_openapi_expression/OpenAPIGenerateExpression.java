@@ -905,10 +905,7 @@ public class OpenAPIGenerateExpression implements BieGenerateOpenApiExpression, 
         boolean isNillable = asbie.isNillable();
 
         boolean reused = !asbie.getOwnerTopLevelAsbiepId().equals(asbiep.getOwnerTopLevelAsbiepId());
-        if (reused) {
-            SchemaReference ref = getReference(schemas, asbiep, generationContext);
-            properties.put("$ref", ref.getPath());
-        } else {
+
             ABIE typeAbie = generationContext.queryTargetABIE(asbiep);
             ASCC ascc = generationContext.queryBasedASCC(asbie);
 
@@ -939,7 +936,7 @@ public class OpenAPIGenerateExpression implements BieGenerateOpenApiExpression, 
             }
 
             properties = oneOf(allOf(properties), isNillable);
-        }
+        
 
         if (isArray) {
             Map<String, Object> items = new LinkedHashMap();
