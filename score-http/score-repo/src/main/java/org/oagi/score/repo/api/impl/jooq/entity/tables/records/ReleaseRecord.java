@@ -206,6 +206,20 @@ public class ReleaseRecord extends UpdatableRecordImpl<ReleaseRecord> {
         return (String) get(10);
     }
 
+    /**
+     * Setter for <code>oagi.release.specification_id</code>.
+     */
+    public void setSpecificationId(Long value) {
+        set(11, value);
+    }
+
+    /**
+     * Getter for <code>oagi.release.specification_id</code>.
+     */
+    public Long getSpecificationId() {
+        return (Long) get(11);
+    }
+
     // -------------------------------------------------------------------------
     // Primary key information
     // -------------------------------------------------------------------------
@@ -229,7 +243,7 @@ public class ReleaseRecord extends UpdatableRecordImpl<ReleaseRecord> {
     /**
      * Create a detached, initialised ReleaseRecord
      */
-    public ReleaseRecord(ULong releaseId, String guid, String releaseNum, String releaseNote, String releaseLicense, ULong namespaceId, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state) {
+    public ReleaseRecord(ULong releaseId, String guid, String releaseNum, String releaseNote, String releaseLicense, ULong namespaceId, ULong createdBy, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, Long specificationId) {
         super(Release.RELEASE);
 
         setReleaseId(releaseId);
@@ -243,6 +257,7 @@ public class ReleaseRecord extends UpdatableRecordImpl<ReleaseRecord> {
         setCreationTimestamp(creationTimestamp);
         setLastUpdateTimestamp(lastUpdateTimestamp);
         setState(state);
+        setSpecificationId(specificationId);
         resetChangedOnNotNull();
     }
 }

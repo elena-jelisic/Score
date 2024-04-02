@@ -419,6 +419,20 @@ public class BccpRecord extends UpdatableRecordImpl<BccpRecord> {
         return (ULong) get(20);
     }
 
+    /**
+     * Setter for <code>oagi.bccp.super_bccp_id</code>.
+     */
+    public void setSuperBccpId(Long value) {
+        set(21, value);
+    }
+
+    /**
+     * Getter for <code>oagi.bccp.super_bccp_id</code>.
+     */
+    public Long getSuperBccpId() {
+        return (Long) get(21);
+    }
+
     // -------------------------------------------------------------------------
     // Primary key information
     // -------------------------------------------------------------------------
@@ -442,7 +456,7 @@ public class BccpRecord extends UpdatableRecordImpl<BccpRecord> {
     /**
      * Create a detached, initialised BccpRecord
      */
-    public BccpRecord(ULong bccpId, String guid, String propertyTerm, String representationTerm, ULong bdtId, String definition, String definitionSource, ULong namespaceId, Byte isDeprecated, ULong replacementBccpId, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, Byte isNillable, String defaultValue, String fixedValue, ULong prevBccpId, ULong nextBccpId) {
+    public BccpRecord(ULong bccpId, String guid, String propertyTerm, String representationTerm, ULong bdtId, String definition, String definitionSource, ULong namespaceId, Byte isDeprecated, ULong replacementBccpId, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, Byte isNillable, String defaultValue, String fixedValue, ULong prevBccpId, ULong nextBccpId, Long superBccpId) {
         super(Bccp.BCCP);
 
         setBccpId(bccpId);
@@ -466,6 +480,7 @@ public class BccpRecord extends UpdatableRecordImpl<BccpRecord> {
         setFixedValue(fixedValue);
         setPrevBccpId(prevBccpId);
         setNextBccpId(nextBccpId);
+        setSuperBccpId(superBccpId);
         resetChangedOnNotNull();
     }
 }

@@ -398,6 +398,20 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> {
         return (ULong) get(19);
     }
 
+    /**
+     * Setter for <code>oagi.asccp.super_asccp_id</code>.
+     */
+    public void setSuperAsccpId(Long value) {
+        set(20, value);
+    }
+
+    /**
+     * Getter for <code>oagi.asccp.super_asccp_id</code>.
+     */
+    public Long getSuperAsccpId() {
+        return (Long) get(20);
+    }
+
     // -------------------------------------------------------------------------
     // Primary key information
     // -------------------------------------------------------------------------
@@ -421,7 +435,7 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> {
     /**
      * Create a detached, initialised AsccpRecord
      */
-    public AsccpRecord(ULong asccpId, String guid, String type, String propertyTerm, String definition, String definitionSource, ULong roleOfAccId, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, ULong namespaceId, Byte reusableIndicator, Byte isDeprecated, ULong replacementAsccpId, Byte isNillable, ULong prevAsccpId, ULong nextAsccpId) {
+    public AsccpRecord(ULong asccpId, String guid, String type, String propertyTerm, String definition, String definitionSource, ULong roleOfAccId, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, ULong namespaceId, Byte reusableIndicator, Byte isDeprecated, ULong replacementAsccpId, Byte isNillable, ULong prevAsccpId, ULong nextAsccpId, Long superAsccpId) {
         super(Asccp.ASCCP);
 
         setAsccpId(asccpId);
@@ -444,6 +458,7 @@ public class AsccpRecord extends UpdatableRecordImpl<AsccpRecord> {
         setIsNillable(isNillable);
         setPrevAsccpId(prevAsccpId);
         setNextAsccpId(nextAsccpId);
+        setSuperAsccpId(superAsccpId);
         resetChangedOnNotNull();
     }
 }

@@ -43,6 +43,8 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Asccp.AsccpPath;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Bcc.BccPath;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.BieUserExtRevision.BieUserExtRevisionPath;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Namespace.NamespacePath;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.SpecificationAggregateComponent.SpecificationAggregateComponentPath;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.SuperAcc.SuperAccPath;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AccRecord;
 
 
@@ -234,6 +236,11 @@ public class Acc extends TableImpl<AccRecord> {
      */
     public final TableField<AccRecord, ULong> NEXT_ACC_ID = createField(DSL.name("next_acc_id"), SQLDataType.BIGINTUNSIGNED.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.BIGINTUNSIGNED)), this, "A self-foreign key to indicate the next history record.");
 
+    /**
+     * The column <code>oagi.acc.super_acc_id</code>.
+     */
+    public final TableField<AccRecord, Long> SUPER_ACC_ID = createField(DSL.name("super_acc_id"), SQLDataType.BIGINT.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.BIGINT)), this, "");
+
     private Acc(Name alias, Table<AccRecord> aliased) {
         this(alias, aliased, (Field<?>[]) null, null);
     }
@@ -303,7 +310,7 @@ public class Acc extends TableImpl<AccRecord> {
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.asList(Indexes.ACC_ACC_GUID_IDX, Indexes.ACC_ACC_LAST_UPDATE_TIMESTAMP_DESC_IDX);
+        return Arrays.asList(Indexes.ACC_ACC_GUID_IDX, Indexes.ACC_ACC_LAST_UPDATE_TIMESTAMP_DESC_IDX, Indexes.ACC_SUPER_ACC_ID);
     }
 
     @Override
@@ -318,7 +325,7 @@ public class Acc extends TableImpl<AccRecord> {
 
     @Override
     public List<ForeignKey<AccRecord, ?>> getReferences() {
-        return Arrays.asList(Keys.ACC_BASED_ACC_ID_FK, Keys.ACC_NAMESPACE_ID_FK, Keys.ACC_CREATED_BY_FK, Keys.ACC_OWNER_USER_ID_FK, Keys.ACC_LAST_UPDATED_BY_FK, Keys.ACC_REPLACEMENT_ACC_ID_FK, Keys.ACC_PREV_ACC_ID_FK, Keys.ACC_NEXT_ACC_ID_FK);
+        return Arrays.asList(Keys.ACC_BASED_ACC_ID_FK, Keys.ACC_NAMESPACE_ID_FK, Keys.ACC_CREATED_BY_FK, Keys.ACC_OWNER_USER_ID_FK, Keys.ACC_LAST_UPDATED_BY_FK, Keys.ACC_REPLACEMENT_ACC_ID_FK, Keys.ACC_PREV_ACC_ID_FK, Keys.ACC_NEXT_ACC_ID_FK, Keys.ACC_IBFK_1);
     }
 
     private transient AccPath _accBasedAccIdFk;
@@ -424,6 +431,18 @@ public class Acc extends TableImpl<AccRecord> {
         return _accNextAccIdFk;
     }
 
+    private transient SuperAccPath _superAcc;
+
+    /**
+     * Get the implicit join path to the <code>oagi.super_acc</code> table.
+     */
+    public SuperAccPath superAcc() {
+        if (_superAcc == null)
+            _superAcc = new SuperAccPath(this, Keys.ACC_IBFK_1, null);
+
+        return _superAcc;
+    }
+
     private transient AccManifestPath _accManifest;
 
     /**
@@ -499,6 +518,19 @@ public class Acc extends TableImpl<AccRecord> {
             _bieUserExtRevisionUserExtAccIdFk = new BieUserExtRevisionPath(this, null, Keys.BIE_USER_EXT_REVISION_USER_EXT_ACC_ID_FK.getInverseKey());
 
         return _bieUserExtRevisionUserExtAccIdFk;
+    }
+
+    private transient SpecificationAggregateComponentPath _specificationAggregateComponent;
+
+    /**
+     * Get the implicit to-many join path to the
+     * <code>oagi.specification_aggregate_component</code> table
+     */
+    public SpecificationAggregateComponentPath specificationAggregateComponent() {
+        if (_specificationAggregateComponent == null)
+            _specificationAggregateComponent = new SpecificationAggregateComponentPath(this, null, Keys.GFGDFGDFG.getInverseKey());
+
+        return _specificationAggregateComponent;
     }
 
     @Override

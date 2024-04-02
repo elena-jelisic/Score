@@ -28,7 +28,12 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Exception;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Log;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleBlobContentManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.OasMessageBody;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.Release;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.SeqKey;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.SpecificationAggregateComponent;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.SpecificationAssociationComponent;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.SpecificationBasicComponent;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.SpecificationDataType;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Xbt;
 
 
@@ -70,6 +75,10 @@ public class Indexes {
     public static final Index DT_DT_LAST_UPDATE_TIMESTAMP_DESC_IDX = Internal.createIndex(DSL.name("dt_last_update_timestamp_desc_idx"), Dt.DT, new OrderField[] { Dt.DT.LAST_UPDATE_TIMESTAMP }, false);
     public static final Index DT_SC_DT_SC_GUID_IDX = Internal.createIndex(DSL.name("dt_sc_guid_idx"), DtSc.DT_SC, new OrderField[] { DtSc.DT_SC.GUID }, false);
     public static final Index EXCEPTION_EXCEPTION_TAG_IDX = Internal.createIndex(DSL.name("exception_tag_idx"), Exception.EXCEPTION, new OrderField[] { Exception.EXCEPTION.TAG }, false);
+    public static final Index SPECIFICATION_DATA_TYPE_FKSPECIFICAT57299_IDX = Internal.createIndex(DSL.name("FKspecificat57299_idx"), SpecificationDataType.SPECIFICATION_DATA_TYPE, new OrderField[] { SpecificationDataType.SPECIFICATION_DATA_TYPE.DT_ID }, false);
+    public static final Index SPECIFICATION_ASSOCIATION_COMPONENT_FKSPECIFICAT961521_IDX = Internal.createIndex(DSL.name("FKspecificat961521_idx"), SpecificationAssociationComponent.SPECIFICATION_ASSOCIATION_COMPONENT, new OrderField[] { SpecificationAssociationComponent.SPECIFICATION_ASSOCIATION_COMPONENT.ASCC_ID }, false);
+    public static final Index SPECIFICATION_BASIC_COMPONENT_FKSPECIFICAT993501_IDX = Internal.createIndex(DSL.name("FKspecificat993501_idx"), SpecificationBasicComponent.SPECIFICATION_BASIC_COMPONENT, new OrderField[] { SpecificationBasicComponent.SPECIFICATION_BASIC_COMPONENT.BCC_ID }, false);
+    public static final Index SPECIFICATION_AGGREGATE_COMPONENT_GFGDFGDFG_IDX = Internal.createIndex(DSL.name("gfgdfgdfg_idx"), SpecificationAggregateComponent.SPECIFICATION_AGGREGATE_COMPONENT, new OrderField[] { SpecificationAggregateComponent.SPECIFICATION_AGGREGATE_COMPONENT.ACC_ID }, false);
     public static final Index MODULE_BLOB_CONTENT_MANIFEST_MMODULE_BLOB_CONTENT_MANIFEST_LAST_UPDATED_BY_FK = Internal.createIndex(DSL.name("mmodule_blob_content_manifest_last_updated_by_fk"), ModuleBlobContentManifest.MODULE_BLOB_CONTENT_MANIFEST, new OrderField[] { ModuleBlobContentManifest.MODULE_BLOB_CONTENT_MANIFEST.LAST_UPDATED_BY }, false);
     public static final Index MODULE_BLOB_CONTENT_MANIFEST_MODULE_BLOB_CONTENT_MANIFEST_BLOB_CONTENT_MANIFEST_ID_FK = Internal.createIndex(DSL.name("module_blob_content_manifest_blob_content_manifest_id_fk"), ModuleBlobContentManifest.MODULE_BLOB_CONTENT_MANIFEST, new OrderField[] { ModuleBlobContentManifest.MODULE_BLOB_CONTENT_MANIFEST.BLOB_CONTENT_MANIFEST_ID }, false);
     public static final Index OAS_MESSAGE_BODY_OAS_MESSAGE_BODY_OAS_ASBIEP_ID_FK = Internal.createIndex(DSL.name("oas_message_body_oas_asbiep_id_fk"), OasMessageBody.OAS_MESSAGE_BODY, new OrderField[] { OasMessageBody.OAS_MESSAGE_BODY.TOP_LEVEL_ASBIEP_ID }, false);
@@ -78,6 +87,12 @@ public class Indexes {
     public static final Index SEQ_KEY_SEQ_KEY_ASCC_MANIFEST_ID = Internal.createIndex(DSL.name("seq_key_ascc_manifest_id"), SeqKey.SEQ_KEY, new OrderField[] { SeqKey.SEQ_KEY.ASCC_MANIFEST_ID }, false);
     public static final Index SEQ_KEY_SEQ_KEY_BCC_MANIFEST_ID = Internal.createIndex(DSL.name("seq_key_bcc_manifest_id"), SeqKey.SEQ_KEY, new OrderField[] { SeqKey.SEQ_KEY.BCC_MANIFEST_ID }, false);
     public static final Index SEQ_KEY_SEQ_KEY_FROM_ACC_MANIFEST_ID = Internal.createIndex(DSL.name("seq_key_from_acc_manifest_id"), SeqKey.SEQ_KEY, new OrderField[] { SeqKey.SEQ_KEY.FROM_ACC_MANIFEST_ID }, false);
+    public static final Index RELEASE_SPECIFICATION_ID = Internal.createIndex(DSL.name("specification_id"), Release.RELEASE, new OrderField[] { Release.RELEASE.SPECIFICATION_ID }, false);
+    public static final Index ACC_SUPER_ACC_ID = Internal.createIndex(DSL.name("super_acc_id"), Acc.ACC, new OrderField[] { Acc.ACC.SUPER_ACC_ID }, false);
+    public static final Index ASCC_SUPER_ASCC_ID = Internal.createIndex(DSL.name("super_ascc_id"), Ascc.ASCC, new OrderField[] { Ascc.ASCC.SUPER_ASCC_ID }, false);
+    public static final Index ASCCP_SUPER_ASCCP_ID = Internal.createIndex(DSL.name("super_asccp_id"), Asccp.ASCCP, new OrderField[] { Asccp.ASCCP.SUPER_ASCCP_ID }, false);
+    public static final Index BCC_SUPER_BCC_ID = Internal.createIndex(DSL.name("super_bcc_id"), Bcc.BCC, new OrderField[] { Bcc.BCC.SUPER_BCC_ID }, false);
+    public static final Index BCCP_SUPER_BCCP_ID = Internal.createIndex(DSL.name("super_bccp_id"), Bccp.BCCP, new OrderField[] { Bccp.BCCP.SUPER_BCCP_ID }, false);
     public static final Index XBT_XBT_GUID_IDX = Internal.createIndex(DSL.name("xbt_guid_idx"), Xbt.XBT, new OrderField[] { Xbt.XBT.GUID }, false);
     public static final Index XBT_XBT_LAST_UPDATE_TIMESTAMP_DESC_IDX = Internal.createIndex(DSL.name("xbt_last_update_timestamp_desc_idx"), Xbt.XBT, new OrderField[] { Xbt.XBT.LAST_UPDATE_TIMESTAMP }, false);
 }

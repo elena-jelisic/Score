@@ -44,6 +44,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.DtManifest.DtManifestPath
 import org.oagi.score.repo.api.impl.jooq.entity.tables.DtSc.DtScPath;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.DtUsageRule.DtUsageRulePath;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Namespace.NamespacePath;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.SpecificationDataType.SpecificationDataTypePath;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.DtRecord;
 
 
@@ -494,6 +495,19 @@ public class Dt extends TableImpl<DtRecord> {
             _dtUsageRule = new DtUsageRulePath(this, null, Keys.DT_USAGE_RULE_TARGET_DT_ID_FK.getInverseKey());
 
         return _dtUsageRule;
+    }
+
+    private transient SpecificationDataTypePath _specificationDataType;
+
+    /**
+     * Get the implicit to-many join path to the
+     * <code>oagi.specification_data_type</code> table
+     */
+    public SpecificationDataTypePath specificationDataType() {
+        if (_specificationDataType == null)
+            _specificationDataType = new SpecificationDataTypePath(this, null, Keys.FKSPECIFICAT57299.getInverseKey());
+
+        return _specificationDataType;
     }
 
     @Override

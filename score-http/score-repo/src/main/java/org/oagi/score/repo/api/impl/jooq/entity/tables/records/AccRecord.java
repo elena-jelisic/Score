@@ -431,6 +431,20 @@ public class AccRecord extends UpdatableRecordImpl<AccRecord> {
         return (ULong) get(20);
     }
 
+    /**
+     * Setter for <code>oagi.acc.super_acc_id</code>.
+     */
+    public void setSuperAccId(Long value) {
+        set(21, value);
+    }
+
+    /**
+     * Getter for <code>oagi.acc.super_acc_id</code>.
+     */
+    public Long getSuperAccId() {
+        return (Long) get(21);
+    }
+
     // -------------------------------------------------------------------------
     // Primary key information
     // -------------------------------------------------------------------------
@@ -454,7 +468,7 @@ public class AccRecord extends UpdatableRecordImpl<AccRecord> {
     /**
      * Create a detached, initialised AccRecord
      */
-    public AccRecord(ULong accId, String guid, String type, String objectClassTerm, String definition, String definitionSource, ULong basedAccId, String objectClassQualifier, Integer oagisComponentType, ULong namespaceId, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, Byte isDeprecated, ULong replacementAccId, Byte isAbstract, ULong prevAccId, ULong nextAccId) {
+    public AccRecord(ULong accId, String guid, String type, String objectClassTerm, String definition, String definitionSource, ULong basedAccId, String objectClassQualifier, Integer oagisComponentType, ULong namespaceId, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, Byte isDeprecated, ULong replacementAccId, Byte isAbstract, ULong prevAccId, ULong nextAccId, Long superAccId) {
         super(Acc.ACC);
 
         setAccId(accId);
@@ -478,6 +492,7 @@ public class AccRecord extends UpdatableRecordImpl<AccRecord> {
         setIsAbstract(isAbstract);
         setPrevAccId(prevAccId);
         setNextAccId(nextAccId);
+        setSuperAccId(superAccId);
         resetChangedOnNotNull();
     }
 }

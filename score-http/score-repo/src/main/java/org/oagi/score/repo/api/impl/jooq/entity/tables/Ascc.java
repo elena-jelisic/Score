@@ -41,6 +41,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Ascc.AsccPath;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.AsccBizterm.AsccBiztermPath;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.AsccManifest.AsccManifestPath;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Asccp.AsccpPath;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.SuperAscc.SuperAsccPath;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsccRecord;
 
 
@@ -213,6 +214,11 @@ public class Ascc extends TableImpl<AsccRecord> {
      */
     public final TableField<AsccRecord, ULong> NEXT_ASCC_ID = createField(DSL.name("next_ascc_id"), SQLDataType.BIGINTUNSIGNED.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.BIGINTUNSIGNED)), this, "A self-foreign key to indicate the next history record.");
 
+    /**
+     * The column <code>oagi.ascc.super_ascc_id</code>.
+     */
+    public final TableField<AsccRecord, Long> SUPER_ASCC_ID = createField(DSL.name("super_ascc_id"), SQLDataType.BIGINT.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.BIGINT)), this, "");
+
     private Ascc(Name alias, Table<AsccRecord> aliased) {
         this(alias, aliased, (Field<?>[]) null, null);
     }
@@ -282,7 +288,7 @@ public class Ascc extends TableImpl<AsccRecord> {
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.asList(Indexes.ASCC_ASCC_GUID_IDX, Indexes.ASCC_ASCC_LAST_UPDATE_TIMESTAMP_DESC_IDX);
+        return Arrays.asList(Indexes.ASCC_ASCC_GUID_IDX, Indexes.ASCC_ASCC_LAST_UPDATE_TIMESTAMP_DESC_IDX, Indexes.ASCC_SUPER_ASCC_ID);
     }
 
     @Override
@@ -297,7 +303,7 @@ public class Ascc extends TableImpl<AsccRecord> {
 
     @Override
     public List<ForeignKey<AsccRecord, ?>> getReferences() {
-        return Arrays.asList(Keys.ASCC_FROM_ACC_ID_FK, Keys.ASCC_TO_ASCCP_ID_FK, Keys.ASCC_REPLACEMENT_ASCC_ID_FK, Keys.ASCC_CREATED_BY_FK, Keys.ASCC_OWNER_USER_ID_FK, Keys.ASCC_LAST_UPDATED_BY_FK, Keys.ASCC_PREV_ASCC_ID_FK, Keys.ASCC_NEXT_ASCC_ID_FK);
+        return Arrays.asList(Keys.ASCC_FROM_ACC_ID_FK, Keys.ASCC_TO_ASCCP_ID_FK, Keys.ASCC_REPLACEMENT_ASCC_ID_FK, Keys.ASCC_CREATED_BY_FK, Keys.ASCC_OWNER_USER_ID_FK, Keys.ASCC_LAST_UPDATED_BY_FK, Keys.ASCC_PREV_ASCC_ID_FK, Keys.ASCC_NEXT_ASCC_ID_FK, Keys.ASCC_IBFK_1);
     }
 
     private transient AccPath _acc;
@@ -400,6 +406,18 @@ public class Ascc extends TableImpl<AsccRecord> {
             _asccNextAsccIdFk = new AsccPath(this, Keys.ASCC_NEXT_ASCC_ID_FK, null);
 
         return _asccNextAsccIdFk;
+    }
+
+    private transient SuperAsccPath _superAscc;
+
+    /**
+     * Get the implicit join path to the <code>oagi.super_ascc</code> table.
+     */
+    public SuperAsccPath superAscc() {
+        if (_superAscc == null)
+            _superAscc = new SuperAsccPath(this, Keys.ASCC_IBFK_1, null);
+
+        return _superAscc;
     }
 
     private transient AsccBiztermPath _asccBizterm;

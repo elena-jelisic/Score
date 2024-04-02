@@ -391,6 +391,20 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> {
         return (ULong) get(18);
     }
 
+    /**
+     * Setter for <code>oagi.ascc.super_ascc_id</code>.
+     */
+    public void setSuperAsccId(Long value) {
+        set(19, value);
+    }
+
+    /**
+     * Getter for <code>oagi.ascc.super_ascc_id</code>.
+     */
+    public Long getSuperAsccId() {
+        return (Long) get(19);
+    }
+
     // -------------------------------------------------------------------------
     // Primary key information
     // -------------------------------------------------------------------------
@@ -414,7 +428,7 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> {
     /**
      * Create a detached, initialised AsccRecord
      */
-    public AsccRecord(ULong asccId, String guid, Integer cardinalityMin, Integer cardinalityMax, Integer seqKey, ULong fromAccId, ULong toAsccpId, String definition, String definitionSource, Byte isDeprecated, ULong replacementAsccId, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, ULong prevAsccId, ULong nextAsccId) {
+    public AsccRecord(ULong asccId, String guid, Integer cardinalityMin, Integer cardinalityMax, Integer seqKey, ULong fromAccId, ULong toAsccpId, String definition, String definitionSource, Byte isDeprecated, ULong replacementAsccId, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, ULong prevAsccId, ULong nextAsccId, Long superAsccId) {
         super(Ascc.ASCC);
 
         setAsccId(asccId);
@@ -436,6 +450,7 @@ public class AsccRecord extends UpdatableRecordImpl<AsccRecord> {
         setState(state);
         setPrevAsccId(prevAsccId);
         setNextAsccId(nextAsccId);
+        setSuperAsccId(superAsccId);
         resetChangedOnNotNull();
     }
 }

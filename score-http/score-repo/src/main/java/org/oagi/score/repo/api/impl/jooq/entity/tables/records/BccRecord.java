@@ -477,6 +477,20 @@ public class BccRecord extends UpdatableRecordImpl<BccRecord> {
         return (ULong) get(22);
     }
 
+    /**
+     * Setter for <code>oagi.bcc.super_bcc_id</code>.
+     */
+    public void setSuperBccId(Long value) {
+        set(23, value);
+    }
+
+    /**
+     * Getter for <code>oagi.bcc.super_bcc_id</code>.
+     */
+    public Long getSuperBccId() {
+        return (Long) get(23);
+    }
+
     // -------------------------------------------------------------------------
     // Primary key information
     // -------------------------------------------------------------------------
@@ -500,7 +514,7 @@ public class BccRecord extends UpdatableRecordImpl<BccRecord> {
     /**
      * Create a detached, initialised BccRecord
      */
-    public BccRecord(ULong bccId, String guid, Integer cardinalityMin, Integer cardinalityMax, ULong toBccpId, ULong fromAccId, Integer seqKey, Integer entityType, String definition, String definitionSource, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, Byte isDeprecated, ULong replacementBccId, Byte isNillable, String defaultValue, String fixedValue, ULong prevBccId, ULong nextBccId) {
+    public BccRecord(ULong bccId, String guid, Integer cardinalityMin, Integer cardinalityMax, ULong toBccpId, ULong fromAccId, Integer seqKey, Integer entityType, String definition, String definitionSource, ULong createdBy, ULong ownerUserId, ULong lastUpdatedBy, LocalDateTime creationTimestamp, LocalDateTime lastUpdateTimestamp, String state, Byte isDeprecated, ULong replacementBccId, Byte isNillable, String defaultValue, String fixedValue, ULong prevBccId, ULong nextBccId, Long superBccId) {
         super(Bcc.BCC);
 
         setBccId(bccId);
@@ -526,6 +540,7 @@ public class BccRecord extends UpdatableRecordImpl<BccRecord> {
         setFixedValue(fixedValue);
         setPrevBccId(prevBccId);
         setNextBccId(nextBccId);
+        setSuperBccId(superBccId);
         resetChangedOnNotNull();
     }
 }

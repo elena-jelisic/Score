@@ -25,6 +25,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.AsccpManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.AsccpManifestTag;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Bbie;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.BbieBizterm;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.BbieGapAnalysisResults;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.BbieSc;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Bbiep;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Bcc;
@@ -35,6 +36,9 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.BccpManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.BccpManifestTag;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.BdtPriRestri;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.BdtScPriRestri;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.BieGapAnalysis;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.BieGapAnalysisConstraintsResult;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.BieGapAnalysisStatusCode;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.BiePackage;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.BiePackageTopLevelAsbiep;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.BieUsageRule;
@@ -45,6 +49,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.BizCtxValue;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.BlobContent;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.BlobContentManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.BusinessTerm;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.CcGapAnalysisResultCode;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CdtAwdPri;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CdtAwdPriXpsTypeMap;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.CdtPri;
@@ -68,7 +73,9 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.DtSc;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.DtScManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.DtUsageRule;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Exception;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.FlatBcc;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Log;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.MappingSpecification;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Message;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Module;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleAccManifest;
@@ -107,6 +114,19 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Oauth2AppScope;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.RefSpec;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Release;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.SeqKey;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.Source;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.Specification;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.SpecificationAggregateComponent;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.SpecificationAssociationComponent;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.SpecificationBasicComponent;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.SpecificationDataType;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.SpecificationType;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.StatusCode;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.SuperAcc;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.SuperAscc;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.SuperAsccp;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.SuperBcc;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.SuperBccp;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Tag;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Tenant;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.TenantBusinessCtx;
@@ -263,6 +283,11 @@ public class Tables {
     public static final BbieBizterm BBIE_BIZTERM = BbieBizterm.BBIE_BIZTERM;
 
     /**
+     * The table <code>oagi.bbie_gap_analysis_results</code>.
+     */
+    public static final BbieGapAnalysisResults BBIE_GAP_ANALYSIS_RESULTS = BbieGapAnalysisResults.BBIE_GAP_ANALYSIS_RESULTS;
+
+    /**
      * Because there is no single table that is a contextualized counterpart of
      * the DT table (which stores both CDT and BDT), The context specific
      * constraints associated with the DT are stored in the BBIE table, while
@@ -341,6 +366,21 @@ public class Tables {
     public static final BdtScPriRestri BDT_SC_PRI_RESTRI = BdtScPriRestri.BDT_SC_PRI_RESTRI;
 
     /**
+     * The table <code>oagi.bie_gap_analysis</code>.
+     */
+    public static final BieGapAnalysis BIE_GAP_ANALYSIS = BieGapAnalysis.BIE_GAP_ANALYSIS;
+
+    /**
+     * The table <code>oagi.bie_gap_analysis_constraints_result</code>.
+     */
+    public static final BieGapAnalysisConstraintsResult BIE_GAP_ANALYSIS_CONSTRAINTS_RESULT = BieGapAnalysisConstraintsResult.BIE_GAP_ANALYSIS_CONSTRAINTS_RESULT;
+
+    /**
+     * The table <code>oagi.bie_gap_analysis_status_code</code>.
+     */
+    public static final BieGapAnalysisStatusCode BIE_GAP_ANALYSIS_STATUS_CODE = BieGapAnalysisStatusCode.BIE_GAP_ANALYSIS_STATUS_CODE;
+
+    /**
      * The table <code>oagi.bie_package</code>.
      */
     public static final BiePackage BIE_PACKAGE = BiePackage.BIE_PACKAGE;
@@ -406,6 +446,11 @@ public class Tables {
      * missing.
      */
     public static final BusinessTerm BUSINESS_TERM = BusinessTerm.BUSINESS_TERM;
+
+    /**
+     * The table <code>oagi.cc_gap_analysis_result_code</code>.
+     */
+    public static final CcGapAnalysisResultCode CC_GAP_ANALYSIS_RESULT_CODE = CcGapAnalysisResultCode.CC_GAP_ANALYSIS_RESULT_CODE;
 
     /**
      * This table capture allowed primitives of the CDT?s Content Component. 
@@ -564,9 +609,19 @@ public class Tables {
     public static final Exception EXCEPTION = Exception.EXCEPTION;
 
     /**
+     * The table <code>oagi.flat_bcc</code>.
+     */
+    public static final FlatBcc FLAT_BCC = FlatBcc.FLAT_BCC;
+
+    /**
      * The table <code>oagi.log</code>.
      */
     public static final Log LOG = Log.LOG;
+
+    /**
+     * The table <code>oagi.mapping_specification</code>.
+     */
+    public static final MappingSpecification MAPPING_SPECIFICATION = MappingSpecification.MAPPING_SPECIFICATION;
 
     /**
      * The table <code>oagi.message</code>.
@@ -759,6 +814,71 @@ public class Tables {
      * The table <code>oagi.seq_key</code>.
      */
     public static final SeqKey SEQ_KEY = SeqKey.SEQ_KEY;
+
+    /**
+     * The table <code>oagi.source</code>.
+     */
+    public static final Source SOURCE = Source.SOURCE;
+
+    /**
+     * The table <code>oagi.specification</code>.
+     */
+    public static final Specification SPECIFICATION = Specification.SPECIFICATION;
+
+    /**
+     * The table <code>oagi.specification_aggregate_component</code>.
+     */
+    public static final SpecificationAggregateComponent SPECIFICATION_AGGREGATE_COMPONENT = SpecificationAggregateComponent.SPECIFICATION_AGGREGATE_COMPONENT;
+
+    /**
+     * The table <code>oagi.specification_association_component</code>.
+     */
+    public static final SpecificationAssociationComponent SPECIFICATION_ASSOCIATION_COMPONENT = SpecificationAssociationComponent.SPECIFICATION_ASSOCIATION_COMPONENT;
+
+    /**
+     * The table <code>oagi.specification_basic_component</code>.
+     */
+    public static final SpecificationBasicComponent SPECIFICATION_BASIC_COMPONENT = SpecificationBasicComponent.SPECIFICATION_BASIC_COMPONENT;
+
+    /**
+     * The table <code>oagi.specification_data_type</code>.
+     */
+    public static final SpecificationDataType SPECIFICATION_DATA_TYPE = SpecificationDataType.SPECIFICATION_DATA_TYPE;
+
+    /**
+     * The table <code>oagi.specification_type</code>.
+     */
+    public static final SpecificationType SPECIFICATION_TYPE = SpecificationType.SPECIFICATION_TYPE;
+
+    /**
+     * The table <code>oagi.status_code</code>.
+     */
+    public static final StatusCode STATUS_CODE = StatusCode.STATUS_CODE;
+
+    /**
+     * The table <code>oagi.super_acc</code>.
+     */
+    public static final SuperAcc SUPER_ACC = SuperAcc.SUPER_ACC;
+
+    /**
+     * The table <code>oagi.super_ascc</code>.
+     */
+    public static final SuperAscc SUPER_ASCC = SuperAscc.SUPER_ASCC;
+
+    /**
+     * The table <code>oagi.super_asccp</code>.
+     */
+    public static final SuperAsccp SUPER_ASCCP = SuperAsccp.SUPER_ASCCP;
+
+    /**
+     * The table <code>oagi.super_bcc</code>.
+     */
+    public static final SuperBcc SUPER_BCC = SuperBcc.SUPER_BCC;
+
+    /**
+     * The table <code>oagi.super_bccp</code>.
+     */
+    public static final SuperBccp SUPER_BCCP = SuperBccp.SUPER_BCCP;
 
     /**
      * The table <code>oagi.tag</code>.

@@ -13,6 +13,7 @@ import org.jooq.Condition;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Identity;
+import org.jooq.Index;
 import org.jooq.InverseForeignKey;
 import org.jooq.Name;
 import org.jooq.Path;
@@ -31,6 +32,7 @@ import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
+import org.oagi.score.repo.api.impl.jooq.entity.Indexes;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.AccManifest.AccManifestPath;
@@ -48,6 +50,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.DtManifest.DtManifestPath
 import org.oagi.score.repo.api.impl.jooq.entity.tables.DtScManifest.DtScManifestPath;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleSetRelease.ModuleSetReleasePath;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Namespace.NamespacePath;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.Specification.SpecificationPath;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.TopLevelAsbiep.TopLevelAsbiepPath;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.XbtManifest.XbtManifestPath;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ReleaseRecord;
@@ -145,6 +148,11 @@ public class Release extends TableImpl<ReleaseRecord> {
      */
     public final TableField<ReleaseRecord, String> STATE = createField(DSL.name("state"), SQLDataType.VARCHAR(20).defaultValue(DSL.field(DSL.raw("'Initialized'"), SQLDataType.VARCHAR)), this, "This indicates the revision life cycle state of the Release.");
 
+    /**
+     * The column <code>oagi.release.specification_id</code>.
+     */
+    public final TableField<ReleaseRecord, Long> SPECIFICATION_ID = createField(DSL.name("specification_id"), SQLDataType.BIGINT.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.BIGINT)), this, "");
+
     private Release(Name alias, Table<ReleaseRecord> aliased) {
         this(alias, aliased, (Field<?>[]) null, null);
     }
@@ -213,6 +221,11 @@ public class Release extends TableImpl<ReleaseRecord> {
     }
 
     @Override
+    public List<Index> getIndexes() {
+        return Arrays.asList(Indexes.RELEASE_SPECIFICATION_ID);
+    }
+
+    @Override
     public Identity<ReleaseRecord, ULong> getIdentity() {
         return (Identity<ReleaseRecord, ULong>) super.getIdentity();
     }
@@ -224,7 +237,7 @@ public class Release extends TableImpl<ReleaseRecord> {
 
     @Override
     public List<ForeignKey<ReleaseRecord, ?>> getReferences() {
-        return Arrays.asList(Keys.RELEASE_NAMESPACE_ID_FK, Keys.RELEASE_CREATED_BY_FK, Keys.RELEASE_LAST_UPDATED_BY_FK);
+        return Arrays.asList(Keys.RELEASE_NAMESPACE_ID_FK, Keys.RELEASE_CREATED_BY_FK, Keys.RELEASE_LAST_UPDATED_BY_FK, Keys.RELEASE_IBFK_1);
     }
 
     private transient NamespacePath _namespace;
@@ -263,6 +276,18 @@ public class Release extends TableImpl<ReleaseRecord> {
             _releaseLastUpdatedByFk = new AppUserPath(this, Keys.RELEASE_LAST_UPDATED_BY_FK, null);
 
         return _releaseLastUpdatedByFk;
+    }
+
+    private transient SpecificationPath _specification;
+
+    /**
+     * Get the implicit join path to the <code>oagi.specification</code> table.
+     */
+    public SpecificationPath specification() {
+        if (_specification == null)
+            _specification = new SpecificationPath(this, Keys.RELEASE_IBFK_1, null);
+
+        return _specification;
     }
 
     private transient AccManifestPath _accManifest;

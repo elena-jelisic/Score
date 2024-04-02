@@ -41,6 +41,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Ascc.AsccPath;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Asccp.AsccpPath;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.AsccpManifest.AsccpManifestPath;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Namespace.NamespacePath;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.SuperAsccp.SuperAsccpPath;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsccpRecord;
 
 
@@ -214,6 +215,11 @@ public class Asccp extends TableImpl<AsccpRecord> {
      */
     public final TableField<AsccpRecord, ULong> NEXT_ASCCP_ID = createField(DSL.name("next_asccp_id"), SQLDataType.BIGINTUNSIGNED.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.BIGINTUNSIGNED)), this, "A self-foreign key to indicate the next history record.");
 
+    /**
+     * The column <code>oagi.asccp.super_asccp_id</code>.
+     */
+    public final TableField<AsccpRecord, Long> SUPER_ASCCP_ID = createField(DSL.name("super_asccp_id"), SQLDataType.BIGINT.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.BIGINT)), this, "");
+
     private Asccp(Name alias, Table<AsccpRecord> aliased) {
         this(alias, aliased, (Field<?>[]) null, null);
     }
@@ -283,7 +289,7 @@ public class Asccp extends TableImpl<AsccpRecord> {
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.asList(Indexes.ASCCP_ASCCP_GUID_IDX, Indexes.ASCCP_ASCCP_LAST_UPDATE_TIMESTAMP_DESC_IDX);
+        return Arrays.asList(Indexes.ASCCP_ASCCP_GUID_IDX, Indexes.ASCCP_ASCCP_LAST_UPDATE_TIMESTAMP_DESC_IDX, Indexes.ASCCP_SUPER_ASCCP_ID);
     }
 
     @Override
@@ -298,7 +304,7 @@ public class Asccp extends TableImpl<AsccpRecord> {
 
     @Override
     public List<ForeignKey<AsccpRecord, ?>> getReferences() {
-        return Arrays.asList(Keys.ASCCP_ROLE_OF_ACC_ID_FK, Keys.ASCCP_CREATED_BY_FK, Keys.ASCCP_OWNER_USER_ID_FK, Keys.ASCCP_LAST_UPDATED_BY_FK, Keys.ASCCP_NAMESPACE_ID_FK, Keys.ASCCP_REPLACEMENT_ASCCP_ID_FK, Keys.ASCCP_PREV_ASCCP_ID_FK, Keys.ASCCP_NEXT_ASCCP_ID_FK);
+        return Arrays.asList(Keys.ASCCP_ROLE_OF_ACC_ID_FK, Keys.ASCCP_CREATED_BY_FK, Keys.ASCCP_OWNER_USER_ID_FK, Keys.ASCCP_LAST_UPDATED_BY_FK, Keys.ASCCP_NAMESPACE_ID_FK, Keys.ASCCP_REPLACEMENT_ASCCP_ID_FK, Keys.ASCCP_PREV_ASCCP_ID_FK, Keys.ASCCP_NEXT_ASCCP_ID_FK, Keys.ASCCP_IBFK_1);
     }
 
     private transient AccPath _acc;
@@ -401,6 +407,18 @@ public class Asccp extends TableImpl<AsccpRecord> {
             _asccpNextAsccpIdFk = new AsccpPath(this, Keys.ASCCP_NEXT_ASCCP_ID_FK, null);
 
         return _asccpNextAsccpIdFk;
+    }
+
+    private transient SuperAsccpPath _superAsccp;
+
+    /**
+     * Get the implicit join path to the <code>oagi.super_asccp</code> table.
+     */
+    public SuperAsccpPath superAsccp() {
+        if (_superAsccp == null)
+            _superAsccp = new SuperAsccpPath(this, Keys.ASCCP_IBFK_1, null);
+
+        return _superAsccp;
     }
 
     private transient AsccpManifestPath _asccpManifest;

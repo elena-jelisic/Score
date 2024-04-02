@@ -41,6 +41,8 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Bcc.BccPath;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.BccBizterm.BccBiztermPath;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.BccManifest.BccManifestPath;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Bccp.BccpPath;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.SpecificationBasicComponent.SpecificationBasicComponentPath;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.SuperBcc.SuperBccPath;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BccRecord;
 
 
@@ -248,6 +250,11 @@ public class Bcc extends TableImpl<BccRecord> {
      */
     public final TableField<BccRecord, ULong> NEXT_BCC_ID = createField(DSL.name("next_bcc_id"), SQLDataType.BIGINTUNSIGNED.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.BIGINTUNSIGNED)), this, "A self-foreign key to indicate the next history record.");
 
+    /**
+     * The column <code>oagi.bcc.super_bcc_id</code>.
+     */
+    public final TableField<BccRecord, Long> SUPER_BCC_ID = createField(DSL.name("super_bcc_id"), SQLDataType.BIGINT.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.BIGINT)), this, "");
+
     private Bcc(Name alias, Table<BccRecord> aliased) {
         this(alias, aliased, (Field<?>[]) null, null);
     }
@@ -317,7 +324,7 @@ public class Bcc extends TableImpl<BccRecord> {
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.asList(Indexes.BCC_BCC_GUID_IDX, Indexes.BCC_BCC_LAST_UPDATE_TIMESTAMP_DESC_IDX);
+        return Arrays.asList(Indexes.BCC_BCC_GUID_IDX, Indexes.BCC_BCC_LAST_UPDATE_TIMESTAMP_DESC_IDX, Indexes.BCC_SUPER_BCC_ID);
     }
 
     @Override
@@ -332,7 +339,7 @@ public class Bcc extends TableImpl<BccRecord> {
 
     @Override
     public List<ForeignKey<BccRecord, ?>> getReferences() {
-        return Arrays.asList(Keys.BCC_TO_BCCP_ID_FK, Keys.BCC_FROM_ACC_ID_FK, Keys.BCC_CREATED_BY_FK, Keys.BCC_OWNER_USER_ID_FK, Keys.BCC_LAST_UPDATED_BY_FK, Keys.BCC_REPLACEMENT_BCC_ID_FK, Keys.BCC_PREV_BCC_ID_FK, Keys.BCC_NEXT_BCC_ID_FK);
+        return Arrays.asList(Keys.BCC_TO_BCCP_ID_FK, Keys.BCC_FROM_ACC_ID_FK, Keys.BCC_CREATED_BY_FK, Keys.BCC_OWNER_USER_ID_FK, Keys.BCC_LAST_UPDATED_BY_FK, Keys.BCC_REPLACEMENT_BCC_ID_FK, Keys.BCC_PREV_BCC_ID_FK, Keys.BCC_NEXT_BCC_ID_FK, Keys.BCC_IBFK_1);
     }
 
     private transient BccpPath _bccp;
@@ -437,6 +444,18 @@ public class Bcc extends TableImpl<BccRecord> {
         return _bccNextBccIdFk;
     }
 
+    private transient SuperBccPath _superBcc;
+
+    /**
+     * Get the implicit join path to the <code>oagi.super_bcc</code> table.
+     */
+    public SuperBccPath superBcc() {
+        if (_superBcc == null)
+            _superBcc = new SuperBccPath(this, Keys.BCC_IBFK_1, null);
+
+        return _superBcc;
+    }
+
     private transient BccBiztermPath _bccBizterm;
 
     /**
@@ -461,6 +480,19 @@ public class Bcc extends TableImpl<BccRecord> {
             _bccManifest = new BccManifestPath(this, null, Keys.BCC_MANIFEST_BCC_ID_FK.getInverseKey());
 
         return _bccManifest;
+    }
+
+    private transient SpecificationBasicComponentPath _specificationBasicComponent;
+
+    /**
+     * Get the implicit to-many join path to the
+     * <code>oagi.specification_basic_component</code> table
+     */
+    public SpecificationBasicComponentPath specificationBasicComponent() {
+        if (_specificationBasicComponent == null)
+            _specificationBasicComponent = new SpecificationBasicComponentPath(this, null, Keys.FKSPECIFICAT993501.getInverseKey());
+
+        return _specificationBasicComponent;
     }
 
     @Override

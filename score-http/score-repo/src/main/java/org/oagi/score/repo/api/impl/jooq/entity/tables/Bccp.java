@@ -41,6 +41,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Bccp.BccpPath;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.BccpManifest.BccpManifestPath;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Dt.DtPath;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Namespace.NamespacePath;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.SuperBccp.SuperBccpPath;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BccpRecord;
 
 
@@ -223,6 +224,11 @@ public class Bccp extends TableImpl<BccpRecord> {
      */
     public final TableField<BccpRecord, ULong> NEXT_BCCP_ID = createField(DSL.name("next_bccp_id"), SQLDataType.BIGINTUNSIGNED.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.BIGINTUNSIGNED)), this, "A self-foreign key to indicate the next history record.");
 
+    /**
+     * The column <code>oagi.bccp.super_bccp_id</code>.
+     */
+    public final TableField<BccpRecord, Long> SUPER_BCCP_ID = createField(DSL.name("super_bccp_id"), SQLDataType.BIGINT.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.BIGINT)), this, "");
+
     private Bccp(Name alias, Table<BccpRecord> aliased) {
         this(alias, aliased, (Field<?>[]) null, null);
     }
@@ -292,7 +298,7 @@ public class Bccp extends TableImpl<BccpRecord> {
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.asList(Indexes.BCCP_BCCP_GUID_IDX, Indexes.BCCP_BCCP_LAST_UPDATE_TIMESTAMP_DESC_IDX);
+        return Arrays.asList(Indexes.BCCP_BCCP_GUID_IDX, Indexes.BCCP_BCCP_LAST_UPDATE_TIMESTAMP_DESC_IDX, Indexes.BCCP_SUPER_BCCP_ID);
     }
 
     @Override
@@ -307,7 +313,7 @@ public class Bccp extends TableImpl<BccpRecord> {
 
     @Override
     public List<ForeignKey<BccpRecord, ?>> getReferences() {
-        return Arrays.asList(Keys.BCCP_BDT_ID_FK, Keys.BCCP_NAMESPACE_ID_FK, Keys.BCCP_REPLACEMENT_BCCP_ID_FK, Keys.BCCP_CREATED_BY_FK, Keys.BCCP_OWNER_USER_ID_FK, Keys.BCCP_LAST_UPDATED_BY_FK, Keys.BCCP_PREV_BCCP_ID_FK, Keys.BCCP_NEXT_BCCP_ID_FK);
+        return Arrays.asList(Keys.BCCP_BDT_ID_FK, Keys.BCCP_NAMESPACE_ID_FK, Keys.BCCP_REPLACEMENT_BCCP_ID_FK, Keys.BCCP_CREATED_BY_FK, Keys.BCCP_OWNER_USER_ID_FK, Keys.BCCP_LAST_UPDATED_BY_FK, Keys.BCCP_PREV_BCCP_ID_FK, Keys.BCCP_NEXT_BCCP_ID_FK, Keys.BCCP_IBFK_1);
     }
 
     private transient DtPath _dt;
@@ -410,6 +416,18 @@ public class Bccp extends TableImpl<BccpRecord> {
             _bccpNextBccpIdFk = new BccpPath(this, Keys.BCCP_NEXT_BCCP_ID_FK, null);
 
         return _bccpNextBccpIdFk;
+    }
+
+    private transient SuperBccpPath _superBccp;
+
+    /**
+     * Get the implicit join path to the <code>oagi.super_bccp</code> table.
+     */
+    public SuperBccpPath superBccp() {
+        if (_superBccp == null)
+            _superBccp = new SuperBccpPath(this, Keys.BCCP_IBFK_1, null);
+
+        return _superBccp;
     }
 
     private transient BccpManifestPath _bccpManifest;
