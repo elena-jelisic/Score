@@ -1,10 +1,9 @@
-package org.oagi.score.gateway.http.api.multi_standard_management.service;
+package org.oagi.score.gateway.http.api.specification_management.service;
 
-import org.jooq.meta.derby.sys.Sys;
 import org.jooq.types.ULong;
-import org.oagi.score.gateway.http.api.multi_standard_management.data.SpecificationAggregateComponent;
-import org.oagi.score.gateway.http.api.multi_standard_management.data.SpecificationAssociationComponent;
-import org.oagi.score.gateway.http.api.multi_standard_management.data.SpecificationBasicComponent;
+import org.oagi.score.gateway.http.api.specification_management.data.SpecificationAggregateComponent;
+import org.oagi.score.gateway.http.api.specification_management.data.SpecificationAssociationComponent;
+import org.oagi.score.gateway.http.api.specification_management.data.SpecificationBasicComponent;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.Document;
@@ -42,10 +41,8 @@ public class MultiStandardService {
         aggregateComponentsList = new ArrayList<>();
         basicComponentsList = new ArrayList<>();
         associationComponentsList = new ArrayList<>();
-        //rootFolder = "/Users/enj2/Documents/QIF3.0-2018-ANSI/xsd/QIFApplications";
-        rootFolder = "/Users/enj2/Documents/4.3.0 FINAL/Common/xml/person/";
-        //String documentName = "QIFResults.xsd";
-        String documentName = "LegalDocumentType.xsd";
+        rootFolder = "/Users/enj2/Documents/QIF3.0-2018-ANSI/xsd/QIFApplications";
+        String documentName = "QIFResults.xsd";
         doc = loadSchema(rootFolder, documentName);
         complexTypeMapInitial = loadComplexTypesFromSchema(doc);
         loadIncludedSchemas(doc);

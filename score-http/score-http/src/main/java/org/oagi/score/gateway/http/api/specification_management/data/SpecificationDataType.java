@@ -1,4 +1,4 @@
-package org.oagi.score.gateway.http.api.multi_standard_management.data;
+package org.oagi.score.gateway.http.api.specification_management.data;
 
 import lombok.Data;
 import org.jooq.types.ULong;
