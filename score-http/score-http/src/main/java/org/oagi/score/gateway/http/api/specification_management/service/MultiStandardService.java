@@ -1,9 +1,15 @@
 package org.oagi.score.gateway.http.api.specification_management.service;
 
 import org.jooq.types.ULong;
-import org.oagi.score.gateway.http.api.specification_management.data.SpecificationAggregateComponent;
-import org.oagi.score.gateway.http.api.specification_management.data.SpecificationAssociationComponent;
-import org.oagi.score.gateway.http.api.specification_management.data.SpecificationBasicComponent;
+import org.oagi.score.repo.api.ScoreRepositoryFactory;
+import org.oagi.score.repo.api.impl.jooq.JooqScoreRepositoryFactory;
+import org.oagi.score.repo.api.impl.jooq.specification.JooqSpecificationWriteRepository;
+import org.oagi.score.repo.api.specification.SpecificationWriteRepository;
+import org.oagi.score.repo.api.specification.model.*;
+import org.oagi.score.repo.api.user.model.ScoreUser;
+import org.oagi.score.repo.component.specification.SpecificationRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.Document;
@@ -21,7 +27,8 @@ import java.util.*;
 @Service
 @Transactional(readOnly = true)
 public class MultiStandardService {
-
+    @Autowired
+    private SpecificationRepository specRepo;
     private List<SpecificationAggregateComponent> aggregateComponentsList;
     private List<SpecificationBasicComponent> basicComponentsList;
     private List<SpecificationAssociationComponent> associationComponentsList;
@@ -31,13 +38,19 @@ public class MultiStandardService {
     private Document doc;
     private String rootFolder;
 
-    public static void main(String args[]) {
+   /* public static void main(String args[]) {
         MultiStandardService service = new MultiStandardService();
-        service.insertNewSpecification();
-    }
+        AuthenticatedPrincipal user = new AuthenticatedPrincipal() {
+            @Override
+            public String getName() {
+                return null;
+            }
+        };
+        service.insertNewSpecification(new ScoreUser());
+    }*/
 
     @Transactional
-    public void insertNewSpecification() {
+    public void insertNewSpecification(AuthenticatedPrincipal user) {
         aggregateComponentsList = new ArrayList<>();
         basicComponentsList = new ArrayList<>();
         associationComponentsList = new ArrayList<>();
@@ -49,6 +62,17 @@ public class MultiStandardService {
         for (String key : complexTypeMapInitial.keySet()) {
             resolveComplexTypeStructure(complexTypeMapInitial.get(key));
         }
+        CreateSpecificationRequest createSpec = new CreateSpecificationRequest();
+        Source source = new Source();
+        source.setSourceName("QIF");
+        Specification spec = new Specification();
+        spec.setSpecificationName("QIF 3");
+        createSpec.setSpecificationType("Standard library");
+        createSpec.setSpecificationAggregatesList(aggregateComponentsList);
+        createSpec.setSource(source);
+        createSpec.setSpecification(spec);
+        CreateSpecificationResponse response = specRepo.createSpecification(createSpec);
+
     }
 
 
@@ -63,37 +87,40 @@ public class MultiStandardService {
     private SpecificationAggregateComponent resolveComplexTypeStructure(Element complexType) {
         SpecificationAggregateComponent fromAggregate = new SpecificationAggregateComponent();
         if (complexTypeIsStructure(complexType)) {
-            fromAggregate.setComponentId(ULong.valueOf(new Random().nextInt(1000)));
             fromAggregate.setComponentName(resolveElementName(complexType));
             fromAggregate.setDefinition(resolveElementDefinition(complexType));
-            aggregateComponentsList.add(fromAggregate);
             NodeList structure = complexType.getElementsByTagName("xs:element");
             for (int i = 0; i < structure.getLength(); i++) {
                 Element element = (Element) structure.item(i);
                 if (elementTypeIsPrimitive(element)) {
                     SpecificationBasicComponent basic = new SpecificationBasicComponent();
-                    basic.setComponentId(ULong.valueOf(i));
                     basic.setComponentName(resolveElementName(element));
                     basic.setDefinition(resolveElementDefinition(element));
                     basic.setAggregateComponentId(fromAggregate.getComponentId());
                     basic.setMinCardinality(resolveElementMinCardinality(element));
                     basic.setMaxCardinality(resolveElementMaxCardinality(element));
+                    SpecificationDataType dt = new SpecificationDataType();
+                    dt.setDataTypeName("Text");
+                    basic.setDataType(dt);
                     basicComponentsList.add(basic);
+                    fromAggregate.setSpecificationBasicsList(basicComponentsList);
                 } else if (complexTypeMapFull.containsKey(resolveElementType(element))){
                     SpecificationAssociationComponent association = new SpecificationAssociationComponent();
-                    association.setComponentId(ULong.valueOf(i));
                     association.setAssociationName(resolveElementName(element));
                     association.setMinCardinality(resolveElementMinCardinality(element));
                     association.setMaxCardinality(resolveElementMaxCardinality(element));
                     association.setDefinition(resolveElementDefinition(element));
-                    association.setFromAggregateComponent(fromAggregate.getComponentId());
+                    association.setFromAggregateComponent(fromAggregate);
                     SpecificationAggregateComponent toAggregate = resolveComplexTypeStructure(complexTypeMapFull.get(resolveElementType(element)));
-                    association.setToAggregateComponent(toAggregate.getComponentId());
+                    association.setToAggregateComponent(toAggregate);
                     associationComponentsList.add(association);
+                    fromAggregate.setSpecificationAssociationsList(associationComponentsList);
                 } else if (simpleTypeMapFull.containsKey(resolveElementType(element))){
                     System.out.println ("is simple");
                 }
             }
+            aggregateComponentsList.add(fromAggregate);
+
         }
         return fromAggregate;
     }
