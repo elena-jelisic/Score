@@ -1,13 +1,15 @@
 package org.oagi.score.gateway.http.api.specification_management.service;
 
-import org.jooq.types.ULong;
-import org.oagi.score.repo.api.ScoreRepositoryFactory;
-import org.oagi.score.repo.api.impl.jooq.JooqScoreRepositoryFactory;
-import org.oagi.score.repo.api.impl.jooq.specification.JooqSpecificationWriteRepository;
-import org.oagi.score.repo.api.specification.SpecificationWriteRepository;
+import org.oagi.score.gateway.http.api.namespace_management.data.Namespace;
+import org.oagi.score.gateway.http.api.namespace_management.service.NamespaceService;
+import org.oagi.score.gateway.http.api.release_management.data.ReleaseState;
+import org.oagi.score.gateway.http.configuration.security.SessionService;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.ReleaseRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.SpecificationRecord;
 import org.oagi.score.repo.api.specification.model.*;
-import org.oagi.score.repo.api.user.model.ScoreUser;
+import org.oagi.score.repo.component.release.ReleaseRepository;
 import org.oagi.score.repo.component.specification.SpecificationRepository;
+import org.oagi.score.service.common.data.AppUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.stereotype.Service;
@@ -16,12 +18,12 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.*;
 
 @Service
@@ -29,6 +31,12 @@ import java.util.*;
 public class MultiStandardService {
     @Autowired
     private SpecificationRepository specRepo;
+    @Autowired
+    private NamespaceService namespaceService;
+    @Autowired
+    private ReleaseRepository releaseRepo;
+    @Autowired
+    private SessionService session;
     private List<SpecificationAggregateComponent> aggregateComponentsList;
     private List<SpecificationBasicComponent> basicComponentsList;
     private List<SpecificationAssociationComponent> associationComponentsList;
@@ -72,7 +80,17 @@ public class MultiStandardService {
         createSpec.setSource(source);
         createSpec.setSpecification(spec);
         CreateSpecificationResponse response = specRepo.createSpecification(createSpec);
-
+        Namespace namespace = new Namespace();
+        namespace.setUri("http://qifstandards.org/xsd/qif3");
+        namespace.setPrefix("QIF");
+        namespace.setStd(true);
+        BigInteger namespaceID = namespaceService.create(user, namespace);
+        AppUser targetUser = session.getAppUserByUsername("oagis");
+        SpecificationRecord specificationRecord = specRepo.getSpecificationByName(spec.getSpecificationName());
+        ReleaseRecord releaseRecord = releaseRepo.createForSpecification(
+                targetUser.getAppUserId(), "QIF 3", "QIF release 3",
+                        "QIF", namespaceID, BigInteger.valueOf(specificationRecord.getSpecificationId()));
+        releaseRepo.updateState(targetUser.getAppUserId(), releaseRecord.getReleaseId().toBigInteger(), ReleaseState.Published);
     }
 
 
@@ -104,7 +122,7 @@ public class MultiStandardService {
                     basic.setDataType(dt);
                     basicComponentsList.add(basic);
                     fromAggregate.setSpecificationBasicsList(basicComponentsList);
-                } else if (complexTypeMapFull.containsKey(resolveElementType(element))){
+                } else if (complexTypeMapFull.containsKey(resolveElementType(element))) {
                     SpecificationAssociationComponent association = new SpecificationAssociationComponent();
                     association.setAssociationName(resolveElementName(element));
                     association.setMinCardinality(resolveElementMinCardinality(element));
@@ -115,8 +133,8 @@ public class MultiStandardService {
                     association.setToAggregateComponent(toAggregate);
                     associationComponentsList.add(association);
                     fromAggregate.setSpecificationAssociationsList(associationComponentsList);
-                } else if (simpleTypeMapFull.containsKey(resolveElementType(element))){
-                    System.out.println ("is simple");
+                } else if (simpleTypeMapFull.containsKey(resolveElementType(element))) {
+                    System.out.println("is simple");
                 }
             }
             aggregateComponentsList.add(fromAggregate);
@@ -125,7 +143,7 @@ public class MultiStandardService {
         return fromAggregate;
     }
 
-    private void loadIncludedSchemas (Document document){
+    private void loadIncludedSchemas(Document document) {
         NodeList includedSchemas = document.getElementsByTagName("xs:include");
         for (int i = 0; i < includedSchemas.getLength(); i++) {
             Element first = (Element) includedSchemas.item(i);
@@ -149,7 +167,7 @@ public class MultiStandardService {
         return doc;
     }
 
-    private Map<String, Element> loadComplexTypesFromSchema (Document document){
+    private Map<String, Element> loadComplexTypesFromSchema(Document document) {
         Map<String, Element> map = new HashMap<>();
         NodeList complexTypeList = document.getElementsByTagName("xs:complexType");
         for (int i = 0; i < complexTypeList.getLength(); i++) {
@@ -159,7 +177,8 @@ public class MultiStandardService {
         }
         return map;
     }
-    private void loadSimpleTypesFromSchema (Document document){
+
+    private void loadSimpleTypesFromSchema(Document document) {
         NodeList simpleTypeList = doc.getElementsByTagName("xs:simpleType");
         for (int i = 0; i < simpleTypeList.getLength(); i++) {
             Element first = (Element) simpleTypeList.item(i);

@@ -1,6 +1,7 @@
 package org.oagi.score.repo.component.specification;
 
 import org.jooq.DSLContext;
+import org.oagi.score.gateway.http.api.specification_management.service.SpecComponentState;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.repo.api.specification.model.*;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
@@ -92,7 +94,7 @@ public class SpecificationRepository {
             specAggregateRecord.setComponentName(aggregate.getComponentName());
             specAggregateRecord.setDefinition(aggregate.getDefinition());
             specAggregateRecord.setSpecificationid(specificationID.longValue());
-            StatusCodeRecord statusCodeRecord = getStatusByStatusCodeName("Staged");
+            StatusCodeRecord statusCodeRecord = getStatusByStatusCodeName(SpecComponentState.STAGED.toString());
             specAggregateRecord.setStatusCodeId(statusCodeRecord.getStatusCodeId());
             specAggregateRecord.setGapAnalysisCodeId(null);
             specAggregateRecord.setAccId(null);
@@ -130,7 +132,7 @@ public class SpecificationRepository {
             basicRecord.setMinCardinality(basic.getMinCardinality());
             basicRecord.setMaxCardinality(basic.getMaxCardinality());
             basicRecord.setValueConstraint(basic.getValueConstraint());
-            StatusCodeRecord statusCodeRecord = getStatusByStatusCodeName("Staged");
+            StatusCodeRecord statusCodeRecord = getStatusByStatusCodeName(SpecComponentState.STAGED.toString());
             basicRecord.setStatusCodeId(statusCodeRecord.getStatusCodeId());
             basicRecord.setGapAnalysisCodeId(null);
             basicRecord.setBccId(null);
@@ -160,7 +162,7 @@ public class SpecificationRepository {
         dtRecord.setDataTypeName(dataType.getDataTypeName());
         dtRecord.setDefinition(dataType.getDefinition());
         dtRecord.setSpecificationId(specificationID.longValue());
-        StatusCodeRecord statusCodeRecord = getStatusByStatusCodeName("Staged");
+        StatusCodeRecord statusCodeRecord = getStatusByStatusCodeName(SpecComponentState.STAGED.toString());
         dtRecord.setStatusCodeId(statusCodeRecord.getStatusCodeId());
         dtRecord.setGapAnalysisCodeId(null);
         dtRecord.setDtId(null);
@@ -180,7 +182,7 @@ public class SpecificationRepository {
             associationRecord.setAssociationName(association.getAssociationName());
             associationRecord.setDefinition(association.getDefinition());
             associationRecord.setFromAggregateComponent(fromAggregate.getComponentId().longValue());
-            StatusCodeRecord statusCodeRecord = getStatusByStatusCodeName("Staged");
+            StatusCodeRecord statusCodeRecord = getStatusByStatusCodeName(SpecComponentState.STAGED.toString());
             associationRecord.setStatusCodeId(statusCodeRecord.getStatusCodeId());
             associationRecord.setGapAnalysisCodeId(null);
             associationRecord.setAsccId(null);
@@ -240,18 +242,18 @@ public class SpecificationRepository {
                                 SPECIFICATION_ASSOCIATION_COMPONENT.SPECIFICATION_ID,
                                 SPECIFICATION_ASSOCIATION_COMPONENT.ASSOCIATION_NAME)
                         .from(SPECIFICATION_ASSOCIATION_COMPONENT)
-                        .join(SPECIFICATION_AGGREGATE_COMPONENT.as("FIRST"))
+                        .join(SPECIFICATION_AGGREGATE_COMPONENT)
                         .on(SPECIFICATION_AGGREGATE_COMPONENT.COMPONENT_ID.eq(SPECIFICATION_ASSOCIATION_COMPONENT.TO_AGGREGATE_COMPONENT))
                         .where(
                                 SPECIFICATION_ASSOCIATION_COMPONENT.ASSOCIATION_NAME.eq(association.getAssociationName()).and(
                                         SPECIFICATION_ASSOCIATION_COMPONENT.FROM_AGGREGATE_COMPONENT.eq(fromAggregate.getComponentId().longValue())
-                                                .and(SPECIFICATION_AGGREGATE_COMPONENT.as("FIRST").COMPONENT_NAME.eq(association.getToAggregateComponent().getComponentName()))
+                                                .and(SPECIFICATION_AGGREGATE_COMPONENT.COMPONENT_NAME.eq(association.getToAggregateComponent().getComponentName()))
                                 )
                         ).fetchOneInto(SpecificationAssociationComponentRecord.class);
         return associationRecord;
     }
 
-    private StatusCodeRecord getStatusByStatusCodeName(String statusCodeName) {
+    public StatusCodeRecord getStatusByStatusCodeName(String statusCodeName) {
         StatusCodeRecord statusCodeRecord =
                 dslContext.selectFrom(STATUS_CODE.where(STATUS_CODE.CODE.eq(statusCodeName))).fetchOne();
         return statusCodeRecord;
@@ -263,5 +265,57 @@ public class SpecificationRepository {
                         eq(dataType.getDataTypeName()).and(SPECIFICATION_DATA_TYPE.SPECIFICATION_ID.
                                 eq(specificationID.longValue())))).fetchOne();
         return dtRecord;
+    }
+
+    public SpecificationRecord getSpecificationByName(String name) {
+        SpecificationRecord specificationRecord =
+                dslContext.selectFrom(SPECIFICATION.where(SPECIFICATION.SPECIFICATION_NAME.eq(name))).fetchOne();
+        return specificationRecord;
+    }
+
+    public List<SpecificationAggregateComponentRecord> getAllSpecificationAggregates(Long specificationId) {
+        List<SpecificationAggregateComponentRecord> aggregatesRecords =
+                dslContext.selectFrom(SPECIFICATION_AGGREGATE_COMPONENT
+                        .where(SPECIFICATION_AGGREGATE_COMPONENT.SPECIFICATIONID.eq(specificationId))).stream().toList();
+        return aggregatesRecords;
+    }
+
+    public CcGapAnalysisResultCodeRecord getCCGapAnalysisCodeByCodeName(String code) {
+        CcGapAnalysisResultCodeRecord codeRecord =
+                dslContext.selectFrom(CC_GAP_ANALYSIS_RESULT_CODE.
+                        where(CC_GAP_ANALYSIS_RESULT_CODE.CODE.eq(code))).fetchOne();
+        return codeRecord;
+    }
+
+    public void updateSpecificationAggregateComponent(SpecificationAggregateComponentRecord acc) {
+        dslContext.update(SPECIFICATION_AGGREGATE_COMPONENT)
+                .set(SPECIFICATION_AGGREGATE_COMPONENT.STATUS_CODE_ID, acc.getStatusCodeId())
+                .set(SPECIFICATION_AGGREGATE_COMPONENT.GAP_ANALYSIS_CODE_ID, acc.getGapAnalysisCodeId())
+                .set(SPECIFICATION_AGGREGATE_COMPONENT.ACC_ID, acc.getAccId())
+                .set(SPECIFICATION_AGGREGATE_COMPONENT.IS_APPROVED, acc.getIsApproved())
+                .where(SPECIFICATION_AGGREGATE_COMPONENT.COMPONENT_ID.eq(acc.getComponentId())).execute();
+    }
+
+    public List<SpecificationAggregateComponentRecord> getAnalyzedSpecificationAggregates(Long specificationId) {
+        List<SpecificationAggregateComponentRecord> aggregatesRecords =
+                (dslContext.select(SPECIFICATION_AGGREGATE_COMPONENT.COMPONENT_ID,
+                                SPECIFICATION_AGGREGATE_COMPONENT.DEFINITION,
+                                SPECIFICATION_AGGREGATE_COMPONENT.COMPONENT_NAME,
+                                SPECIFICATION_AGGREGATE_COMPONENT.STATUS_CODE_ID,
+                                SPECIFICATION_AGGREGATE_COMPONENT.GAP_ANALYSIS_CODE_ID,
+                                SPECIFICATION_AGGREGATE_COMPONENT.IS_APPROVED,
+                                SPECIFICATION_AGGREGATE_COMPONENT.ACC_ID)
+                        .from(SPECIFICATION_AGGREGATE_COMPONENT)
+                        .join(STATUS_CODE).on(SPECIFICATION_AGGREGATE_COMPONENT.STATUS_CODE_ID.eq(STATUS_CODE.STATUS_CODE_ID))
+                        .where(SPECIFICATION_AGGREGATE_COMPONENT.SPECIFICATIONID.eq(specificationId)
+                                .and(STATUS_CODE.CODE.eq(SpecComponentState.ANALYZED.toString()))).fetchInto(SpecificationAggregateComponentRecord.class));
+        return aggregatesRecords;
+    }
+
+    public CcGapAnalysisResultCodeRecord getCCGapAnalysisCodeByID(Long gapAnalysisCodeId) {
+        CcGapAnalysisResultCodeRecord codeRecord =
+                dslContext.selectFrom(CC_GAP_ANALYSIS_RESULT_CODE.
+                        where(CC_GAP_ANALYSIS_RESULT_CODE.CODE_ID.eq(gapAnalysisCodeId))).fetchOne();
+        return codeRecord;
     }
 }

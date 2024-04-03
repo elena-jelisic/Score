@@ -42,8 +42,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.jooq.impl.DSL.and;
-import static org.oagi.score.repo.api.impl.jooq.entity.Tables.ACC;
-import static org.oagi.score.repo.api.impl.jooq.entity.Tables.ACC_MANIFEST;
+import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
 @Service
 @Transactional(readOnly = true)
@@ -1643,5 +1642,14 @@ public class CcNodeService extends EventHandler {
         CcUngroupResponse response = new CcUngroupResponse();
         response.setAccManifestId(accManifestRecord.getAccManifestId().toBigInteger());
         return response;
+    }
+
+    @Transactional
+    public AccRecord findACCByDefinitionAndSpecification (String definition, String name, String specification){
+        return dslContext.select(ACC).from(ACC).
+                        join(ACC_MANIFEST).on(ACC.ACC_ID.eq(ACC_MANIFEST.ACC_ID))
+                        .join(RELEASE).on(ACC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
+                        .join(SPECIFICATION).on(SPECIFICATION.SPECIFICATION_ID.eq(RELEASE.SPECIFICATION_ID))
+                        .where(ACC.DEFINITION.eq(definition).and(SPECIFICATION.SPECIFICATION_NAME.eq(specification))).fetchOneInto(AccRecord.class);
     }
 }
