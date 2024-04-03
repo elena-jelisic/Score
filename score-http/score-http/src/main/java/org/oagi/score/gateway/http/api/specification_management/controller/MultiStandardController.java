@@ -4,7 +4,7 @@ import org.oagi.score.gateway.http.api.bie_management.data.BieCreateRequest;
 import org.oagi.score.gateway.http.api.specification_management.service.CCGapAnalysisService;
 import org.oagi.score.gateway.http.api.specification_management.service.MultiStandardService;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.SpecificationAggregateComponentRecord;
-import org.oagi.score.repo.api.specification.model.Specification;
+import org.oagi.score.gateway.http.api.specification_management.data.Specification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticatedPrincipal;

@@ -1,16 +1,14 @@
 package org.oagi.score.repo.component.specification;
 
 import org.jooq.DSLContext;
-import org.oagi.score.gateway.http.api.specification_management.service.SpecComponentState;
+import org.oagi.score.gateway.http.api.specification_management.data.*;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
-import org.oagi.score.repo.api.specification.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
