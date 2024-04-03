@@ -1,8 +1,7 @@
-package org.oagi.score.repo.api.specification.model;
+package org.oagi.score.gateway.http.api.specification_management.data;
 
 import org.oagi.score.repo.api.base.Response;
 
-import java.math.BigInteger;
 import java.util.List;
 
 public class CreateSpecificationResponse extends Response {

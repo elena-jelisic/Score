@@ -1,7 +1,4 @@
-package org.oagi.score.repo.api.specification.model;
-
-import org.oagi.score.repo.api.base.Request;
-import org.springframework.security.core.AuthenticatedPrincipal;
+package org.oagi.score.gateway.http.api.specification_management.data;
 
 import java.util.List;
 

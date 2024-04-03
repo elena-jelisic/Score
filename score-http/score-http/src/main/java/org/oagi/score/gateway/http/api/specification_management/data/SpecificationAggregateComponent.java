@@ -1,4 +1,4 @@
-package org.oagi.score.repo.api.specification.model;
+package org.oagi.score.gateway.http.api.specification_management.data;
 
 
 import java.math.BigInteger;
