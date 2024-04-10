@@ -246,24 +246,7 @@ public class AsccReadRepository {
 
     public List<AsccManifestRecord> getAllLatestASCCs() {
         BigInteger latestRelease = dslContext.select(max(RELEASE.RELEASE_ID)).from(RELEASE).where(RELEASE.SPECIFICATION_ID.isNull()).fetchOneInto(BigInteger.class);
-        List<ULong> asccIDList =
-                dslContext.select(ASCC_MANIFEST.ASCC_MANIFEST_ID)
-                        .from(ASCC_MANIFEST)
-                        .join(ASCCP_MANIFEST).on(ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
-                        .join(ACC_MANIFEST).on(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID))
-                        .join(BCC_MANIFEST).on(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID))
-                        .fetchInto(ULong.class);
-        List<ULong> asccIDListTwo =
-                dslContext.select(ASCC_MANIFEST.ASCC_MANIFEST_ID)
-                        .from(ASCC_MANIFEST)
-                        .join(ASCCP_MANIFEST).on(ASCC_MANIFEST.TO_ASCCP_MANIFEST_ID.eq(ASCCP_MANIFEST.ASCCP_MANIFEST_ID))
-                        .join(ACC_MANIFEST).on(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID.eq(ACC_MANIFEST.ACC_MANIFEST_ID))
-                        .join(ACC_MANIFEST.as("based")).on(ACC_MANIFEST.BASED_ACC_MANIFEST_ID.eq(ACC_MANIFEST.as("based").ACC_MANIFEST_ID))
-                        .join(BCC_MANIFEST).on(BCC_MANIFEST.FROM_ACC_MANIFEST_ID.eq(ACC_MANIFEST.as("based").ACC_MANIFEST_ID))
-                        .fetchInto(ULong.class);
         return dslContext.selectFrom(ASCC_MANIFEST)
-                .where(ASCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(latestRelease))
-                        .and((ASCC_MANIFEST.ASCC_MANIFEST_ID.in(asccIDList)))
-                        .or(ASCC_MANIFEST.ASCC_MANIFEST_ID.in(asccIDListTwo))).fetchInto(AsccManifestRecord.class);
+                .where(ASCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(latestRelease))).fetchInto(AsccManifestRecord.class);
     }
 }
