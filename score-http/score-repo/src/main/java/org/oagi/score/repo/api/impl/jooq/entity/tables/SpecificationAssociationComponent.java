@@ -109,13 +109,13 @@ public class SpecificationAssociationComponent extends TableImpl<SpecificationAs
      * The column
      * <code>oagi.specification_association_component.min_cardinality</code>.
      */
-    public final TableField<SpecificationAssociationComponentRecord, Integer> MIN_CARDINALITY = createField(DSL.name("min_cardinality"), SQLDataType.INTEGER.nullable(false), this, "");
+    public final TableField<SpecificationAssociationComponentRecord, Integer> MIN_CARDINALITY = createField(DSL.name("min_cardinality"), SQLDataType.INTEGER.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.INTEGER)), this, "");
 
     /**
      * The column
      * <code>oagi.specification_association_component.max_cardinality</code>.
      */
-    public final TableField<SpecificationAssociationComponentRecord, Integer> MAX_CARDINALITY = createField(DSL.name("max_cardinality"), SQLDataType.INTEGER.nullable(false), this, "");
+    public final TableField<SpecificationAssociationComponentRecord, Integer> MAX_CARDINALITY = createField(DSL.name("max_cardinality"), SQLDataType.INTEGER.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.INTEGER)), this, "");
 
     /**
      * The column <code>oagi.specification_association_component.ascc_id</code>.

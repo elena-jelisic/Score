@@ -42,6 +42,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Dt.DtPath;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.DtSc.DtScPath;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.DtScManifest.DtScManifestPath;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.DtUsageRule.DtUsageRulePath;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.FlatBcc.FlatBccPath;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.DtScRecord;
 
 
@@ -453,6 +454,19 @@ public class DtSc extends TableImpl<DtScRecord> {
             _dtUsageRule = new DtUsageRulePath(this, null, Keys.DT_USAGE_RULE_TARGET_DT_SC_ID_FK.getInverseKey());
 
         return _dtUsageRule;
+    }
+
+    private transient FlatBccPath _flatBcc;
+
+    /**
+     * Get the implicit to-many join path to the <code>oagi.flat_bcc</code>
+     * table
+     */
+    public FlatBccPath flatBcc() {
+        if (_flatBcc == null)
+            _flatBcc = new FlatBccPath(this, null, Keys.FKFLAT_BCC2545379.getInverseKey());
+
+        return _flatBcc;
     }
 
     @Override

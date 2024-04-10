@@ -74,6 +74,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.DtScManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.DtUsageRule;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Exception;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.FlatBcc;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.FlatBccView_2;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Log;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.MappingSpecification;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Message;
@@ -612,6 +613,11 @@ public class Tables {
      * The table <code>oagi.flat_bcc</code>.
      */
     public static final FlatBcc FLAT_BCC = FlatBcc.FLAT_BCC;
+
+    /**
+     * VIEW
+     */
+    public static final FlatBccView_2 FLAT_BCC_VIEW_2 = FlatBccView_2.FLAT_BCC_VIEW_2;
 
     /**
      * The table <code>oagi.log</code>.

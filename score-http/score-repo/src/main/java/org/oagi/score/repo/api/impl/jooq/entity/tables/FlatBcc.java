@@ -12,6 +12,7 @@ import org.jooq.Condition;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Identity;
+import org.jooq.Index;
 import org.jooq.InverseForeignKey;
 import org.jooq.Name;
 import org.jooq.Path;
@@ -29,8 +30,13 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
+import org.jooq.types.ULong;
+import org.oagi.score.repo.api.impl.jooq.entity.Indexes;
 import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.Acc.AccPath;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.Bcc.BccPath;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.DtSc.DtScPath;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.SuperBcc.SuperBccPath;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.FlatBccRecord;
 
@@ -64,22 +70,27 @@ public class FlatBcc extends TableImpl<FlatBccRecord> {
     /**
      * The column <code>oagi.flat_bcc.acc_id</code>.
      */
-    public final TableField<FlatBccRecord, Long> ACC_ID = createField(DSL.name("acc_id"), SQLDataType.BIGINT.nullable(false), this, "");
+    public final TableField<FlatBccRecord, ULong> ACC_ID = createField(DSL.name("acc_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
 
     /**
      * The column <code>oagi.flat_bcc.bcc_id</code>.
      */
-    public final TableField<FlatBccRecord, Long> BCC_ID = createField(DSL.name("bcc_id"), SQLDataType.BIGINT.nullable(false), this, "");
+    public final TableField<FlatBccRecord, ULong> BCC_ID = createField(DSL.name("bcc_id"), SQLDataType.BIGINTUNSIGNED.nullable(false), this, "");
 
     /**
      * The column <code>oagi.flat_bcc.dt_sc_id</code>.
      */
-    public final TableField<FlatBccRecord, Long> DT_SC_ID = createField(DSL.name("dt_sc_id"), SQLDataType.BIGINT.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.BIGINT)), this, "");
+    public final TableField<FlatBccRecord, ULong> DT_SC_ID = createField(DSL.name("dt_sc_id"), SQLDataType.BIGINTUNSIGNED.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.BIGINTUNSIGNED)), this, "");
 
     /**
      * The column <code>oagi.flat_bcc.super_bcc_id</code>.
      */
     public final TableField<FlatBccRecord, Long> SUPER_BCC_ID = createField(DSL.name("super_bcc_id"), SQLDataType.BIGINT.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.BIGINT)), this, "");
+
+    /**
+     * The column <code>oagi.flat_bcc.Path</code>.
+     */
+    public final TableField<FlatBccRecord, String> PATH = createField(DSL.name("Path"), SQLDataType.VARCHAR(1000).nullable(false), this, "");
 
     private FlatBcc(Name alias, Table<FlatBccRecord> aliased) {
         this(alias, aliased, (Field<?>[]) null, null);
@@ -149,6 +160,11 @@ public class FlatBcc extends TableImpl<FlatBccRecord> {
     }
 
     @Override
+    public List<Index> getIndexes() {
+        return Arrays.asList(Indexes.FLAT_BCC_FKFLAT_BCC2545379_IDX, Indexes.FLAT_BCC_FKFLAT_BCC254538_IDX, Indexes.FLAT_BCC_FKFLAT_BCC2545399_IDX);
+    }
+
+    @Override
     public Identity<FlatBccRecord, Long> getIdentity() {
         return (Identity<FlatBccRecord, Long>) super.getIdentity();
     }
@@ -160,7 +176,43 @@ public class FlatBcc extends TableImpl<FlatBccRecord> {
 
     @Override
     public List<ForeignKey<FlatBccRecord, ?>> getReferences() {
-        return Arrays.asList(Keys.FKFLAT_BCC254537);
+        return Arrays.asList(Keys.FKFLAT_BCC254538, Keys.FKFLAT_BCC2545399, Keys.FKFLAT_BCC2545379, Keys.FKFLAT_BCC254537);
+    }
+
+    private transient AccPath _acc;
+
+    /**
+     * Get the implicit join path to the <code>oagi.acc</code> table.
+     */
+    public AccPath acc() {
+        if (_acc == null)
+            _acc = new AccPath(this, Keys.FKFLAT_BCC254538, null);
+
+        return _acc;
+    }
+
+    private transient BccPath _bcc;
+
+    /**
+     * Get the implicit join path to the <code>oagi.bcc</code> table.
+     */
+    public BccPath bcc() {
+        if (_bcc == null)
+            _bcc = new BccPath(this, Keys.FKFLAT_BCC2545399, null);
+
+        return _bcc;
+    }
+
+    private transient DtScPath _dtSc;
+
+    /**
+     * Get the implicit join path to the <code>oagi.dt_sc</code> table.
+     */
+    public DtScPath dtSc() {
+        if (_dtSc == null)
+            _dtSc = new DtScPath(this, Keys.FKFLAT_BCC2545379, null);
+
+        return _dtSc;
     }
 
     private transient SuperBccPath _superBcc;

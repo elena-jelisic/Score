@@ -42,6 +42,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Ascc.AsccPath;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Asccp.AsccpPath;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Bcc.BccPath;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.BieUserExtRevision.BieUserExtRevisionPath;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.FlatBcc.FlatBccPath;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Namespace.NamespacePath;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.SpecificationAggregateComponent.SpecificationAggregateComponentPath;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.SuperAcc.SuperAccPath;
@@ -518,6 +519,19 @@ public class Acc extends TableImpl<AccRecord> {
             _bieUserExtRevisionUserExtAccIdFk = new BieUserExtRevisionPath(this, null, Keys.BIE_USER_EXT_REVISION_USER_EXT_ACC_ID_FK.getInverseKey());
 
         return _bieUserExtRevisionUserExtAccIdFk;
+    }
+
+    private transient FlatBccPath _flatBcc;
+
+    /**
+     * Get the implicit to-many join path to the <code>oagi.flat_bcc</code>
+     * table
+     */
+    public FlatBccPath flatBcc() {
+        if (_flatBcc == null)
+            _flatBcc = new FlatBccPath(this, null, Keys.FKFLAT_BCC254538.getInverseKey());
+
+        return _flatBcc;
     }
 
     private transient SpecificationAggregateComponentPath _specificationAggregateComponent;

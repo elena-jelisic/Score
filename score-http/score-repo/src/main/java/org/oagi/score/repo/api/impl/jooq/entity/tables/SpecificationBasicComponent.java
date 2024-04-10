@@ -78,19 +78,19 @@ public class SpecificationBasicComponent extends TableImpl<SpecificationBasicCom
     /**
      * The column <code>oagi.specification_basic_component.definition</code>.
      */
-    public final TableField<SpecificationBasicComponentRecord, String> DEFINITION = createField(DSL.name("definition"), SQLDataType.VARCHAR(100).nullable(false), this, "");
+    public final TableField<SpecificationBasicComponentRecord, String> DEFINITION = createField(DSL.name("definition"), SQLDataType.VARCHAR(500).nullable(false), this, "");
 
     /**
      * The column
      * <code>oagi.specification_basic_component.min_cardinality</code>.
      */
-    public final TableField<SpecificationBasicComponentRecord, Integer> MIN_CARDINALITY = createField(DSL.name("min_cardinality"), SQLDataType.INTEGER.nullable(false), this, "");
+    public final TableField<SpecificationBasicComponentRecord, Integer> MIN_CARDINALITY = createField(DSL.name("min_cardinality"), SQLDataType.INTEGER.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.INTEGER)), this, "");
 
     /**
      * The column
      * <code>oagi.specification_basic_component.max_cardinality</code>.
      */
-    public final TableField<SpecificationBasicComponentRecord, Integer> MAX_CARDINALITY = createField(DSL.name("max_cardinality"), SQLDataType.INTEGER.nullable(false), this, "");
+    public final TableField<SpecificationBasicComponentRecord, Integer> MAX_CARDINALITY = createField(DSL.name("max_cardinality"), SQLDataType.INTEGER.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.INTEGER)), this, "");
 
     /**
      * The column

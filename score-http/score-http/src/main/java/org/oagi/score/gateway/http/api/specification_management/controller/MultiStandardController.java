@@ -1,7 +1,9 @@
 package org.oagi.score.gateway.http.api.specification_management.controller;
 
+import org.checkerframework.checker.units.qual.A;
 import org.oagi.score.gateway.http.api.bie_management.data.BieCreateRequest;
 import org.oagi.score.gateway.http.api.specification_management.service.CCGapAnalysisService;
+import org.oagi.score.gateway.http.api.specification_management.service.FlatBCCService;
 import org.oagi.score.gateway.http.api.specification_management.service.MultiStandardService;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.SpecificationAggregateComponentRecord;
 import org.oagi.score.gateway.http.api.specification_management.data.Specification;
@@ -21,9 +23,11 @@ import java.util.List;
 public class MultiStandardController {
 
     @Autowired
-    MultiStandardService importSpecService;
+    private MultiStandardService importSpecService;
     @Autowired
-    CCGapAnalysisService ccGapAnalysisService;
+    private CCGapAnalysisService ccGapAnalysisService;
+    @Autowired
+    private FlatBCCService flatBccService;
 
     @RequestMapping(value = "/import_specification", method = RequestMethod.PUT,
             produces = MediaType.APPLICATION_JSON_VALUE)
@@ -51,6 +55,13 @@ public class MultiStandardController {
         spec.setSpecificationName("QIF 3");
         List<SpecificationAggregateComponentRecord> aggregates = new ArrayList<>();
         ccGapAnalysisService.approveACCAnalysisResults(aggregates, user, spec);
+        return "Success";
+    }
+    @RequestMapping(value = "/flat_bcc", method = RequestMethod.PUT,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public String flatBccUpdate(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                                                   @RequestBody BieCreateRequest bieCreateRequest) {
+        flatBccService.updateFlatBccTable();
         return "Success";
     }
 

@@ -41,6 +41,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Bcc.BccPath;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.BccBizterm.BccBiztermPath;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.BccManifest.BccManifestPath;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Bccp.BccpPath;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.FlatBcc.FlatBccPath;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.SpecificationBasicComponent.SpecificationBasicComponentPath;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.SuperBcc.SuperBccPath;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BccRecord;
@@ -480,6 +481,19 @@ public class Bcc extends TableImpl<BccRecord> {
             _bccManifest = new BccManifestPath(this, null, Keys.BCC_MANIFEST_BCC_ID_FK.getInverseKey());
 
         return _bccManifest;
+    }
+
+    private transient FlatBccPath _flatBcc;
+
+    /**
+     * Get the implicit to-many join path to the <code>oagi.flat_bcc</code>
+     * table
+     */
+    public FlatBccPath flatBcc() {
+        if (_flatBcc == null)
+            _flatBcc = new FlatBccPath(this, null, Keys.FKFLAT_BCC2545399.getInverseKey());
+
+        return _flatBcc;
     }
 
     private transient SpecificationBasicComponentPath _specificationBasicComponent;

@@ -25,6 +25,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Comment;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Dt;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.DtSc;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Exception;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.FlatBcc;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Log;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleBlobContentManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.OasMessageBody;
@@ -75,6 +76,9 @@ public class Indexes {
     public static final Index DT_DT_LAST_UPDATE_TIMESTAMP_DESC_IDX = Internal.createIndex(DSL.name("dt_last_update_timestamp_desc_idx"), Dt.DT, new OrderField[] { Dt.DT.LAST_UPDATE_TIMESTAMP }, false);
     public static final Index DT_SC_DT_SC_GUID_IDX = Internal.createIndex(DSL.name("dt_sc_guid_idx"), DtSc.DT_SC, new OrderField[] { DtSc.DT_SC.GUID }, false);
     public static final Index EXCEPTION_EXCEPTION_TAG_IDX = Internal.createIndex(DSL.name("exception_tag_idx"), Exception.EXCEPTION, new OrderField[] { Exception.EXCEPTION.TAG }, false);
+    public static final Index FLAT_BCC_FKFLAT_BCC2545379_IDX = Internal.createIndex(DSL.name("FKflat_bcc2545379_idx"), FlatBcc.FLAT_BCC, new OrderField[] { FlatBcc.FLAT_BCC.DT_SC_ID }, false);
+    public static final Index FLAT_BCC_FKFLAT_BCC254538_IDX = Internal.createIndex(DSL.name("FKflat_bcc254538_idx"), FlatBcc.FLAT_BCC, new OrderField[] { FlatBcc.FLAT_BCC.ACC_ID }, false);
+    public static final Index FLAT_BCC_FKFLAT_BCC2545399_IDX = Internal.createIndex(DSL.name("FKflat_bcc2545399_idx"), FlatBcc.FLAT_BCC, new OrderField[] { FlatBcc.FLAT_BCC.BCC_ID }, false);
     public static final Index SPECIFICATION_DATA_TYPE_FKSPECIFICAT57299_IDX = Internal.createIndex(DSL.name("FKspecificat57299_idx"), SpecificationDataType.SPECIFICATION_DATA_TYPE, new OrderField[] { SpecificationDataType.SPECIFICATION_DATA_TYPE.DT_ID }, false);
     public static final Index SPECIFICATION_ASSOCIATION_COMPONENT_FKSPECIFICAT961521_IDX = Internal.createIndex(DSL.name("FKspecificat961521_idx"), SpecificationAssociationComponent.SPECIFICATION_ASSOCIATION_COMPONENT, new OrderField[] { SpecificationAssociationComponent.SPECIFICATION_ASSOCIATION_COMPONENT.ASCC_ID }, false);
     public static final Index SPECIFICATION_BASIC_COMPONENT_FKSPECIFICAT993501_IDX = Internal.createIndex(DSL.name("FKspecificat993501_idx"), SpecificationBasicComponent.SPECIFICATION_BASIC_COMPONENT, new OrderField[] { SpecificationBasicComponent.SPECIFICATION_BASIC_COMPONENT.BCC_ID }, false);

@@ -23,8 +23,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static org.jooq.impl.DSL.and;
-import static org.jooq.impl.DSL.inline;
+import static org.jooq.impl.DSL.*;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 import static org.oagi.score.repo.api.impl.jooq.entity.tables.Acc.ACC;
 import static org.oagi.score.repo.api.impl.jooq.entity.tables.AccManifest.ACC_MANIFEST;
@@ -74,22 +73,22 @@ public class BccReadRepository {
         Map<ULong, List<String>> issueMap = getBlockerReasonMap(user, bccManifestRecord, ULong.valueOf(accManifestId));
 
         List<CcRefactorValidationResponse.IssuedCc> issuedCcList = dslContext.select(
-                inline("ACC").as("type"),
-                Tables.ACC_MANIFEST.ACC_MANIFEST_ID.as("manifest_id"),
-                Tables.ACC.ACC_ID.as("id"),
-                Tables.ACC.GUID,
-                Tables.ACC_MANIFEST.DEN,
-                Tables.ACC.OBJECT_CLASS_TERM,
-                Tables.ACC.OAGIS_COMPONENT_TYPE.as("oagis_component_type"),
-                Tables.ACC.STATE,
-                Tables.ACC.IS_DEPRECATED,
-                Tables.ACC.LAST_UPDATE_TIMESTAMP,
-                APP_USER.as("appUserOwner").LOGIN_ID.as("owner"),
-                APP_USER.as("appUserOwner").IS_DEVELOPER.as("owned_by_developer"),
-                APP_USER.as("appUserUpdater").LOGIN_ID.as("last_update_user"),
-                LOG.REVISION_NUM,
-                LOG.REVISION_TRACKING_NUM,
-                RELEASE.RELEASE_NUM)
+                        inline("ACC").as("type"),
+                        Tables.ACC_MANIFEST.ACC_MANIFEST_ID.as("manifest_id"),
+                        Tables.ACC.ACC_ID.as("id"),
+                        Tables.ACC.GUID,
+                        Tables.ACC_MANIFEST.DEN,
+                        Tables.ACC.OBJECT_CLASS_TERM,
+                        Tables.ACC.OAGIS_COMPONENT_TYPE.as("oagis_component_type"),
+                        Tables.ACC.STATE,
+                        Tables.ACC.IS_DEPRECATED,
+                        Tables.ACC.LAST_UPDATE_TIMESTAMP,
+                        APP_USER.as("appUserOwner").LOGIN_ID.as("owner"),
+                        APP_USER.as("appUserOwner").IS_DEVELOPER.as("owned_by_developer"),
+                        APP_USER.as("appUserUpdater").LOGIN_ID.as("last_update_user"),
+                        LOG.REVISION_NUM,
+                        LOG.REVISION_TRACKING_NUM,
+                        RELEASE.RELEASE_NUM)
                 .from(Tables.ACC)
                 .join(Tables.ACC_MANIFEST)
                 .on(Tables.ACC.ACC_ID.eq(Tables.ACC_MANIFEST.ACC_ID).and(Tables.ACC_MANIFEST.RELEASE_ID.eq(bccManifestRecord.getReleaseId())))
@@ -203,7 +202,7 @@ public class BccReadRepository {
             }
 
             if (acc.getOagisComponentType().equals(OagisComponentType.SemanticGroup.getValue())
-                || acc.getOagisComponentType().equals(OagisComponentType.UserExtensionGroup.getValue())) {
+                    || acc.getOagisComponentType().equals(OagisComponentType.UserExtensionGroup.getValue())) {
                 AccManifestRecord parentAccManifest = accManifestMap.get(groupMap.get(amr.getAccManifestId()));
                 map.put(parentAccManifest.getAccManifestId(), map.get(amr.getAccManifestId()));
                 map.remove(amr.getAccManifestId());
@@ -237,5 +236,24 @@ public class BccReadRepository {
             });
         }
         return result;
+    }
+
+    public List<BccRecord> getBccByAccId(AccRecord relatedAcc) {
+        BigInteger latestRelease = dslContext.select(max(RELEASE.RELEASE_ID))
+                .from(RELEASE)
+                .where(RELEASE.SPECIFICATION_ID.isNull())
+                .fetchOneInto(BigInteger.class);
+        return dslContext.select(BCC.BCC_ID, BCC.CARDINALITY_MAX, BCC.CARDINALITY_MIN, BCC.DEFINITION)
+                .from(BCC)
+                .join(BCC_MANIFEST).on(BCC_MANIFEST.BCC_ID.eq(BCC.BCC_ID))
+                .where(BCC.FROM_ACC_ID.eq(relatedAcc.getAccId()))
+                .and(BCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(latestRelease)))
+                .fetchInto(BccRecord.class);
+    }
+
+    public List<BccManifestRecord> getAllLatestBCCs() {
+        BigInteger latestRelease = dslContext.select(max(RELEASE.RELEASE_ID)).from(RELEASE).where(RELEASE.SPECIFICATION_ID.isNull()).fetchOneInto(BigInteger.class);
+        return dslContext.selectFrom(BCC_MANIFEST)
+                .where(BCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(latestRelease))).fetchInto(BccManifestRecord.class);
     }
 }

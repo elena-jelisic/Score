@@ -76,7 +76,7 @@ public class Specification extends TableImpl<SpecificationRecord> {
     /**
      * The column <code>oagi.specification.based_specification_id</code>.
      */
-    public final TableField<SpecificationRecord, Long> BASED_SPECIFICATION_ID = createField(DSL.name("based_specification_id"), SQLDataType.BIGINT.nullable(false), this, "");
+    public final TableField<SpecificationRecord, Long> BASED_SPECIFICATION_ID = createField(DSL.name("based_specification_id"), SQLDataType.BIGINT.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.BIGINT)), this, "");
 
     /**
      * The column <code>oagi.specification.source_id</code>.

@@ -76,7 +76,7 @@ public class SpecificationAggregateComponent extends TableImpl<SpecificationAggr
      * The column
      * <code>oagi.specification_aggregate_component.definition</code>.
      */
-    public final TableField<SpecificationAggregateComponentRecord, String> DEFINITION = createField(DSL.name("definition"), SQLDataType.VARCHAR(100).nullable(false), this, "");
+    public final TableField<SpecificationAggregateComponentRecord, String> DEFINITION = createField(DSL.name("definition"), SQLDataType.VARCHAR(500).nullable(false), this, "");
 
     /**
      * The column

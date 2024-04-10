@@ -1,14 +1,22 @@
 package org.oagi.score.repo.component.dt;
 
+import org.apache.poi.ss.formula.functions.DMax;
 import org.jooq.DSLContext;
+import org.jooq.impl.QOM;
 import org.jooq.types.ULong;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BccRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.DtRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.DtScManifestRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.DtScRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
+import java.util.List;
 
+import static org.jooq.impl.DSL.max;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
+import static org.oagi.score.repo.api.impl.jooq.entity.tables.Acc.ACC;
 
 @Repository
 public class BdtReadRepository {
@@ -52,5 +60,19 @@ public class BdtReadRepository {
         bdtNode.setBdtManifestId(dtManifestId);
 
         return bdtNode;
+    }
+
+    public List<DtScManifestRecord> getLatestDTSCList() {
+        BigInteger latestRelease = dslContext.select(max(RELEASE.RELEASE_ID))
+                .from(RELEASE)
+                .where(RELEASE.SPECIFICATION_ID.isNull())
+                .fetchOneInto(BigInteger.class);
+        return dslContext.select(DT_SC_MANIFEST.DT_SC_ID, DT_SC_MANIFEST.OWNER_DT_MANIFEST_ID)
+                .from(DT_MANIFEST)
+                .join(DT_SC_MANIFEST).on(DT_MANIFEST.DT_MANIFEST_ID.eq(DT_SC_MANIFEST.OWNER_DT_MANIFEST_ID))
+                .join(DT_SC).on(DT_SC_MANIFEST.DT_SC_ID.eq(DT_SC.DT_SC_ID))
+                .where(DT_SC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(latestRelease)))
+                .and(DT_SC.CARDINALITY_MAX.greaterThan(0))
+                .fetchInto(DtScManifestRecord.class);
     }
 }

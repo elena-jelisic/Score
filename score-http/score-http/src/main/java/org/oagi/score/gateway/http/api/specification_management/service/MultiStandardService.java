@@ -46,17 +46,6 @@ public class MultiStandardService {
     private Document doc;
     private String rootFolder;
 
-   /* public static void main(String args[]) {
-        MultiStandardService service = new MultiStandardService();
-        AuthenticatedPrincipal user = new AuthenticatedPrincipal() {
-            @Override
-            public String getName() {
-                return null;
-            }
-        };
-        service.insertNewSpecification(new ScoreUser());
-    }*/
-
     @Transactional
     public void insertNewSpecification(AuthenticatedPrincipal user) {
         aggregateComponentsList = new ArrayList<>();

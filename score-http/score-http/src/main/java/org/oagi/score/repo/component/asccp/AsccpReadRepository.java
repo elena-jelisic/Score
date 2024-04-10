@@ -9,8 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
+import java.util.List;
 
 import static org.jooq.impl.DSL.and;
+import static org.jooq.impl.DSL.max;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
 @Repository
@@ -49,5 +51,11 @@ public class AsccpReadRepository {
                 .from(ASCCP_MANIFEST)
                 .where(ASCCP_MANIFEST.ROLE_OF_ACC_MANIFEST_ID.eq(ULong.valueOf(accManifestId)))
                 .fetchOptionalInto(AsccpManifestRecord.class).orElse(null);
+    }
+
+    public List<AsccpManifestRecord> getAllLatestASCCPs() {
+        BigInteger latestRelease = dslContext.select(max(RELEASE.RELEASE_ID)).from(RELEASE).where(RELEASE.SPECIFICATION_ID.isNull()).fetchOneInto(BigInteger.class);
+        return dslContext.selectFrom(ASCCP_MANIFEST)
+                .where(ASCCP_MANIFEST.RELEASE_ID.eq(ULong.valueOf(latestRelease))).fetchInto(AsccpManifestRecord.class);
     }
 }

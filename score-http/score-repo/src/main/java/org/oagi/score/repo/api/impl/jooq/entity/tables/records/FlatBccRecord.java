@@ -6,6 +6,7 @@ package org.oagi.score.repo.api.impl.jooq.entity.tables.records;
 
 import org.jooq.Record1;
 import org.jooq.impl.UpdatableRecordImpl;
+import org.jooq.types.ULong;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.FlatBcc;
 
 
@@ -34,43 +35,43 @@ public class FlatBccRecord extends UpdatableRecordImpl<FlatBccRecord> {
     /**
      * Setter for <code>oagi.flat_bcc.acc_id</code>.
      */
-    public void setAccId(Long value) {
+    public void setAccId(ULong value) {
         set(1, value);
     }
 
     /**
      * Getter for <code>oagi.flat_bcc.acc_id</code>.
      */
-    public Long getAccId() {
-        return (Long) get(1);
+    public ULong getAccId() {
+        return (ULong) get(1);
     }
 
     /**
      * Setter for <code>oagi.flat_bcc.bcc_id</code>.
      */
-    public void setBccId(Long value) {
+    public void setBccId(ULong value) {
         set(2, value);
     }
 
     /**
      * Getter for <code>oagi.flat_bcc.bcc_id</code>.
      */
-    public Long getBccId() {
-        return (Long) get(2);
+    public ULong getBccId() {
+        return (ULong) get(2);
     }
 
     /**
      * Setter for <code>oagi.flat_bcc.dt_sc_id</code>.
      */
-    public void setDtScId(Long value) {
+    public void setDtScId(ULong value) {
         set(3, value);
     }
 
     /**
      * Getter for <code>oagi.flat_bcc.dt_sc_id</code>.
      */
-    public Long getDtScId() {
-        return (Long) get(3);
+    public ULong getDtScId() {
+        return (ULong) get(3);
     }
 
     /**
@@ -85,6 +86,20 @@ public class FlatBccRecord extends UpdatableRecordImpl<FlatBccRecord> {
      */
     public Long getSuperBccId() {
         return (Long) get(4);
+    }
+
+    /**
+     * Setter for <code>oagi.flat_bcc.Path</code>.
+     */
+    public void setPath(String value) {
+        set(5, value);
+    }
+
+    /**
+     * Getter for <code>oagi.flat_bcc.Path</code>.
+     */
+    public String getPath() {
+        return (String) get(5);
     }
 
     // -------------------------------------------------------------------------
@@ -110,7 +125,7 @@ public class FlatBccRecord extends UpdatableRecordImpl<FlatBccRecord> {
     /**
      * Create a detached, initialised FlatBccRecord
      */
-    public FlatBccRecord(Long flatBccId, Long accId, Long bccId, Long dtScId, Long superBccId) {
+    public FlatBccRecord(Long flatBccId, ULong accId, ULong bccId, ULong dtScId, Long superBccId, String path) {
         super(FlatBcc.FLAT_BCC);
 
         setFlatBccId(flatBccId);
@@ -118,6 +133,7 @@ public class FlatBccRecord extends UpdatableRecordImpl<FlatBccRecord> {
         setBccId(bccId);
         setDtScId(dtScId);
         setSuperBccId(superBccId);
+        setPath(path);
         resetChangedOnNotNull();
     }
 }

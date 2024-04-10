@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.math.BigInteger;
 import java.util.List;
 
+import static org.jooq.impl.DSL.max;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 
 @Repository
@@ -44,5 +45,11 @@ public class BccpReadRepository {
                 .join(CDT_PRI).on(CDT_AWD_PRI.CDT_PRI_ID.eq(CDT_PRI.CDT_PRI_ID))
                 .where(BCCP_MANIFEST.BCCP_MANIFEST_ID.eq(bccpManifestId))
                 .fetchInto(String.class);
+    }
+
+    public List<BccpManifestRecord> getAllLatestBCCPs() {
+        BigInteger latestRelease = dslContext.select(max(RELEASE.RELEASE_ID)).from(RELEASE).where(RELEASE.SPECIFICATION_ID.isNull()).fetchOneInto(BigInteger.class);
+        return dslContext.selectFrom(BCCP_MANIFEST)
+                .where(BCCP_MANIFEST.RELEASE_ID.eq(ULong.valueOf(latestRelease))).fetchInto(BccpManifestRecord.class);
     }
 }
