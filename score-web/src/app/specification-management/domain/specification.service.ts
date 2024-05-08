@@ -32,4 +32,10 @@ export class SpecificationService {
       description: specification.description
     });
   }
+  flatBCC(specification: Specification): Observable<any> {
+    return this.http.put<any>('/api/flat_bcc', {
+      uri: specification.uri,
+      description: specification.description
+    });
+  }
 }

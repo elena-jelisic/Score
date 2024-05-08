@@ -71,4 +71,14 @@ export class SpecificationImportComponent implements OnInit {
     });
   }
 
+  flatBCC() {
+    this.specification.uri = this.uriForm.value;
+    this.service.flatBCC(this.specification).subscribe(_ => {
+      this.snackBar.open('Approved', '', {
+        duration: 3000,
+      });
+      this.router.navigateByUrl('/import_specification');
+    });
+  }
+
 }
