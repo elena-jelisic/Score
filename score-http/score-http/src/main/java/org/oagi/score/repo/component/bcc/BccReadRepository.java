@@ -253,7 +253,8 @@ public class BccReadRepository {
 
     public List<BccManifestRecord> getAllLatestBCCs() {
         BigInteger latestRelease = dslContext.select(max(RELEASE.RELEASE_ID)).from(RELEASE).where(RELEASE.SPECIFICATION_ID.isNull()).fetchOneInto(BigInteger.class);
+        BigInteger releaseNoLoops = dslContext.select(RELEASE.RELEASE_ID).from(RELEASE).where(RELEASE.RELEASE_NUM.eq("10.6")).fetchOneInto(BigInteger.class);
         return dslContext.selectFrom(BCC_MANIFEST)
-                .where(BCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(latestRelease))).fetchInto(BccManifestRecord.class);
+                .where(BCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseNoLoops))).fetchInto(BccManifestRecord.class);
     }
 }

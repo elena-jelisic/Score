@@ -246,7 +246,8 @@ public class AsccReadRepository {
 
     public List<AsccManifestRecord> getAllLatestASCCs() {
         BigInteger latestRelease = dslContext.select(max(RELEASE.RELEASE_ID)).from(RELEASE).where(RELEASE.SPECIFICATION_ID.isNull()).fetchOneInto(BigInteger.class);
+        BigInteger releaseNoLoops = dslContext.select(RELEASE.RELEASE_ID).from(RELEASE).where(RELEASE.RELEASE_NUM.eq("10.6")).fetchOneInto(BigInteger.class);
         return dslContext.selectFrom(ASCC_MANIFEST)
-                .where(ASCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(latestRelease))).fetchInto(AsccManifestRecord.class);
+                .where(ASCC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseNoLoops))).fetchInto(AsccManifestRecord.class);
     }
 }

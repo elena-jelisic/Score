@@ -98,8 +98,9 @@ public class AccReadRepository {
 
     public List<AccManifestRecord> getAllLatestACCs() {
         BigInteger latestRelease = dslContext.select(max(RELEASE.RELEASE_ID)).from(RELEASE).where(RELEASE.SPECIFICATION_ID.isNull()).fetchOneInto(BigInteger.class);
+        BigInteger releaseNoLoops = dslContext.select(RELEASE.RELEASE_ID).from(RELEASE).where(RELEASE.RELEASE_NUM.eq("10.6")).fetchOneInto(BigInteger.class);
         return dslContext.selectFrom(ACC_MANIFEST)
-                .where(ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(latestRelease)))
+                .where(ACC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseNoLoops)))
                 .fetchInto(AccManifestRecord.class);
     }
     public List<AccRecord> getAllACCs() {
