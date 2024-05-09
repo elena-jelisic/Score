@@ -31,17 +31,7 @@ public class SpecificationRepository {
                 source.getSourceId(), specificationType.getSpecificationTypeId());
 
         request.getSpecificationAggregatesList().forEach(aggregate -> {
-            SpecificationAggregateComponent aggregateWithID = insertAggregate(aggregate, specification.getSpecificationId());
-            if (aggregate.getSpecificationBasicsList() != null) {
-                aggregate.getSpecificationBasicsList().forEach(basic -> {
-                    insertBasic(basic, aggregateWithID);
-                });
-            }
-            if (aggregate.getSpecificationAssociationsList() != null) {
-                aggregate.getSpecificationAssociationsList().forEach(association -> {
-                    insertAssociation(association, aggregateWithID);
-                });
-            }
+            insertAggregate(aggregate, specification.getSpecificationId());
             aggregates.add(aggregate);
         });
 
@@ -112,6 +102,16 @@ public class SpecificationRepository {
                     .set(specAggregateRecord)
                     .returning(SPECIFICATION_AGGREGATE_COMPONENT.COMPONENT_ID).fetchOne()
                     .getComponentId()));
+            if (aggregate.getSpecificationBasicsList() != null) {
+                aggregate.getSpecificationBasicsList().forEach(basic -> {
+                    insertBasic(basic, aggregate);
+                });
+            }
+            if (aggregate.getSpecificationAssociationsList() != null) {
+                aggregate.getSpecificationAssociationsList().forEach(association -> {
+                    insertAssociation(association, aggregate);
+                });
+            }
         } else {
             aggregate.setComponentId(BigInteger.valueOf(foundRecord.getComponentId()));
             aggregate.setSpecificationId(specificationID);

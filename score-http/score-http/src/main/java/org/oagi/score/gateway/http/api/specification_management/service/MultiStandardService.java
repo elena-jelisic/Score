@@ -18,6 +18,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+
+import javax.imageio.metadata.IIOMetadataNode;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -41,6 +43,7 @@ public class MultiStandardService {
     private List<SpecificationBasicComponent> basicComponentsList;
     private List<SpecificationAssociationComponent> associationComponentsList;
     private Map<String, Element> complexTypeMapFull = new HashMap<>();
+    private Map<String, Element> elementMapFull = new HashMap<>();
     private Map<String, Element> complexTypeMapInitial = new HashMap<>();
     private Map<String, Element> simpleTypeMapFull = new HashMap<>();
     private Document doc;
@@ -63,43 +66,72 @@ public class MultiStandardService {
         Source source = new Source();
         source.setSourceName("QIF");
         Specification spec = new Specification();
-        spec.setSpecificationName("QIF 3");
+        spec.setSpecificationName(source.getSourceName() + " " + getSpecificationVersion());
         createSpec.setSpecificationType("Standard library");
         createSpec.setSpecificationAggregatesList(aggregateComponentsList);
         createSpec.setSource(source);
         createSpec.setSpecification(spec);
         CreateSpecificationResponse response = specRepo.createSpecification(createSpec);
         Namespace namespace = new Namespace();
-        namespace.setUri("http://qifstandards.org/xsd/qif3");
-        namespace.setPrefix("QIF");
+        namespace.setUri(getTargetNamespace());
+        namespace.setPrefix(source.getSourceName());
         namespace.setStd(true);
         BigInteger namespaceID = namespaceService.create(user, namespace);
         AppUser targetUser = session.getAppUserByUsername("oagis");
         SpecificationRecord specificationRecord = specRepo.getSpecificationByName(spec.getSpecificationName());
         ReleaseRecord releaseRecord = releaseRepo.createForSpecification(
-                targetUser.getAppUserId(), "QIF 3", "QIF release 3",
-                        "QIF", namespaceID, BigInteger.valueOf(specificationRecord.getSpecificationId()));
+                targetUser.getAppUserId(), getSpecificationVersion(), source.getSourceName() + " " +getSpecificationVersion(),
+                        source.getSourceName(), namespaceID, BigInteger.valueOf(specificationRecord.getSpecificationId()));
         releaseRepo.updateState(targetUser.getAppUserId(), releaseRecord.getReleaseId().toBigInteger(), ReleaseState.Published);
     }
 
+    private boolean elementIsExtension(Element element) {
+        return element.getElementsByTagName("xs:extension").getLength() > 0;
+    }
+    private boolean elementIsRestriction(Element element) {
+        return element.getElementsByTagName("xs:restriction").getLength() > 0;
+    }
 
-    private boolean complexTypeIsStructure(Element complexType) {
+    private boolean complexTypeIsDefinedByCompositor(Element complexType) {
         if (complexType.getElementsByTagName("xs:sequence").getLength() > 0) {
             return true;
         } else if (complexType.getElementsByTagName("xs:choice").getLength() > 0) {
             return true;
         } else return complexType.getElementsByTagName("xs:all").getLength() > 0;
     }
+    private boolean complexTypeIsDefinedAsComplexContent(Element complexType) {
+        return complexType.getElementsByTagName("xs:complexContent").getLength() > 0;
+    }
+
+    private String getTargetNamespace (){
+        NodeList schemaElement = doc.getElementsByTagName("xs:schema");
+        Element schema = new IIOMetadataNode();
+        for (int i = 0; i < schemaElement.getLength(); i++) {
+             schema = (Element) schemaElement.item(i);
+        }
+        return schema.getAttribute("targetNamespace");
+    }
+    private String getSpecificationVersion (){
+        NodeList schemaElement = doc.getElementsByTagName("xs:schema");
+        Element schema = new IIOMetadataNode();
+        for (int i = 0; i < schemaElement.getLength(); i++) {
+            schema = (Element) schemaElement.item(i);
+        }
+        return schema.getAttribute("version");
+    }
 
     private SpecificationAggregateComponent resolveComplexTypeStructure(Element complexType) {
+        basicComponentsList = new ArrayList<>();
+        associationComponentsList = new ArrayList<>();
         SpecificationAggregateComponent fromAggregate = new SpecificationAggregateComponent();
-        if (complexTypeIsStructure(complexType)) {
-            fromAggregate.setComponentName(resolveElementName(complexType));
-            fromAggregate.setDefinition(resolveElementDefinition(complexType));
+        fromAggregate.setComponentName(resolveElementName(complexType));
+        fromAggregate.setDefinition(resolveElementDefinition(complexType));
+        if (!complexTypeIsDefinedAsComplexContent(complexType)) {
             NodeList structure = complexType.getElementsByTagName("xs:element");
             for (int i = 0; i < structure.getLength(); i++) {
                 Element element = (Element) structure.item(i);
-                if (elementTypeIsPrimitive(element)) {
+                String elementType = resolveElementType(element);
+                if (elementTypeIsPrimitive(elementType)) {
                     SpecificationBasicComponent basic = new SpecificationBasicComponent();
                     basic.setComponentName(resolveElementName(element));
                     basic.setDefinition(resolveElementDefinition(element));
@@ -110,24 +142,35 @@ public class MultiStandardService {
                     dt.setDataTypeName("Text");
                     basic.setDataType(dt);
                     basicComponentsList.add(basic);
-                    fromAggregate.setSpecificationBasicsList(basicComponentsList);
-                } else if (complexTypeMapFull.containsKey(resolveElementType(element))) {
+                } else if (complexTypeMapFull.containsKey(elementType)) {
                     SpecificationAssociationComponent association = new SpecificationAssociationComponent();
                     association.setAssociationName(resolveElementName(element));
                     association.setMinCardinality(resolveElementMinCardinality(element));
                     association.setMaxCardinality(resolveElementMaxCardinality(element));
                     association.setDefinition(resolveElementDefinition(element));
                     association.setFromAggregateComponent(fromAggregate);
-                    SpecificationAggregateComponent toAggregate = resolveComplexTypeStructure(complexTypeMapFull.get(resolveElementType(element)));
+                    SpecificationAggregateComponent toAggregate = resolveComplexTypeStructure(complexTypeMapFull.get(elementType));
                     association.setToAggregateComponent(toAggregate);
                     associationComponentsList.add(association);
-                    fromAggregate.setSpecificationAssociationsList(associationComponentsList);
-                } else if (simpleTypeMapFull.containsKey(resolveElementType(element))) {
+                } else if (simpleTypeMapFull.containsKey(elementType)) {
                     System.out.println("is simple");
                 }
             }
+        } else {
+            Element complexContent = resolveComplexContent(complexType);
+            if (elementIsExtension(complexContent)){
+                Element extension = resolveExtension(complexContent);
+                String baseType = resolveTheBaseType(extension);
+                if (elementTypeIsComplex(baseType)){
+                    SpecificationAggregateComponent baseAggregate = resolveComplexTypeStructure(complexTypeMapFull.get(baseType));
+                    fromAggregate.setBasedAggregateComponent(baseAggregate);
+                } else{
+                    //is this possible?
+                }
+            }
+            fromAggregate.setSpecificationBasicsList(basicComponentsList);
+            fromAggregate.setSpecificationAssociationsList(associationComponentsList);
             aggregateComponentsList.add(fromAggregate);
-
         }
         return fromAggregate;
     }
@@ -138,8 +181,12 @@ public class MultiStandardService {
             Element first = (Element) includedSchemas.item(i);
             String schemaLocation = first.getAttribute("schemaLocation");
             Document includedSchema = loadSchema(rootFolder, schemaLocation);
+            NodeList includedSchemasLevelTwo = includedSchema.getElementsByTagName("xs:include");
             loadComplexTypesFromSchema(includedSchema);
             loadSimpleTypesFromSchema(includedSchema);
+            if (includedSchemasLevelTwo != null){
+                loadIncludedSchemas(includedSchema);
+            }
         }
 
     }
@@ -154,6 +201,17 @@ public class MultiStandardService {
             throw new RuntimeException(e);
         }
         return doc;
+    }
+
+    private Map<String, Element> loadElementsFromSchema(Document document) {
+        Map<String, Element> map = new HashMap<>();
+        NodeList elementList = document.getElementsByTagName("xs:element");
+        for (int i = 0; i < elementList.getLength(); i++) {
+            Element first = (Element) elementList.item(i);
+            map.put(resolveElementName(first), first);
+            elementMapFull.put(resolveElementName(first), first);
+        }
+        return map;
     }
 
     private Map<String, Element> loadComplexTypesFromSchema(Document document) {
@@ -175,13 +233,34 @@ public class MultiStandardService {
         }
     }
 
-    private boolean elementTypeIsPrimitive(Element element) {
-        return element.getAttribute("type").contains("xs:");
+    private boolean elementTypeIsPrimitive(String type) {
+        return type.contains("xs:");
+    }
+    private boolean elementTypeIsSimple(String type) {
+        return simpleTypeMapFull.containsKey(type);
+    }
+    private boolean elementTypeIsComplex(String type) {
+        return complexTypeMapFull.containsKey(type);
     }
 
     private String resolveElementDefinition(Element element) {
         NodeList documentation = element.getElementsByTagName("xs:documentation");
         return documentation.item(0).getTextContent().trim();
+    }
+    private Element resolveExtension(Element element) {
+        NodeList extension = element.getElementsByTagName("xs:extension");
+        return (Element) extension.item(0);
+    }
+    private Element resolveComplexContent(Element element) {
+        NodeList extension = element.getElementsByTagName("xs:complexContent");
+        return (Element) extension.item(0);
+    }
+    private Element resolveRestriction(Element element) {
+        NodeList extension = element.getElementsByTagName("xs:restriction");
+        return (Element) extension.item(0);
+    }
+    private String resolveTheBaseType(Element element) {
+        return element.getAttribute("base");
     }
 
     private String resolveElementType(Element element) {
