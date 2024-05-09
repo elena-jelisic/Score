@@ -139,7 +139,7 @@ public class MultiStandardService {
                     basic.setMinCardinality(resolveElementMinCardinality(element));
                     basic.setMaxCardinality(resolveElementMaxCardinality(element));
                     SpecificationDataType dt = new SpecificationDataType();
-                    dt.setDataTypeName("Text");
+                    dt.setDataTypeName(elementType);
                     basic.setDataType(dt);
                     basicComponentsList.add(basic);
                 } else if (complexTypeMapFull.containsKey(elementType)) {
