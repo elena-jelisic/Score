@@ -9,6 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.FLAT_BCC;
 
@@ -18,20 +21,29 @@ public class FlatBccRepo {
     @Autowired
     private DSLContext dslContext;
 
-    public FlatBcc insertFlatBcc (FlatBcc flatBCC){
+    public FlatBccRecord insertFlatBcc(FlatBcc flatBCC) {
         FlatBccRecord flatBccRecord = new FlatBccRecord();
         flatBccRecord.setAccId(ULong.valueOf(flatBCC.getAccId()));
         flatBccRecord.setBccId(ULong.valueOf(flatBCC.getBccID()));
         flatBccRecord.setDtScId(flatBCC.getDtSCId() != null ? ULong.valueOf(flatBCC.getDtSCId()) : null);
-        flatBccRecord.setSuperBccId(flatBCC.getSuperBccId() != null? flatBCC.getSuperBccId().longValue() : null);
+        flatBccRecord.setSuperBccId(flatBCC.getSuperBccId() != null ? flatBCC.getSuperBccId().longValue() : null);
         flatBccRecord.setPath(flatBCC.getPath());
 
-        flatBCC.setFlatBccId(BigInteger.valueOf(dslContext.insertInto(FLAT_BCC)
-                .set(flatBccRecord)
-                .returning(FLAT_BCC.FLAT_BCC_ID).fetchOne()
-                .getFlatBccId()));
+//        flatBCC.setFlatBccId(BigInteger.valueOf(dslContext.insertInto(FLAT_BCC)
+//                .set(flatBccRecord)
+//                .returning(FLAT_BCC.FLAT_BCC_ID).fetchOne()
+//                .getFlatBccId()));
 
-        return flatBCC;
+        return flatBccRecord;
+    }
+
+    public void insertFlatBccList(List<FlatBccRecord> flatBccRecordList) {
+        dslContext.batch(
+                        flatBccRecordList.stream()
+                                .map(record -> dslContext.insertInto(FLAT_BCC)
+                                        .set(record))
+                                .collect(Collectors.toList()))
+                .execute();
     }
 
     public FlatBcc updateSuperBCCId (FlatBcc flatBCC, SuperBcc superBCC){

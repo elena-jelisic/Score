@@ -98,59 +98,66 @@ public class FlatBCCService {
                 dtDTSCMap.put(dtsc.getOwnerDtManifestId(), list);
             }
         }
+
+        List<FlatBccRecord> flatBccRecords = new ArrayList<>();
+
         for (AccManifestRecord accManifest : accManifestList) {
             AccRecord processed = accMap.get(accManifest.getAccId());
-            if (processed.getObjectClassTerm().equals("Status Header Base")){
-                accRelatedAccList = new ArrayList<>();
-                getAllRelatedACCs(accManifest);
-                if (accBCCMap.get(accManifest.getAccManifestId()) != null) {
-                    for (BccManifestRecord bcc : accBCCMap.get(accManifest.getAccManifestId())) {
-                        flatBcc.setAccId(processed.getAccId().toBigInteger());
-                        flatBcc.setBccID(bcc.getBccId().toBigInteger());
-                        flatBcc.setPath(processed.getObjectClassTerm());
-                        flatBcc.setDtSCId(null);
-                        flatBccRepo.insertFlatBcc(flatBcc);
-                        BccpManifestRecord bccp = bccpMap.get(bcc.getToBccpManifestId());
-                        if (dtDTSCMap.get(bccp.getBdtManifestId()) != null) {
-                            for (DtScManifestRecord dtSC : dtDTSCMap.get(bccp.getBdtManifestId())) {
-                                flatBcc.setAccId(processed.getAccId().toBigInteger());
-                                flatBcc.setBccID(bcc.getBccId().toBigInteger());
-                                flatBcc.setPath(processed.getObjectClassTerm());
-                                flatBcc.setDtSCId(dtSC.getDtScId().toBigInteger());
-                                flatBccRepo.insertFlatBcc(flatBcc);
-                            }
+            accRelatedAccList = new ArrayList<>();
+            getAllRelatedACCs(accManifest);
+            if (accBCCMap.get(accManifest.getAccManifestId()) != null) {
+                for (BccManifestRecord bcc : accBCCMap.get(accManifest.getAccManifestId())) {
+                    flatBcc.setAccId(processed.getAccId().toBigInteger());
+                    flatBcc.setBccID(bcc.getBccId().toBigInteger());
+                    flatBcc.setPath(processed.getObjectClassTerm());
+                    flatBcc.setDtSCId(null);
+                    flatBccRecords.add(flatBccRepo.insertFlatBcc(flatBcc));
+                    BccpManifestRecord bccp = bccpMap.get(bcc.getToBccpManifestId());
+                    if (dtDTSCMap.get(bccp.getBdtManifestId()) != null) {
+                        for (DtScManifestRecord dtSC : dtDTSCMap.get(bccp.getBdtManifestId())) {
+                            flatBcc.setAccId(processed.getAccId().toBigInteger());
+                            flatBcc.setBccID(bcc.getBccId().toBigInteger());
+                            flatBcc.setPath(processed.getObjectClassTerm());
+                            flatBcc.setDtSCId(dtSC.getDtScId().toBigInteger());
+                            flatBccRecords.add(flatBccRepo.insertFlatBcc(flatBcc));
                         }
                     }
                 }
-                if (!accRelatedAccList.isEmpty()) {
-                    for (AccManifestRecord relatedACCManifest : accRelatedAccList) {
-                        String path = relatedACCPathMap.get(relatedACCManifest);
-                        if (accBCCMap.get(relatedACCManifest.getAccManifestId()) != null) {
-                            for (BccManifestRecord bcc : accBCCMap.get(relatedACCManifest.getAccManifestId())) {
-                                BccpManifestRecord bccp = bccpMap.get(bcc.getToBccpManifestId());
-                                flatBcc.setAccId(processed.getAccId().toBigInteger());
-                                flatBcc.setBccID(bcc.getBccId().toBigInteger());
-                                flatBcc.setDtSCId(null);
-                                flatBcc.setPath(path);
-                                flatBccRepo.insertFlatBcc(flatBcc);
-                                if (dtDTSCMap.get(bccp.getBdtManifestId()) != null) {
-                                    for (DtScManifestRecord dtSC : dtDTSCMap.get(bccp.getBdtManifestId())) {
-                                        flatBcc.setAccId(processed.getAccId().toBigInteger());
-                                        flatBcc.setBccID(bcc.getBccId().toBigInteger());
-                                        flatBcc.setPath(path);
-                                        flatBcc.setDtSCId(dtSC.getDtScId().toBigInteger());
-                                        flatBccRepo.insertFlatBcc(flatBcc);
-                                    }
+            }
+            if (!accRelatedAccList.isEmpty()) {
+                for (AccManifestRecord relatedACCManifest : accRelatedAccList) {
+                    String path = relatedACCPathMap.get(relatedACCManifest);
+                    if (accBCCMap.get(relatedACCManifest.getAccManifestId()) != null) {
+                        for (BccManifestRecord bcc : accBCCMap.get(relatedACCManifest.getAccManifestId())) {
+                            BccpManifestRecord bccp = bccpMap.get(bcc.getToBccpManifestId());
+                            flatBcc.setAccId(processed.getAccId().toBigInteger());
+                            flatBcc.setBccID(bcc.getBccId().toBigInteger());
+                            flatBcc.setDtSCId(null);
+                            flatBcc.setPath(path);
+                            flatBccRecords.add(flatBccRepo.insertFlatBcc(flatBcc));
+                            if (dtDTSCMap.get(bccp.getBdtManifestId()) != null) {
+                                for (DtScManifestRecord dtSC : dtDTSCMap.get(bccp.getBdtManifestId())) {
+                                    flatBcc.setAccId(processed.getAccId().toBigInteger());
+                                    flatBcc.setBccID(bcc.getBccId().toBigInteger());
+                                    flatBcc.setPath(path);
+                                    flatBcc.setDtSCId(dtSC.getDtScId().toBigInteger());
+                                    flatBccRecords.add(flatBccRepo.insertFlatBcc(flatBcc));
                                 }
                             }
                         }
                     }
                 }
             }
-            }
+        }
+
+        flatBccRepo.insertFlatBccList(flatBccRecords);
     }
 
     private void getAllRelatedACCs(AccManifestRecord accManifest) {
+        if (accRelatedAccList.contains(accManifest)) {
+            return;
+        }
+
         String path = relatedACCPathMap.get(accManifest);
         if (accManifest.getBasedAccManifestId() != null) {
             AccManifestRecord basedAccManifest = accManifestMap.get(accManifest.getBasedAccManifestId());
@@ -165,6 +172,7 @@ public class FlatBCCService {
                 getAllRelatedACCs(basedAccManifest);
             }
         }
+
         List<AsccManifestRecord> asccList = accASCCMap.get(accManifest.getAccManifestId());
         if (asccList != null) {
             for (AsccManifestRecord ascc : asccList) {
