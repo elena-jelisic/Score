@@ -175,6 +175,45 @@ public class MultiStandardService {
                     //is this possible?
                 }
             }
+            NodeList structure = complexType.getElementsByTagName("xs:element");
+            for (int i = 0; i < structure.getLength(); i++) {
+                Element element = (Element) structure.item(i);
+                String elementType = resolveElementType(element);
+                if (elementTypeIsPrimitive(elementType)) {
+                    SpecificationBasicComponent basic = new SpecificationBasicComponent();
+                    basic.setComponentName(resolveElementName(element));
+                    basic.setDefinition(resolveElementDefinition(element));
+                    basic.setAggregateComponentId(fromAggregate.getComponentId());
+                    basic.setMinCardinality(resolveElementMinCardinality(element));
+                    basic.setMaxCardinality(resolveElementMaxCardinality(element));
+                    SpecificationDataType dt = new SpecificationDataType();
+                    dt.setDataTypeName(elementType);
+                    basic.setDataType(dt);
+                    addBasicComponentToTheList(fromAggregate.getComponentName(), basic);
+                } else if (complexTypeMapFull.containsKey(elementType)) {
+                    SpecificationAssociationComponent association = new SpecificationAssociationComponent();
+                    association.setAssociationName(resolveElementName(element));
+                    association.setMinCardinality(resolveElementMinCardinality(element));
+                    association.setMaxCardinality(resolveElementMaxCardinality(element));
+                    association.setDefinition(resolveElementDefinition(element));
+                    association.setFromAggregateComponent(fromAggregate);
+                    SpecificationAggregateComponent toAggregate = resolveComplexTypeStructure(complexTypeMapFull.get(elementType));
+                    association.setToAggregateComponent(toAggregate);
+                    addAssociationComponentToTheList(fromAggregate.getComponentName(), association);
+                } else if (simpleTypeMapFull.containsKey(elementType)) {
+                    SpecificationBasicComponent basic = new SpecificationBasicComponent();
+                    basic.setComponentName(resolveElementName(element));
+                    basic.setDefinition(resolveElementDefinition(element));
+                    basic.setAggregateComponentId(fromAggregate.getComponentId());
+                    basic.setMinCardinality(resolveElementMinCardinality(element));
+                    basic.setMaxCardinality(resolveElementMaxCardinality(element));
+                    SpecificationDataType dt = new SpecificationDataType();
+                    dt.setDataTypeName(elementType);
+                    basic.setDataType(dt);
+                    addBasicComponentToTheList(fromAggregate.getComponentName(), basic);
+                }
+            }
+
         }
         fromAggregate.setSpecificationBasicsList(basicComponentsList.get(fromAggregate.getComponentName()));
         fromAggregate.setSpecificationAssociationsList(associationComponentsList.get(fromAggregate.getComponentName()));
