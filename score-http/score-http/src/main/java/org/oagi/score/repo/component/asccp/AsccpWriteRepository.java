@@ -8,6 +8,7 @@ import org.jooq.types.UInteger;
 import org.jooq.types.ULong;
 import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.gateway.http.helper.ScoreGuid;
+import org.oagi.score.repo.api.impl.jooq.entity.Tables;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.repo.api.impl.utils.StringUtils;
 import org.oagi.score.repo.component.ascc.AsccWriteRepository;
@@ -20,6 +21,7 @@ import org.oagi.score.service.log.model.LogSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -859,5 +861,9 @@ public class AsccpWriteRepository {
         dslContext.deleteFrom(LOG).where(LOG.LOG_ID.in(deleteLogTargets)).execute();
 
         return new CancelRevisionAsccpRepositoryResponse(request.getAsccpManifestId());
+    }
+
+    public AsccpRecord getAsccpByManifest(BigInteger asccpManifestID) {
+        return dslContext.select(Tables.ASCCP.fields()).from(Tables.ASCCP).join(Tables.ASCCP_MANIFEST).on(Tables.ASCCP.ASCCP_ID.eq(Tables.ASCCP_MANIFEST.ASCCP_ID)).where(Tables.ASCCP_MANIFEST.ASCCP_MANIFEST_ID.eq(ULong.valueOf(asccpManifestID))).fetchOptionalInto(AsccpRecord.class).orElse(null);
     }
 }

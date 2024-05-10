@@ -6,6 +6,8 @@ import org.jooq.SelectOnConditionStep;
 import org.jooq.types.ULong;
 import org.oagi.score.data.ASCC;
 import org.oagi.score.repo.api.impl.jooq.entity.Tables;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsccRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.AsccpRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -90,3 +92,4 @@ public class ASCCRepository implements ScoreRepository<ASCC> {
                 .fetchOptionalInto(ASCC.class).orElse(null);
     }
 }
+

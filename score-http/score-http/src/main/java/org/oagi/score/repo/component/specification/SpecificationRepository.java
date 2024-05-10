@@ -302,6 +302,7 @@ public class SpecificationRepository {
                                 SPECIFICATION_AGGREGATE_COMPONENT.STATUS_CODE_ID,
                                 SPECIFICATION_AGGREGATE_COMPONENT.GAP_ANALYSIS_CODE_ID,
                                 SPECIFICATION_AGGREGATE_COMPONENT.IS_APPROVED,
+                                SPECIFICATION_AGGREGATE_COMPONENT.BASED_AGGREGATE_COMPONENT_ID,
                                 SPECIFICATION_AGGREGATE_COMPONENT.ACC_ID)
                         .from(SPECIFICATION_AGGREGATE_COMPONENT)
                         .join(STATUS_CODE).on(SPECIFICATION_AGGREGATE_COMPONENT.STATUS_CODE_ID.eq(STATUS_CODE.STATUS_CODE_ID))
@@ -315,5 +316,43 @@ public class SpecificationRepository {
                 dslContext.selectFrom(CC_GAP_ANALYSIS_RESULT_CODE.
                         where(CC_GAP_ANALYSIS_RESULT_CODE.CODE_ID.eq(gapAnalysisCodeId))).fetchOne();
         return codeRecord;
+    }
+
+    public SpecificationAggregateComponentRecord getSpecificationAggregate(Long componentID) {
+        return dslContext.selectFrom(SPECIFICATION_AGGREGATE_COMPONENT).where(SPECIFICATION_AGGREGATE_COMPONENT.COMPONENT_ID.eq(componentID)).fetchOne();
+    }
+
+    public List<SpecificationAssociationComponentRecord> getAllSpecificationAssociations(Long specificationId) {
+        List<SpecificationAssociationComponentRecord> associationsRecords =
+                dslContext.selectFrom(SPECIFICATION_ASSOCIATION_COMPONENT
+                        .where(SPECIFICATION_ASSOCIATION_COMPONENT.SPECIFICATION_ID.eq(specificationId))).stream().toList();
+        return associationsRecords;
+    }
+
+    public void updateSpecificationAssociationComponent(SpecificationAssociationComponentRecord ascc) {
+        dslContext.update(SPECIFICATION_ASSOCIATION_COMPONENT)
+                .set(SPECIFICATION_ASSOCIATION_COMPONENT.STATUS_CODE_ID, ascc.getStatusCodeId())
+                .set(SPECIFICATION_ASSOCIATION_COMPONENT.GAP_ANALYSIS_CODE_ID, ascc.getGapAnalysisCodeId())
+                .set(SPECIFICATION_ASSOCIATION_COMPONENT.ASCC_ID, ascc.getAsccId())
+                .set(SPECIFICATION_ASSOCIATION_COMPONENT.IS_APPROVED, ascc.getIsApproved())
+                .where(SPECIFICATION_ASSOCIATION_COMPONENT.COMPONENT_ID.eq(ascc.getComponentId())).execute();
+    }
+
+    public List<SpecificationAssociationComponentRecord> getAnalyzedSpecificationAssociations(Long specificationId) {
+        List<SpecificationAssociationComponentRecord> associationsRecords =
+                (dslContext.select(SPECIFICATION_ASSOCIATION_COMPONENT.COMPONENT_ID,
+                                SPECIFICATION_ASSOCIATION_COMPONENT.DEFINITION,
+                                SPECIFICATION_ASSOCIATION_COMPONENT.ASSOCIATION_NAME,
+                                SPECIFICATION_ASSOCIATION_COMPONENT.STATUS_CODE_ID,
+                                SPECIFICATION_ASSOCIATION_COMPONENT.GAP_ANALYSIS_CODE_ID,
+                                SPECIFICATION_ASSOCIATION_COMPONENT.IS_APPROVED,
+                                SPECIFICATION_ASSOCIATION_COMPONENT.TO_AGGREGATE_COMPONENT,
+                                SPECIFICATION_ASSOCIATION_COMPONENT.FROM_AGGREGATE_COMPONENT,
+                                SPECIFICATION_ASSOCIATION_COMPONENT.ASCC_ID)
+                        .from(SPECIFICATION_ASSOCIATION_COMPONENT)
+                        .join(STATUS_CODE).on(SPECIFICATION_ASSOCIATION_COMPONENT.STATUS_CODE_ID.eq(STATUS_CODE.STATUS_CODE_ID))
+                        .where(SPECIFICATION_ASSOCIATION_COMPONENT.SPECIFICATION_ID.eq(specificationId)
+                                .and(STATUS_CODE.CODE.eq(SpecComponentState.ANALYZED.toString()))).fetchInto(SpecificationAssociationComponentRecord.class));
+        return associationsRecords;
     }
 }

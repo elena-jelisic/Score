@@ -42,7 +42,7 @@ public class MultiStandardController {
     public String coreComponentGapAnalysis(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                          @RequestBody BieCreateRequest bieCreateRequest) {
         Specification spec = new Specification();
-        spec.setSpecificationName("QIF 3");
+        spec.setSpecificationName("QIF 3.0.0");
         ccGapAnalysisService.analyzeCoreComponents(user, spec);
         return "Success";
     }
@@ -52,9 +52,12 @@ public class MultiStandardController {
     public String coreComponentGapAnalysisApproval(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                            @RequestBody BieCreateRequest bieCreateRequest) {
         Specification spec = new Specification();
-        spec.setSpecificationName("QIF 3");
+        spec.setSpecificationName("QIF 3.0.0");
         List<SpecificationAggregateComponentRecord> aggregates = new ArrayList<>();
         ccGapAnalysisService.approveACCAnalysisResults(aggregates, user, spec);
+        ccGapAnalysisService.approveDTAnalysisResults (user, spec);
+        ccGapAnalysisService.approveAssociationAnalysisResults (user, spec);
+        ccGapAnalysisService.approveBasicAnalysisResults (user, spec);
         return "Success";
     }
     @RequestMapping(value = "/flat_bcc", method = RequestMethod.PUT,

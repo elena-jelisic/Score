@@ -106,4 +106,11 @@ public class AccReadRepository {
     public List<AccRecord> getAllACCs() {
         return dslContext.selectFrom(ACC).fetchInto(AccRecord.class);
     }
+
+    public BigInteger getAccManifestByAccIDReleaseId(ULong accId, ULong releaseId) {
+        return dslContext.select(ACC_MANIFEST.ACC_MANIFEST_ID)
+                .from(ACC_MANIFEST)
+                .where(ACC_MANIFEST.ACC_ID.eq(accId))
+                .and(ACC_MANIFEST.RELEASE_ID.eq(releaseId)).fetchOneInto(BigInteger.class);
+    }
 }
