@@ -40,8 +40,8 @@ public class MultiStandardService {
     @Autowired
     private SessionService session;
     private List<SpecificationAggregateComponent> aggregateComponentsList;
-    private List<SpecificationBasicComponent> basicComponentsList;
-    private List<SpecificationAssociationComponent> associationComponentsList;
+    private Map<String, List<SpecificationBasicComponent>> basicComponentsList;
+    private Map<String, List<SpecificationAssociationComponent>> associationComponentsList;
     private Map<String, Element> complexTypeMapFull = new HashMap<>();
     private Map<String, Element> elementMapFull = new HashMap<>();
     private Map<String, Element> complexTypeMapInitial = new HashMap<>();
@@ -52,8 +52,8 @@ public class MultiStandardService {
     @Transactional
     public void insertNewSpecification(AuthenticatedPrincipal user) {
         aggregateComponentsList = new ArrayList<>();
-        basicComponentsList = new ArrayList<>();
-        associationComponentsList = new ArrayList<>();
+        basicComponentsList = new HashMap<>();
+        associationComponentsList = new HashMap<>();
         rootFolder = "/Users/enj2/Documents/QIF3.0-2018-ANSI/xsd/QIFApplications";
         String documentName = "QIFResults.xsd";
         doc = loadSchema(rootFolder, documentName);
@@ -121,8 +121,6 @@ public class MultiStandardService {
     }
 
     private SpecificationAggregateComponent resolveComplexTypeStructure(Element complexType) {
-        basicComponentsList = new ArrayList<>();
-        associationComponentsList = new ArrayList<>();
         SpecificationAggregateComponent fromAggregate = new SpecificationAggregateComponent();
         fromAggregate.setComponentName(resolveElementName(complexType));
         fromAggregate.setDefinition(resolveElementDefinition(complexType));
@@ -141,7 +139,7 @@ public class MultiStandardService {
                     SpecificationDataType dt = new SpecificationDataType();
                     dt.setDataTypeName(elementType);
                     basic.setDataType(dt);
-                    basicComponentsList.add(basic);
+                    addBasicComponentToTheList(fromAggregate.getComponentName(), basic);
                 } else if (complexTypeMapFull.containsKey(elementType)) {
                     SpecificationAssociationComponent association = new SpecificationAssociationComponent();
                     association.setAssociationName(resolveElementName(element));
@@ -151,9 +149,18 @@ public class MultiStandardService {
                     association.setFromAggregateComponent(fromAggregate);
                     SpecificationAggregateComponent toAggregate = resolveComplexTypeStructure(complexTypeMapFull.get(elementType));
                     association.setToAggregateComponent(toAggregate);
-                    associationComponentsList.add(association);
+                    addAssociationComponentToTheList(fromAggregate.getComponentName(), association);
                 } else if (simpleTypeMapFull.containsKey(elementType)) {
-                    System.out.println("is simple");
+                    SpecificationBasicComponent basic = new SpecificationBasicComponent();
+                    basic.setComponentName(resolveElementName(element));
+                    basic.setDefinition(resolveElementDefinition(element));
+                    basic.setAggregateComponentId(fromAggregate.getComponentId());
+                    basic.setMinCardinality(resolveElementMinCardinality(element));
+                    basic.setMaxCardinality(resolveElementMaxCardinality(element));
+                    SpecificationDataType dt = new SpecificationDataType();
+                    dt.setDataTypeName(elementType);
+                    basic.setDataType(dt);
+                    addBasicComponentToTheList(fromAggregate.getComponentName(), basic);
                 }
             }
         } else {
@@ -168,11 +175,32 @@ public class MultiStandardService {
                     //is this possible?
                 }
             }
-            fromAggregate.setSpecificationBasicsList(basicComponentsList);
-            fromAggregate.setSpecificationAssociationsList(associationComponentsList);
-            aggregateComponentsList.add(fromAggregate);
         }
+        fromAggregate.setSpecificationBasicsList(basicComponentsList.get(fromAggregate.getComponentName()));
+        fromAggregate.setSpecificationAssociationsList(associationComponentsList.get(fromAggregate.getComponentName()));
+        aggregateComponentsList.add(fromAggregate);
         return fromAggregate;
+    }
+
+    private void addBasicComponentToTheList (String aggregate, SpecificationBasicComponent basic){
+            if (basicComponentsList.containsKey(aggregate)){
+                basicComponentsList.get(aggregate).add(basic);
+            } else {
+                List<SpecificationBasicComponent> basics = new ArrayList<>();
+                basics.add(basic);
+                basicComponentsList.put(aggregate, basics);
+            }
+
+    }
+    private void addAssociationComponentToTheList (String aggregate, SpecificationAssociationComponent association){
+            if (associationComponentsList.containsKey(aggregate)){
+                associationComponentsList.get(aggregate).add(association);
+            } else {
+                List<SpecificationAssociationComponent> associations = new ArrayList<>();
+                associations.add(association);
+                associationComponentsList.put(aggregate, associations);
+            }
+
     }
 
     private void loadIncludedSchemas(Document document) {
