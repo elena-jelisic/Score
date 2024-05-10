@@ -161,7 +161,7 @@ public class CCGapAnalysisService {
         SpecificationAggregateComponentRecord fromAcc = specRepo.getSpecificationAggregate(ascc.getFromAggregateComponent());
         BigInteger fromAccManifestId = accReadRepo.getAccManifestByAccIDReleaseId(fromAcc.getAccId(), release.getReleaseId());
 
-        BigInteger asccManifestId = ccService.appendAsccp(user, release.getReleaseId().toBigInteger(), fromAccManifestId, asccpManifestID ,1);
+        BigInteger asccManifestId = ccService.appendAsccp(user, release.getReleaseId().toBigInteger(), fromAccManifestId, asccpManifestID, -1);
         AsccRecord asccRecord = asccReadRepo.getAsccByManifestId (asccManifestId);
         ascc.setAsccId(ULong.valueOf(asccRecord.getAsccId().longValue()));
         specRepo.updateSpecificationAssociationComponent(ascc);
