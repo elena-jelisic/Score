@@ -10,6 +10,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.SpecificationAggr
 import org.oagi.score.gateway.http.api.specification_management.data.Specification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -63,10 +64,10 @@ public class MultiStandardController {
     }
     @RequestMapping(value = "/flat_bcc", method = RequestMethod.PUT,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public String flatBccUpdate(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                                   @RequestBody BieCreateRequest bieCreateRequest) {
+    public ResponseEntity flatBccUpdate(@AuthenticationPrincipal AuthenticatedPrincipal user,
+                                        @RequestBody BieCreateRequest bieCreateRequest) {
         flatBccService.updateFlatBccTable();
-        return "Success";
+        return ResponseEntity.accepted().build();
     }
 
 }
