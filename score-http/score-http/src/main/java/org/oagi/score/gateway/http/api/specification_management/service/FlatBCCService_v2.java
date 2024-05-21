@@ -175,13 +175,11 @@ public class FlatBCCService_v2 {
                 AccRecord basedAcc = accMap.get(basedAccManifest.getAccId());
                 if (paths == null) {
                     relatedACCPathMap.add(processed.getObjectClassTerm() + ". " + basedAcc.getObjectClassTerm());
-                    paths = getTheLatestPath();
-                    getAllRelatedACCs(basedAcc, basedAccManifest, paths);
+                    getAllRelatedACCs(basedAcc, basedAccManifest, getTheLatestPath());
                 } else {
                     if (!containedInTheList(paths, basedAcc.getObjectClassTerm())){
                         relatedACCPathMap.add(paths.concat(". ").concat(basedAcc.getObjectClassTerm()));
-                        paths = getTheLatestPath();
-                        getAllRelatedACCs(basedAcc, basedAccManifest, paths);
+                        getAllRelatedACCs(basedAcc, basedAccManifest, getTheLatestPath());
                     }
                 }
             }
@@ -200,9 +198,8 @@ public class FlatBCCService_v2 {
                             getAllRelatedACCs(associatedACC, associatedAccManifest, processed.getObjectClassTerm() );
                         } else {
                             if (!containedInTheList(paths, associatedACC.getObjectClassTerm())){
-                                paths = getSecondToTheLatestPath();
                                 relatedACCPathMap.add(paths.concat(". ").concat(associatedACC.getObjectClassTerm()));
-                                getAllRelatedACCs(associatedACC, associatedAccManifest, paths);
+                                getAllRelatedACCs(associatedACC, associatedAccManifest, getSecondToTheLatestPath());
                             }
                         }
                     }
