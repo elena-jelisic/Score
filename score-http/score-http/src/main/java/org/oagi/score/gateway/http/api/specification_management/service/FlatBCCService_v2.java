@@ -2,7 +2,6 @@ package org.oagi.score.gateway.http.api.specification_management.service;
 
 import org.jooq.types.ULong;
 import org.oagi.score.gateway.http.api.specification_management.data.FlatBcc;
-import org.oagi.score.repo.api.corecomponent.model.AccManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
 import org.oagi.score.repo.component.acc.AccReadRepository;
 import org.oagi.score.repo.component.ascc.AsccReadRepository;
@@ -15,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,7 +22,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
-public class FlatBCCService {
+public class FlatBCCService_v2 {
     @Autowired
     private FlatBccRepo flatBccRepo;
     @Autowired
@@ -47,7 +45,7 @@ public class FlatBCCService {
     Map<ULong, List<BccManifestRecord>> accBCCMap;
     Map<ULong, AsccpManifestRecord> asccpMap;
     Map<ULong, BccpManifestRecord> bccpMap;
-    Map<AccManifestRecord, String> relatedACCPathMap;
+    List<String> relatedACCPathMap;
 
     @Transactional
     public void updateFlatBccTable() {
@@ -59,23 +57,17 @@ public class FlatBCCService {
         asccpMap = new HashMap<>();
         bccpMap = new HashMap<>();
         dtDTSCMap = new HashMap<>();
-        relatedACCPathMap = new HashMap<>();
+        relatedACCPathMap = new ArrayList<>();
+        //get the list of the latest ACCs
         List<AccManifestRecord> accManifestList = accReadRepo.getAllLatestACCs();
         accManifestMap = accManifestList.stream().collect(Collectors.toMap(AccManifestRecord::getAccManifestId, acc -> acc));
         List<AccRecord> accList = accReadRepo.getAllACCs();
         accMap = accList.stream().collect(Collectors.toMap(AccRecord::getAccId, acc -> acc));
+
+        //get the list of the latest BCCPs and BCCs
         List<BccpManifestRecord> bccpList = bccpReadRepo.getAllLatestBCCPs();
         bccpMap = bccpList.stream().collect(Collectors.toMap(BccpManifestRecord::getBccpManifestId, bccp -> bccp));
-        List<AsccManifestRecord> asccList = asccReadRepo.getAllLatestASCCs();
-        for (AsccManifestRecord ascc : asccList) {
-            if (accASCCMap.containsKey(ascc.getFromAccManifestId())) {
-                accASCCMap.get(ascc.getFromAccManifestId()).add(ascc);
-            } else {
-                ArrayList<AsccManifestRecord> list = new ArrayList<>();
-                list.add(ascc);
-                accASCCMap.put(ascc.getFromAccManifestId(), list);
-            }
-        }
+
         List<BccManifestRecord> bccList = bccReadRepo.getAllLatestBCCs();
         for (BccManifestRecord bcc : bccList) {
             if (accBCCMap.containsKey(bcc.getFromAccManifestId())) {
@@ -86,8 +78,23 @@ public class FlatBCCService {
                 accBCCMap.put(bcc.getFromAccManifestId(), list);
             }
         }
+
+        //get the list of the latest ASCCPs and ASCCs
         List<AsccpManifestRecord> asccpList = asccpReadRepo.getAllLatestASCCPs();
         asccpMap = asccpList.stream().collect(Collectors.toMap(AsccpManifestRecord::getAsccpManifestId, asccp -> asccp));
+
+        List<AsccManifestRecord> asccList = asccReadRepo.getAllLatestASCCs();
+        for (AsccManifestRecord ascc : asccList) {
+            if (accASCCMap.containsKey(ascc.getFromAccManifestId())) {
+                accASCCMap.get(ascc.getFromAccManifestId()).add(ascc);
+            } else {
+                ArrayList<AsccManifestRecord> list = new ArrayList<>();
+                list.add(ascc);
+                accASCCMap.put(ascc.getFromAccManifestId(), list);
+            }
+        }
+
+        //get the list of the latest DTSCs
         List<DtScManifestRecord> dtSCList = dtRepository.getLatestDTSCList();
         for (DtScManifestRecord dtsc : dtSCList) {
             if (dtDTSCMap.containsKey(dtsc.getOwnerDtManifestId())) {
@@ -99,49 +106,54 @@ public class FlatBCCService {
             }
         }
 
+
         List<FlatBccRecord> flatBccRecords = new ArrayList<>();
 
         for (AccManifestRecord accManifest : accManifestList) {
             AccRecord processed = accMap.get(accManifest.getAccId());
-            if (processed.getObjectClassTerm().equals("ResultsType")){
+            if (processed.getObjectClassTerm().equals("Address")){
                 accRelatedAccList = new ArrayList<>();
-                getAllRelatedACCs(processed, accManifest);
+                String path = "";
+
+                getAllRelatedACCs(processed, accManifest, null);
+
                 if (accBCCMap.get(accManifest.getAccManifestId()) != null) {
-                    for (BccManifestRecord bcc : accBCCMap.get(accManifest.getAccManifestId())) {
+                    for (int i = 0; i < accBCCMap.get(accManifest.getAccManifestId()).size(); i++) {
                         flatBcc.setAccId(processed.getAccId().toBigInteger());
-                        flatBcc.setBccID(bcc.getBccId().toBigInteger());
+                        flatBcc.setBccID(accBCCMap.get(accManifest.getAccManifestId()).get(i).getBccId().toBigInteger());
                         flatBcc.setPath(processed.getObjectClassTerm());
                         flatBcc.setDtSCId(null);
                         flatBccRecords.add(flatBccRepo.insertFlatBcc(flatBcc));
-                        BccpManifestRecord bccp = bccpMap.get(bcc.getToBccpManifestId());
+                        BccpManifestRecord bccp = bccpMap.get(accBCCMap.get(accManifest.getAccManifestId()).get(i).getToBccpManifestId());
                         if (dtDTSCMap.get(bccp.getBdtManifestId()) != null) {
-                            for (DtScManifestRecord dtSC : dtDTSCMap.get(bccp.getBdtManifestId())) {
+                            for (int j= 0; j < dtDTSCMap.get(bccp.getBdtManifestId()).size(); j++) {
                                 flatBcc.setAccId(processed.getAccId().toBigInteger());
-                                flatBcc.setBccID(bcc.getBccId().toBigInteger());
+                                flatBcc.setBccID(accBCCMap.get(accManifest.getAccManifestId()).get(i).getBccId().toBigInteger());
                                 flatBcc.setPath(processed.getObjectClassTerm());
-                                flatBcc.setDtSCId(dtSC.getDtScId().toBigInteger());
+                                flatBcc.setDtSCId(dtDTSCMap.get(bccp.getBdtManifestId()).get(j).getDtScId().toBigInteger());
                                 flatBccRecords.add(flatBccRepo.insertFlatBcc(flatBcc));
                             }
                         }
                     }
                 }
                 if (!accRelatedAccList.isEmpty()) {
-                    for (AccManifestRecord relatedACCManifest : accRelatedAccList) {
-                        String path = relatedACCPathMap.get(relatedACCManifest);
-                        if (accBCCMap.get(relatedACCManifest.getAccManifestId()) != null) {
-                            for (BccManifestRecord bcc : accBCCMap.get(relatedACCManifest.getAccManifestId())) {
-                                BccpManifestRecord bccp = bccpMap.get(bcc.getToBccpManifestId());
+                    for (int z = 0; z < accRelatedAccList.size(); z++) {
+                        String objectClassTerm = accRelatedAccList.get(z).getDen().substring(0, accRelatedAccList.get(z).getDen().indexOf(". Details"));
+                        path = getPathToTheObjectClassTerm(objectClassTerm);
+                        if (accBCCMap.get(accRelatedAccList.get(z).getAccManifestId()) != null) {
+                            for (int i = 0; i < accBCCMap.get(accRelatedAccList.get(z).getAccManifestId()).size(); i++) {
+                                BccpManifestRecord bccp = bccpMap.get(accBCCMap.get(accRelatedAccList.get(z).getAccManifestId()).get(i).getToBccpManifestId());
                                 flatBcc.setAccId(processed.getAccId().toBigInteger());
-                                flatBcc.setBccID(bcc.getBccId().toBigInteger());
+                                flatBcc.setBccID(accBCCMap.get(accRelatedAccList.get(z).getAccManifestId()).get(i).getBccId().toBigInteger());
                                 flatBcc.setDtSCId(null);
                                 flatBcc.setPath(path);
                                 flatBccRecords.add(flatBccRepo.insertFlatBcc(flatBcc));
                                 if (dtDTSCMap.get(bccp.getBdtManifestId()) != null) {
-                                    for (DtScManifestRecord dtSC : dtDTSCMap.get(bccp.getBdtManifestId())) {
+                                    for (int j = 0; j < dtDTSCMap.get(bccp.getBdtManifestId()).size(); j++) {
                                         flatBcc.setAccId(processed.getAccId().toBigInteger());
-                                        flatBcc.setBccID(bcc.getBccId().toBigInteger());
+                                        flatBcc.setBccID(accBCCMap.get(accRelatedAccList.get(z).getAccManifestId()).get(i).getBccId().toBigInteger());
                                         flatBcc.setPath(path);
-                                        flatBcc.setDtSCId(dtSC.getDtScId().toBigInteger());
+                                        flatBcc.setDtSCId(dtDTSCMap.get(bccp.getBdtManifestId()).get(j).getDtScId().toBigInteger());
                                         flatBccRecords.add(flatBccRepo.insertFlatBcc(flatBcc));
                                     }
                                 }
@@ -155,40 +167,81 @@ public class FlatBCCService {
         flatBccRepo.insertFlatBccList(flatBccRecords);
     }
 
-    private void getAllRelatedACCs(AccRecord processed, AccManifestRecord accManifest) {
-        String path = relatedACCPathMap.get(accManifest);
-        if (accManifest.getBasedAccManifestId() != null) {
-            AccManifestRecord basedAccManifest = accManifestMap.get(accManifest.getBasedAccManifestId());
+    private void getAllRelatedACCs(AccRecord processed, AccManifestRecord processedAccManifest, String paths) {
+        if (processedAccManifest.getBasedAccManifestId() != null) {
+            AccManifestRecord basedAccManifest = accManifestMap.get(processedAccManifest.getBasedAccManifestId());
             if (basedAccManifest != null) {
                 accRelatedAccList.add(basedAccManifest);
                 AccRecord basedAcc = accMap.get(basedAccManifest.getAccId());
-                if (path == null) {
-                    relatedACCPathMap.put(basedAccManifest, basedAcc.getObjectClassTerm());
+                if (paths == null) {
+                    relatedACCPathMap.add(processed.getObjectClassTerm() + ". " + basedAcc.getObjectClassTerm());
+                    paths = getTheLatestPath();
+                    getAllRelatedACCs(basedAcc, basedAccManifest, paths);
                 } else {
-                    relatedACCPathMap.put(basedAccManifest, path.concat(". ").concat(basedAcc.getObjectClassTerm()));
-                }
-                getAllRelatedACCs(basedAcc, basedAccManifest);
-            }
-        }
-
-        List<AsccManifestRecord> asccList = accASCCMap.get(accManifest.getAccManifestId());
-        if (asccList != null) {
-            for (AsccManifestRecord ascc : asccList) {
-                AccManifestRecord associatedAccManifest = accManifestMap.get(asccpMap.get(ascc.getToAsccpManifestId()).getRoleOfAccManifestId());
-                AccRecord associatedACC = accMap.get(associatedAccManifest.getAccId());
-                if (!associatedACC.getObjectClassTerm().equals(processed.getObjectClassTerm())){
-                    getAllRelatedACCs(associatedACC, associatedAccManifest);
-                    if (associatedACC != null) {
-                        accRelatedAccList.add(associatedAccManifest);
-                        if (path == null) {
-                            relatedACCPathMap.put(associatedAccManifest, associatedACC.getObjectClassTerm());
-                        } else {
-                            relatedACCPathMap.put(associatedAccManifest, path.concat(". ").concat(associatedACC.getObjectClassTerm()));
-                        }
-
+                    if (!containedInTheList(paths, basedAcc.getObjectClassTerm())){
+                        relatedACCPathMap.add(paths.concat(". ").concat(basedAcc.getObjectClassTerm()));
+                        paths = getTheLatestPath();
+                        getAllRelatedACCs(basedAcc, basedAccManifest, paths);
                     }
                 }
             }
         }
+
+        List<AsccManifestRecord> asccList = accASCCMap.get(processedAccManifest.getAccManifestId());
+        if (asccList != null) {
+            for (AsccManifestRecord ascc : asccList) {
+                AccManifestRecord associatedAccManifest = accManifestMap.get(asccpMap.get(ascc.getToAsccpManifestId()).getRoleOfAccManifestId());
+                if (associatedAccManifest != null) {
+                    AccRecord associatedACC = accMap.get(associatedAccManifest.getAccId());
+                    if (!associatedACC.getObjectClassTerm().equals(processed.getObjectClassTerm())){
+                        accRelatedAccList.add(associatedAccManifest);
+                        if (paths == null) {
+                            relatedACCPathMap.add(processed.getObjectClassTerm() + ". " + associatedACC.getObjectClassTerm());
+                            paths = getSecondToTheLatestPath();
+                            getAllRelatedACCs(associatedACC, associatedAccManifest, paths);
+                        } else {
+                            if (!containedInTheList(paths, associatedACC.getObjectClassTerm())){
+                                relatedACCPathMap.add(paths.concat(". ").concat(associatedACC.getObjectClassTerm()));
+                                paths = getSecondToTheLatestPath();
+                                getAllRelatedACCs(associatedACC, associatedAccManifest, paths);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private boolean containedInTheList (String fullPath, String path){
+        String[] pathPortions = fullPath.split("\\.");
+        boolean result = false;
+        for (int i=0; i<pathPortions.length; i++){
+            if (pathPortions[i].trim().equals(path)){
+                result = true;
+                break;
+            } else{
+                result = false;
+            }
+        }
+        return result;
+    }
+
+    private String getTheLatestPath(){
+        return relatedACCPathMap.get(relatedACCPathMap.size()-1);
+    }
+
+    private String getSecondToTheLatestPath(){
+        return relatedACCPathMap.get(relatedACCPathMap.size()-2);
+    }
+
+    private String getPathToTheObjectClassTerm (String objectClassTerm){
+        String returnPath = "";
+        for (String path: relatedACCPathMap){
+            if (path.endsWith(objectClassTerm)){
+                returnPath = path;
+                break;
+            }
+        }
+        return returnPath;
     }
 }

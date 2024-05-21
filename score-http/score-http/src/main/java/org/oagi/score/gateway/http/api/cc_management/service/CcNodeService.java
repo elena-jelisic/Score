@@ -1652,4 +1652,13 @@ public class CcNodeService extends EventHandler {
                         .join(SPECIFICATION).on(SPECIFICATION.SPECIFICATION_ID.eq(RELEASE.SPECIFICATION_ID))
                         .where(ACC.DEFINITION.eq(definition).and(SPECIFICATION.SPECIFICATION_NAME.eq(specification))).fetchOneInto(AccRecord.class);
     }
+
+    public BccRecord findBCCByDefinitionAndSpecification(String definition, String componentName, String specification) {
+        return dslContext.select(BCC).from(BCC).
+                join(BCC_MANIFEST).on(BCC.BCC_ID.eq(BCC_MANIFEST.BCC_ID))
+                .join(RELEASE).on(BCC_MANIFEST.RELEASE_ID.eq(RELEASE.RELEASE_ID))
+                .join(SPECIFICATION).on(SPECIFICATION.SPECIFICATION_ID.eq(RELEASE.SPECIFICATION_ID))
+                .where(BCC.DEFINITION.eq(definition).and(SPECIFICATION.SPECIFICATION_NAME.eq(specification))).fetchOneInto(BccRecord.class);
+
+    }
 }

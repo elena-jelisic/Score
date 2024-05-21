@@ -4,6 +4,7 @@ import org.checkerframework.checker.units.qual.A;
 import org.oagi.score.gateway.http.api.bie_management.data.BieCreateRequest;
 import org.oagi.score.gateway.http.api.specification_management.service.CCGapAnalysisService;
 import org.oagi.score.gateway.http.api.specification_management.service.FlatBCCService;
+import org.oagi.score.gateway.http.api.specification_management.service.FlatBCCService_v2;
 import org.oagi.score.gateway.http.api.specification_management.service.MultiStandardService;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.SpecificationAggregateComponentRecord;
 import org.oagi.score.gateway.http.api.specification_management.data.Specification;
@@ -27,7 +28,7 @@ public class MultiStandardController {
     @Autowired
     private CCGapAnalysisService ccGapAnalysisService;
     @Autowired
-    private FlatBCCService flatBccService;
+    private FlatBCCService_v2 flatBccService;
 
     @RequestMapping(value = "/import_specification", method = RequestMethod.PUT,
             produces = MediaType.APPLICATION_JSON_VALUE)

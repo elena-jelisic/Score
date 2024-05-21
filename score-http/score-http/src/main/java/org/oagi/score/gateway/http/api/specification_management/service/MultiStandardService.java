@@ -312,7 +312,7 @@ public class MultiStandardService {
 
     private String resolveElementDefinition(Element element) {
         NodeList documentation = element.getElementsByTagName("xs:documentation");
-        return documentation.item(0).getTextContent().trim();
+        return documentation.item(0).getTextContent().trim().replaceAll(" +", " ");
     }
     private Element resolveExtension(Element element) {
         NodeList extension = element.getElementsByTagName("xs:extension");

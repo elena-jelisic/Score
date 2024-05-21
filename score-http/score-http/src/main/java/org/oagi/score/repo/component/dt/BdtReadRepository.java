@@ -65,7 +65,6 @@ public class BdtReadRepository {
     public List<DtScManifestRecord> getLatestDTSCList() {
         BigInteger latestRelease = dslContext.select(max(RELEASE.RELEASE_ID))
                 .from(RELEASE)
-                .where(RELEASE.SPECIFICATION_ID.isNull())
                 .fetchOneInto(BigInteger.class);
         BigInteger releaseNoLoops = dslContext.select(RELEASE.RELEASE_ID).from(RELEASE).where(RELEASE.RELEASE_NUM.eq("10.6")).fetchOneInto(BigInteger.class);
 
@@ -73,8 +72,19 @@ public class BdtReadRepository {
                 .from(DT_MANIFEST)
                 .join(DT_SC_MANIFEST).on(DT_MANIFEST.DT_MANIFEST_ID.eq(DT_SC_MANIFEST.OWNER_DT_MANIFEST_ID))
                 .join(DT_SC).on(DT_SC_MANIFEST.DT_SC_ID.eq(DT_SC.DT_SC_ID))
-                .where(DT_SC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(releaseNoLoops)))
+                .where(DT_SC_MANIFEST.RELEASE_ID.eq(ULong.valueOf(latestRelease)))
                 .and(DT_SC.CARDINALITY_MAX.greaterThan(0))
                 .fetchInto(DtScManifestRecord.class);
+    }
+
+    public BigInteger getManifestIdByDTId(BigInteger dtID) {
+        BigInteger latestRelease = dslContext.select(max(RELEASE.RELEASE_ID))
+                .from(RELEASE)
+                .where(RELEASE.SPECIFICATION_ID.isNull())
+                .fetchOneInto(BigInteger.class);
+        return dslContext.select(DT_MANIFEST.DT_MANIFEST_ID)
+                .from(DT_MANIFEST)
+                .where(DT_MANIFEST.DT_ID.eq(ULong.valueOf(dtID)))
+                .and(DT_MANIFEST.RELEASE_ID.eq(ULong.valueOf(latestRelease))).fetchOneInto(BigInteger.class);
     }
 }

@@ -1,6 +1,7 @@
 package org.oagi.score.repo.component.specification;
 
 import org.jooq.DSLContext;
+import org.jooq.types.ULong;
 import org.oagi.score.gateway.http.api.specification_management.data.*;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
@@ -271,6 +272,12 @@ public class SpecificationRepository {
         return specificationRecord;
     }
 
+    public SourceRecord getSourceByID(Long sourceId) {
+        SourceRecord sourceRecord =
+                dslContext.selectFrom(SOURCE.where(SOURCE.SOURCE_ID.eq(sourceId))).fetchOne();
+        return sourceRecord;
+    }
+
     public List<SpecificationAggregateComponentRecord> getAllSpecificationAggregates(Long specificationId) {
         List<SpecificationAggregateComponentRecord> aggregatesRecords =
                 dslContext.selectFrom(SPECIFICATION_AGGREGATE_COMPONENT
@@ -354,5 +361,69 @@ public class SpecificationRepository {
                         .where(SPECIFICATION_ASSOCIATION_COMPONENT.SPECIFICATION_ID.eq(specificationId)
                                 .and(STATUS_CODE.CODE.eq(SpecComponentState.ANALYZED.toString()))).fetchInto(SpecificationAssociationComponentRecord.class));
         return associationsRecords;
+    }
+
+    public List<SpecificationDataTypeRecord> getAllSpecificationDataTypes(Long specificationId) {
+        List<SpecificationDataTypeRecord> dtRecords =
+                dslContext.selectFrom(SPECIFICATION_DATA_TYPE
+                        .where(SPECIFICATION_DATA_TYPE.SPECIFICATION_ID.eq(specificationId))).stream().toList();
+        return dtRecords;
+    }
+
+    public void updateSpecificationDTComponent(SpecificationDataTypeRecord dt) {
+        dslContext.update(SPECIFICATION_DATA_TYPE)
+                .set(SPECIFICATION_DATA_TYPE.STATUS_CODE_ID, dt.getStatusCodeId())
+                .set(SPECIFICATION_DATA_TYPE.GAP_ANALYSIS_CODE_ID, dt.getGapAnalysisCodeId())
+                .set(SPECIFICATION_DATA_TYPE.DT_ID, dt.getDtId())
+                .set(SPECIFICATION_DATA_TYPE.IS_APPROVED, dt.getIsApproved())
+                .where(SPECIFICATION_DATA_TYPE.DATA_TYPE_ID.eq(dt.getDataTypeId())).execute();
+    }
+
+    public List<SpecificationDataTypeRecord> getAnalyzedSpecificationDTs(Long specificationId) {
+        List<SpecificationDataTypeRecord> dtRecords =
+                (dslContext.select(SPECIFICATION_DATA_TYPE.DATA_TYPE_ID,
+                                SPECIFICATION_DATA_TYPE.DEFINITION,
+                                SPECIFICATION_DATA_TYPE.STATUS_CODE_ID,
+                                SPECIFICATION_DATA_TYPE.GAP_ANALYSIS_CODE_ID,
+                                SPECIFICATION_DATA_TYPE.IS_APPROVED,
+                                SPECIFICATION_DATA_TYPE.DT_ID)
+                        .from(SPECIFICATION_DATA_TYPE)
+                        .join(STATUS_CODE).on(SPECIFICATION_DATA_TYPE.STATUS_CODE_ID.eq(STATUS_CODE.STATUS_CODE_ID))
+                        .where(SPECIFICATION_DATA_TYPE.SPECIFICATION_ID.eq(specificationId)
+                                .and(STATUS_CODE.CODE.eq(SpecComponentState.ANALYZED.toString()))).fetchInto(SpecificationDataTypeRecord.class));
+        return dtRecords;
+    }
+
+    public List<SpecificationBasicComponentRecord> getAllSpecificationBasics(Long specificationId) {
+        List<SpecificationBasicComponentRecord> basicRecords =
+                dslContext.selectFrom(SPECIFICATION_BASIC_COMPONENT
+                        .where(SPECIFICATION_BASIC_COMPONENT.SPECIFICATION_ID.eq(specificationId))).stream().toList();
+        return basicRecords;
+    }
+
+    public void updateSpecificationBasicComponent(SpecificationBasicComponentRecord basic) {
+        dslContext.update(SPECIFICATION_BASIC_COMPONENT)
+                .set(SPECIFICATION_BASIC_COMPONENT.STATUS_CODE_ID, basic.getStatusCodeId())
+                .set(SPECIFICATION_BASIC_COMPONENT.GAP_ANALYSIS_CODE_ID, basic.getGapAnalysisCodeId())
+                .set(SPECIFICATION_BASIC_COMPONENT.BCC_ID, basic.getBccId())
+                .set(SPECIFICATION_BASIC_COMPONENT.IS_APPROVED, basic.getIsApproved())
+                .where(SPECIFICATION_BASIC_COMPONENT.COMPONENT_ID.eq(basic.getComponentId())).execute();
+    }
+
+    public List<SpecificationBasicComponentRecord> getAnalyzedSpecificationBasics(Long specificationId) {
+        List<SpecificationBasicComponentRecord> basicsRecords =
+                (dslContext.select(SPECIFICATION_BASIC_COMPONENT.COMPONENT_ID,
+                                SPECIFICATION_BASIC_COMPONENT.DEFINITION,
+                                SPECIFICATION_BASIC_COMPONENT.COMPONENT_NAME,
+                                SPECIFICATION_BASIC_COMPONENT.STATUS_CODE_ID,
+                                SPECIFICATION_BASIC_COMPONENT.GAP_ANALYSIS_CODE_ID,
+                                SPECIFICATION_BASIC_COMPONENT.IS_APPROVED,
+                                SPECIFICATION_BASIC_COMPONENT.AGGREGATE_COMPONENT_ID,
+                                SPECIFICATION_BASIC_COMPONENT.BCC_ID)
+                        .from(SPECIFICATION_BASIC_COMPONENT)
+                        .join(STATUS_CODE).on(SPECIFICATION_BASIC_COMPONENT.STATUS_CODE_ID.eq(STATUS_CODE.STATUS_CODE_ID))
+                        .where(SPECIFICATION_BASIC_COMPONENT.SPECIFICATION_ID.eq(specificationId)
+                                .and(STATUS_CODE.CODE.eq(SpecComponentState.ANALYZED.toString()))).fetchInto(SpecificationBasicComponentRecord.class));
+        return basicsRecords;
     }
 }
