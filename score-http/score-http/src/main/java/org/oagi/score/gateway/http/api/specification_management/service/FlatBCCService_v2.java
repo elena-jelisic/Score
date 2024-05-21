@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -111,9 +112,8 @@ public class FlatBCCService_v2 {
 
         for (AccManifestRecord accManifest : accManifestList) {
             AccRecord processed = accMap.get(accManifest.getAccId());
-            if (processed.getObjectClassTerm().equals("Address")){
+            if (processed.getObjectClassTerm().equals("Test Results")){
                 accRelatedAccList = new ArrayList<>();
-                String path = "";
 
                 getAllRelatedACCs(processed, accManifest, null);
 
@@ -136,22 +136,22 @@ public class FlatBCCService_v2 {
                         }
                     }
                 }
-                if (!accRelatedAccList.isEmpty()) {
-                    for (int z = 0; z < accRelatedAccList.size(); z++) {
-                        String objectClassTerm = accRelatedAccList.get(z).getDen().substring(0, accRelatedAccList.get(z).getDen().indexOf(". Details"));
-                        path = getPathToTheObjectClassTerm(objectClassTerm);
-                        if (accBCCMap.get(accRelatedAccList.get(z).getAccManifestId()) != null) {
-                            for (int i = 0; i < accBCCMap.get(accRelatedAccList.get(z).getAccManifestId()).size(); i++) {
-                                BccpManifestRecord bccp = bccpMap.get(accBCCMap.get(accRelatedAccList.get(z).getAccManifestId()).get(i).getToBccpManifestId());
+                if (!relatedACCPathMap.isEmpty()) {
+                    for (String path: relatedACCPathMap) {
+                        String associatedObjectClassTerm = getObjectClassTermFromPath (path);
+                        ULong associatedAccManifestId = getAccManifestIdByObjectClassTerm (associatedObjectClassTerm);
+                        if (accBCCMap.get(associatedAccManifestId) != null) {
+                            for (int i = 0; i < accBCCMap.get(associatedAccManifestId).size(); i++) {
+                                BccpManifestRecord bccp = bccpMap.get(accBCCMap.get(associatedAccManifestId).get(i).getToBccpManifestId());
                                 flatBcc.setAccId(processed.getAccId().toBigInteger());
-                                flatBcc.setBccID(accBCCMap.get(accRelatedAccList.get(z).getAccManifestId()).get(i).getBccId().toBigInteger());
+                                flatBcc.setBccID(accBCCMap.get(associatedAccManifestId).get(i).getBccId().toBigInteger());
                                 flatBcc.setDtSCId(null);
                                 flatBcc.setPath(path);
                                 flatBccRecords.add(flatBccRepo.insertFlatBcc(flatBcc));
                                 if (dtDTSCMap.get(bccp.getBdtManifestId()) != null) {
                                     for (int j = 0; j < dtDTSCMap.get(bccp.getBdtManifestId()).size(); j++) {
                                         flatBcc.setAccId(processed.getAccId().toBigInteger());
-                                        flatBcc.setBccID(accBCCMap.get(accRelatedAccList.get(z).getAccManifestId()).get(i).getBccId().toBigInteger());
+                                        flatBcc.setBccID(accBCCMap.get(associatedAccManifestId).get(i).getBccId().toBigInteger());
                                         flatBcc.setPath(path);
                                         flatBcc.setDtSCId(dtDTSCMap.get(bccp.getBdtManifestId()).get(j).getDtScId().toBigInteger());
                                         flatBccRecords.add(flatBccRepo.insertFlatBcc(flatBcc));
@@ -197,12 +197,11 @@ public class FlatBCCService_v2 {
                         accRelatedAccList.add(associatedAccManifest);
                         if (paths == null) {
                             relatedACCPathMap.add(processed.getObjectClassTerm() + ". " + associatedACC.getObjectClassTerm());
-                            paths = getSecondToTheLatestPath();
-                            getAllRelatedACCs(associatedACC, associatedAccManifest, paths);
+                            getAllRelatedACCs(associatedACC, associatedAccManifest, processed.getObjectClassTerm() );
                         } else {
                             if (!containedInTheList(paths, associatedACC.getObjectClassTerm())){
-                                relatedACCPathMap.add(paths.concat(". ").concat(associatedACC.getObjectClassTerm()));
                                 paths = getSecondToTheLatestPath();
+                                relatedACCPathMap.add(paths.concat(". ").concat(associatedACC.getObjectClassTerm()));
                                 getAllRelatedACCs(associatedACC, associatedAccManifest, paths);
                             }
                         }
@@ -234,14 +233,20 @@ public class FlatBCCService_v2 {
         return relatedACCPathMap.get(relatedACCPathMap.size()-2);
     }
 
-    private String getPathToTheObjectClassTerm (String objectClassTerm){
-        String returnPath = "";
-        for (String path: relatedACCPathMap){
-            if (path.endsWith(objectClassTerm)){
-                returnPath = path;
+    private String getObjectClassTermFromPath (String path){
+        String[] pathPortions = path.split("\\.");
+        return pathPortions[pathPortions.length-1].trim();
+    }
+
+    private ULong getAccManifestIdByObjectClassTerm (String objectClassTerm){
+        ULong manifestID = ULong.valueOf(0);
+        for (ULong accManifestID : accManifestMap.keySet()){
+            String currentObjectClassTerm = accManifestMap.get(accManifestID).getDen().substring(0, accManifestMap.get(accManifestID).getDen().indexOf(". Details")).trim();
+            if (currentObjectClassTerm.equals(objectClassTerm)){
+                manifestID = accManifestID;
                 break;
             }
         }
-        return returnPath;
+        return manifestID;
     }
 }
