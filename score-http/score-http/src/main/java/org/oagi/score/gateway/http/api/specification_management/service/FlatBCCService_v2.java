@@ -112,10 +112,11 @@ public class FlatBCCService_v2 {
 
         for (AccManifestRecord accManifest : accManifestList) {
             AccRecord processed = accMap.get(accManifest.getAccId());
-            if (processed.getObjectClassTerm().equals("Test Results")){
+            if (processed.getObjectClassTerm().equals("ResultsType")){
                 accRelatedAccList = new ArrayList<>();
 
-                getAllRelatedACCs(processed, accManifest, null);
+                getAllBasedACCs(processed, accManifest, processed.getObjectClassTerm());
+                getAllAssociatedACCs(processed, accManifest, processed.getObjectClassTerm());
 
                 if (accBCCMap.get(accManifest.getAccManifestId()) != null) {
                     for (int i = 0; i < accBCCMap.get(accManifest.getAccManifestId()).size(); i++) {
@@ -167,41 +168,73 @@ public class FlatBCCService_v2 {
         flatBccRepo.insertFlatBccList(flatBccRecords);
     }
 
-    private void getAllRelatedACCs(AccRecord processed, AccManifestRecord processedAccManifest, String paths) {
-        if (processedAccManifest.getBasedAccManifestId() != null) {
+    private void getAllBasedACCs(AccRecord processed, AccManifestRecord processedAccManifest, String path) {
+        if (hasBaseACC(processedAccManifest)) {
             AccManifestRecord basedAccManifest = accManifestMap.get(processedAccManifest.getBasedAccManifestId());
+            AccRecord basedAcc;
             if (basedAccManifest != null) {
                 accRelatedAccList.add(basedAccManifest);
-                AccRecord basedAcc = accMap.get(basedAccManifest.getAccId());
-                if (paths == null) {
+                basedAcc = accMap.get(basedAccManifest.getAccId());
+                if (path == null) {
                     relatedACCPathMap.add(processed.getObjectClassTerm() + ". " + basedAcc.getObjectClassTerm());
-                    getAllRelatedACCs(basedAcc, basedAccManifest, getTheLatestPath());
                 } else {
-                    if (!containedInTheList(paths, basedAcc.getObjectClassTerm())){
-                        relatedACCPathMap.add(paths.concat(". ").concat(basedAcc.getObjectClassTerm()));
-                        getAllRelatedACCs(basedAcc, basedAccManifest, getTheLatestPath());
+                    if (!containedInTheList(path, basedAcc.getObjectClassTerm())) {
+                        relatedACCPathMap.add(path.concat(". ").concat(basedAcc.getObjectClassTerm()));
                     }
                 }
+                if (hasBaseACC(basedAccManifest)){
+                    getAllBasedACCs(basedAcc, basedAccManifest, getTheLatestPath());
+                }
+
+                if (hasASCCs(basedAccManifest)){
+                    getAllAssociatedACCs(basedAcc, basedAccManifest, getTheLatestPath());
+                }
+            }
+            if (hasASCCs(processedAccManifest)){
+                getAllAssociatedACCs(processed, processedAccManifest, path);
             }
         }
+    }
 
-        List<AsccManifestRecord> asccList = accASCCMap.get(processedAccManifest.getAccManifestId());
-        if (asccList != null) {
+    private boolean hasBaseACC (AccManifestRecord processedAccManifest){
+        if (processedAccManifest.getBasedAccManifestId() != null){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private boolean hasASCCs (AccManifestRecord processedAccManifest){
+        if (accASCCMap.get(processedAccManifest.getAccManifestId()) != null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private void getAllAssociatedACCs (AccRecord processed, AccManifestRecord processedAccManifest, String path){
+        if (hasASCCs(processedAccManifest)){
+            List<AsccManifestRecord> asccList = accASCCMap.get(processedAccManifest.getAccManifestId());
             for (AsccManifestRecord ascc : asccList) {
                 AccManifestRecord associatedAccManifest = accManifestMap.get(asccpMap.get(ascc.getToAsccpManifestId()).getRoleOfAccManifestId());
+                AccRecord associatedACC;
                 if (associatedAccManifest != null) {
-                    AccRecord associatedACC = accMap.get(associatedAccManifest.getAccId());
+                    associatedACC = accMap.get(associatedAccManifest.getAccId());
                     if (!associatedACC.getObjectClassTerm().equals(processed.getObjectClassTerm())){
                         accRelatedAccList.add(associatedAccManifest);
-                        if (paths == null) {
+                        if (path == null) {
                             relatedACCPathMap.add(processed.getObjectClassTerm() + ". " + associatedACC.getObjectClassTerm());
-                            getAllRelatedACCs(associatedACC, associatedAccManifest, processed.getObjectClassTerm() );
                         } else {
-                            if (!containedInTheList(paths, associatedACC.getObjectClassTerm())){
-                                relatedACCPathMap.add(paths.concat(". ").concat(associatedACC.getObjectClassTerm()));
-                                getAllRelatedACCs(associatedACC, associatedAccManifest, getSecondToTheLatestPath());
+                            if (!containedInTheList(path, associatedACC.getObjectClassTerm())){
+                                relatedACCPathMap.add(path.concat(". ").concat(associatedACC.getObjectClassTerm()));
                             }
                         }
+                    }
+                    if (hasBaseACC(associatedAccManifest)){
+                        getAllBasedACCs(associatedACC, associatedAccManifest, getTheLatestPath());
+                    }
+                    if (hasASCCs(associatedAccManifest)){
+                        getAllAssociatedACCs(associatedACC, associatedAccManifest, getTheLatestPath());
                     }
                 }
             }
