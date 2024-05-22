@@ -33,25 +33,25 @@ public class MultiStandardController {
 
     @RequestMapping(value = "/import_specification", method = RequestMethod.PUT,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public String insertNewSpecification(@AuthenticationPrincipal AuthenticatedPrincipal user,
+    public ResponseEntity insertNewSpecification(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                          @RequestBody BieCreateRequest bieCreateRequest) {
         importSpecService.insertNewSpecification(user);
-        return "Success";
+        return ResponseEntity.accepted().build();
     }
 
     @RequestMapping(value = "/cc_gap_analysis", method = RequestMethod.PUT,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public String coreComponentGapAnalysis(@AuthenticationPrincipal AuthenticatedPrincipal user,
+    public ResponseEntity coreComponentGapAnalysis(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                          @RequestBody BieCreateRequest bieCreateRequest) {
         Specification spec = new Specification();
         spec.setSpecificationName("QIF 3.0.0");
         ccGapAnalysisService.analyzeCoreComponents(user, spec);
-        return "Success";
+        return ResponseEntity.accepted().build();
     }
 
     @RequestMapping(value = "/approve_cc_gap_analysis", method = RequestMethod.PUT,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public String coreComponentGapAnalysisApproval(@AuthenticationPrincipal AuthenticatedPrincipal user,
+    public ResponseEntity coreComponentGapAnalysisApproval(@AuthenticationPrincipal AuthenticatedPrincipal user,
                                            @RequestBody BieCreateRequest bieCreateRequest) {
         Specification spec = new Specification();
         spec.setSpecificationName("QIF 3.0.0");
@@ -60,7 +60,7 @@ public class MultiStandardController {
         ccGapAnalysisService.approveDTAnalysisResults (user, spec);
         ccGapAnalysisService.approveAssociationAnalysisResults (user, spec);
         ccGapAnalysisService.approveBasicAnalysisResults (user, spec);
-        return "Success";
+        return ResponseEntity.accepted().build();
     }
     @RequestMapping(value = "/flat_bcc", method = RequestMethod.PUT,
             produces = MediaType.APPLICATION_JSON_VALUE)
