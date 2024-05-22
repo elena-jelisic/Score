@@ -48,7 +48,7 @@ export class SpecificationImportComponent implements OnInit {
       this.snackBar.open('Analyzed', '', {
         duration: 3000,
       });
-      this.router.navigateByUrl('/import_specification');
+      this.router.navigateByUrl('/new_specification');
     });
   }
 
@@ -58,7 +58,7 @@ export class SpecificationImportComponent implements OnInit {
       this.snackBar.open('Imported', '', {
         duration: 3000,
       });
-      this.router.navigateByUrl('/import_specification');
+      this.router.navigateByUrl('/new_specification');
     });
   }
   approve() {
@@ -67,7 +67,7 @@ export class SpecificationImportComponent implements OnInit {
       this.snackBar.open('Approved', '', {
         duration: 3000,
       });
-      this.router.navigateByUrl('/import_specification');
+      this.router.navigateByUrl('/new_specification');
     });
   }
 
@@ -77,7 +77,7 @@ export class SpecificationImportComponent implements OnInit {
       this.snackBar.open('Approved', '', {
         duration: 3000,
       });
-      this.router.navigateByUrl('/import_specification');
+      this.router.navigateByUrl('/new_specification');
     });
   }
 
