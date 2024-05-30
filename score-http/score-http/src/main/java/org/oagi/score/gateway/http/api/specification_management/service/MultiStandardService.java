@@ -50,12 +50,13 @@ public class MultiStandardService {
     private String rootFolder;
 
     @Transactional
-    public void insertNewSpecification(AuthenticatedPrincipal user) {
+    public void insertNewSpecification(AuthenticatedPrincipal user, SpecificationImportRequest request) {
         aggregateComponentsList = new ArrayList<>();
         basicComponentsList = new HashMap<>();
         associationComponentsList = new HashMap<>();
         rootFolder = "/Users/enj2/Documents/QIF3.0-2018-ANSI/xsd/QIFApplications";
-        String documentName = "QIFResults.xsd";
+        rootFolder = request.getRootFolderPath();
+        String documentName = request.getDocumentName();
         doc = loadSchema(rootFolder, documentName);
         complexTypeMapInitial = loadComplexTypesFromSchema(doc);
         elementMapFull = loadElementsFromSchema(doc);
@@ -65,10 +66,10 @@ public class MultiStandardService {
         }
         CreateSpecificationRequest createSpec = new CreateSpecificationRequest();
         Source source = new Source();
-        source.setSourceName("QIF");
+        source.setSourceName(request.getSourceName());
         Specification spec = new Specification();
         spec.setSpecificationName(source.getSourceName() + " " + getSpecificationVersion());
-        createSpec.setSpecificationType("Standard library");
+        createSpec.setSpecificationType(request.getSpecificationType());
         createSpec.setSpecificationAggregatesList(aggregateComponentsList);
         createSpec.setSource(source);
         createSpec.setSpecification(spec);

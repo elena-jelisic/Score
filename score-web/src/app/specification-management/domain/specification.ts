@@ -15,9 +15,13 @@ export class SimpleSource{
 }
 
 export class Specification {
+  rootFolderPath: string;
+  documentName: string;
+  specificationType: string;
   specificationId: number;
   uri: string;
   specificationName: string;
+  sourceName: string;
   description: string;
 }
 

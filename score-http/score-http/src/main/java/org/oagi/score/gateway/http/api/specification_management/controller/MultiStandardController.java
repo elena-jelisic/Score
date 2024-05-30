@@ -29,8 +29,8 @@ public class MultiStandardController {
     @RequestMapping(value = "/import_specification", method = RequestMethod.PUT,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity insertNewSpecification(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                         @RequestBody BieCreateRequest bieCreateRequest) {
-        importSpecService.insertNewSpecification(user);
+                                         @RequestBody SpecificationImportRequest request) {
+        importSpecService.insertNewSpecification(user, request);
         return ResponseEntity.accepted().build();
     }
 

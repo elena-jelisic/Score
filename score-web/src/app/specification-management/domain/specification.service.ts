@@ -3,22 +3,25 @@ import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import {SimpleSource, SimpleSpecification, Specification} from './specification';
 import {PageResponse} from '../../basis/basis';
-import {map} from 'rxjs/operators';
 import {SpecificationList, SpecificationListRequest} from '../../specification-management/domain/specification';
-import {CcList, CcListRequest} from '../../cc-management/cc-list/domain/cc-list';
-import {OagisComponentType} from '../../cc-management/domain/core-component-node';
+
 
 @Injectable()
 export class SpecificationService {
-
   constructor(private http: HttpClient) {
   }
 
-  import(specification: Specification): Observable<any> {
+  import(documentName: string, rootFolderPath: string, specificationType: string, sourceName: string): Observable<any> {
+    const params = new HttpParams()
+      .set('documentName', '' + + 'QIFResults.xsd')
+      .set('rootFolderPath', '' + '/Users/enj2/Documents/QIF3.0-2018-ANSI/xsd/QIFApplications')
+      .set('specificationType', '' + + 'Standard library')
+      .set('sourceName', '' + + 'QIF');
     return this.http.put<any>('/api/import_specification', {
-      uri: specification.uri,
-      description: specification.description
-    });
+      documentName,
+      rootFolderPath,
+      specificationType,
+      sourceName});
   }
 
   ccGapAnalysis(specification: Specification): Observable<any> {

@@ -54,7 +54,7 @@ export class SpecificationImportComponent implements OnInit {
 
   import() {
     this.specification.uri = this.uriForm.value;
-    this.service.import(this.specification).subscribe(_ => {
+    this.service.import(this.specification.documentName, this.specification.rootFolderPath, this.specification.specificationType, this.specification.sourceName).subscribe(_ => {
       this.snackBar.open('Imported', '', {
         duration: 3000,
       });
