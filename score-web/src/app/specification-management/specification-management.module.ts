@@ -7,14 +7,22 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MaterialModule} from '../material.module';
 import {AuthService} from '../authentication/auth.service';
 import {Specification} from './domain/specification';
+import {NamespaceListComponent} from '../namespace-management/namespace-list/namespace-list.component';
+import {SpecificationListComponent} from './specification-list/specification-list.component';
+import {ScoreCommonModule} from '../common/score-common.module';
 
 const routes: Routes = [
   {
-    path: 'new_specification',
+    path: 'specification',
     children: [
       {
-        path: '',
+        path: 'new',
         component: SpecificationImportComponent,
+        canActivate: [AuthService],
+      },
+      {
+        path: 'list',
+        component: SpecificationListComponent,
         canActivate: [AuthService],
       }
     ]
@@ -27,10 +35,12 @@ const routes: Routes = [
     FormsModule,
     ReactiveFormsModule,
     MaterialModule,
-    CommonModule
+    CommonModule,
+    ScoreCommonModule
   ],
   declarations: [
-    SpecificationImportComponent
+    SpecificationImportComponent,
+    SpecificationListComponent
   ],
   providers: [
     SpecificationService

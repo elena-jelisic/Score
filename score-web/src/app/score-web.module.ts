@@ -30,6 +30,7 @@ import {ModuleManagementModule} from './module-management/module-management.modu
 import {MessageManagementModule} from './message-management/message-management.module';
 import {BusinessTermManagementModule} from './business-term-management/business-term-management.module';
 import {SpecificationManagementModule} from './specification-management/specification-management.module';
+import {SpecificationListComponent} from './specification-management/specification-list/specification-list.component';
 
 import {SCORE_WEBAPP_ROUTES} from './basis/routes';
 import {SettingsManagementModule} from './settings-management/settings-management.module';

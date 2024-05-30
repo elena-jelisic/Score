@@ -58,7 +58,7 @@ export class SpecificationImportComponent implements OnInit {
       this.snackBar.open('Imported', '', {
         duration: 3000,
       });
-      this.router.navigateByUrl('/new_specification');
+      this.router.navigateByUrl('/specification/new');
     });
   }
   approve() {
@@ -74,11 +74,10 @@ export class SpecificationImportComponent implements OnInit {
   flatBCC() {
     this.specification.uri = this.uriForm.value;
     this.service.flatBCC(this.specification).subscribe(_ => {
-      this.snackBar.open('Approved', '', {
+      this.snackBar.open('Flat BCC populated', '', {
         duration: 3000,
       });
       this.router.navigateByUrl('/new_specification');
     });
   }
-
 }
