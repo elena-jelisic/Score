@@ -58,6 +58,7 @@ public class MultiStandardService {
         String documentName = "QIFResults.xsd";
         doc = loadSchema(rootFolder, documentName);
         complexTypeMapInitial = loadComplexTypesFromSchema(doc);
+        elementMapFull = loadElementsFromSchema(doc);
         loadIncludedSchemas(doc);
         for (String key : complexTypeMapInitial.keySet()) {
             resolveComplexTypeStructure(complexTypeMapInitial.get(key));
@@ -87,6 +88,13 @@ public class MultiStandardService {
 
     private boolean elementIsExtension(Element element) {
         return element.getElementsByTagName("xs:extension").getLength() > 0;
+    }
+    private boolean elementHasAttributes(Element element) {
+        return element.getElementsByTagName("xs:attribute").getLength() > 0;
+    }
+
+    private boolean elementIsReferenced(Element element) {
+        return !element.getAttribute("ref").equals("");
     }
     private boolean elementIsRestriction(Element element) {
         return element.getElementsByTagName("xs:restriction").getLength() > 0;
@@ -215,6 +223,36 @@ public class MultiStandardService {
             }
 
         }
+        if (elementHasAttributes(complexType)){
+            NodeList attributeList = complexType.getElementsByTagName("xs:attribute");
+            for (int i = 0; i < attributeList.getLength(); i++) {
+                Element element = (Element) attributeList.item(i);
+                String elementType = resolveElementType(element);
+                if (elementTypeIsPrimitive(elementType)) {
+                    SpecificationBasicComponent basic = new SpecificationBasicComponent();
+                    basic.setComponentName(resolveElementName(element));
+                    basic.setDefinition(resolveElementDefinition(element));
+                    basic.setAggregateComponentId(fromAggregate.getComponentId());
+                    basic.setMinCardinality(resolveElementMinCardinality(element));
+                    basic.setMaxCardinality(resolveElementMaxCardinality(element));
+                    SpecificationDataType dt = new SpecificationDataType();
+                    dt.setDataTypeName(elementType);
+                    basic.setDataType(dt);
+                    addBasicComponentToTheList(fromAggregate.getComponentName(), basic);
+                } else if (simpleTypeMapFull.containsKey(elementType)) {
+                    SpecificationBasicComponent basic = new SpecificationBasicComponent();
+                    basic.setComponentName(resolveElementName(element));
+                    basic.setDefinition(resolveElementDefinition(element));
+                    basic.setAggregateComponentId(fromAggregate.getComponentId());
+                    basic.setMinCardinality(resolveElementMinCardinality(element));
+                    basic.setMaxCardinality(resolveElementMaxCardinality(element));
+                    SpecificationDataType dt = new SpecificationDataType();
+                    dt.setDataTypeName(elementType);
+                    basic.setDataType(dt);
+                    addBasicComponentToTheList(fromAggregate.getComponentName(), basic);
+                }
+            }
+        }
         fromAggregate.setSpecificationBasicsList(basicComponentsList.get(fromAggregate.getComponentName()));
         fromAggregate.setSpecificationAssociationsList(associationComponentsList.get(fromAggregate.getComponentName()));
         aggregateComponentsList.add(fromAggregate);
@@ -251,6 +289,7 @@ public class MultiStandardService {
             NodeList includedSchemasLevelTwo = includedSchema.getElementsByTagName("xs:include");
             loadComplexTypesFromSchema(includedSchema);
             loadSimpleTypesFromSchema(includedSchema);
+            loadElementsFromSchema(includedSchema);
             if (includedSchemasLevelTwo != null){
                 loadIncludedSchemas(includedSchema);
             }
@@ -275,8 +314,10 @@ public class MultiStandardService {
         NodeList elementList = document.getElementsByTagName("xs:element");
         for (int i = 0; i < elementList.getLength(); i++) {
             Element first = (Element) elementList.item(i);
-            map.put(resolveElementName(first), first);
-            elementMapFull.put(resolveElementName(first), first);
+            if (!resolveElementName(first).equals("")){
+                map.put(resolveElementName(first), first);
+                elementMapFull.put(resolveElementName(first), first);
+            }
         }
         return map;
     }
@@ -312,7 +353,12 @@ public class MultiStandardService {
 
     private String resolveElementDefinition(Element element) {
         NodeList documentation = element.getElementsByTagName("xs:documentation");
-        return documentation.item(0).getTextContent().trim().replaceAll(" +", " ");
+        if (documentation.item(0) != null) {
+            return documentation.item(0).getTextContent().trim().replaceAll(" +", " ");
+        } else {
+            return "";
+        }
+
     }
     private Element resolveExtension(Element element) {
         NodeList extension = element.getElementsByTagName("xs:extension");
@@ -331,11 +377,35 @@ public class MultiStandardService {
     }
 
     private String resolveElementType(Element element) {
-        return element.getAttribute("type");
+        String type = "";
+        if (element.getAttribute("type").equals("")){
+            if (elementIsReferenced(element)){
+                type = findElementDefinition(element);
+            }
+        } else {
+            type = element.getAttribute("type");
+        }
+        return type;
+    }
+
+    private String findElementDefinition (Element element){
+        Element referencedElement = elementMapFull.get(resolveTheReferencedElements(element));
+        return resolveElementType(referencedElement);
     }
 
     private String resolveElementName(Element element) {
-        return element.getAttribute("name");
+        String name = "";
+        if (element.getAttribute("name").equals("")){
+            if (elementIsReferenced(element)){
+                name = resolveTheReferencedElements(element);
+            }
+        } else {
+            name = element.getAttribute("name");
+        }
+        return name;
+    }
+    private String resolveTheReferencedElements(Element element) {
+        return element.getAttribute("ref");
     }
 
     private Integer resolveElementMinCardinality(Element element) {

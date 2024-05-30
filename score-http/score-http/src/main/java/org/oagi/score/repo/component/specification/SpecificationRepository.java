@@ -1,17 +1,20 @@
 package org.oagi.score.repo.component.specification;
 
-import org.jooq.DSLContext;
+import org.jooq.*;
+import org.jooq.Record;
 import org.jooq.types.ULong;
 import org.oagi.score.gateway.http.api.specification_management.data.*;
+import org.oagi.score.gateway.http.api.specification_management.data.Source;
 import org.oagi.score.repo.api.base.ScoreDataAccessException;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.AppUser;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.*;
+import org.oagi.score.service.common.data.PageRequest;
+import org.oagi.score.service.common.data.PageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-
+import java.util.*;
+import static org.jooq.impl.DSL.*;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.*;
 import static org.oagi.score.repo.api.impl.jooq.entity.Tables.SPECIFICATION_DATA_TYPE;
 
@@ -426,4 +429,217 @@ public class SpecificationRepository {
                                 .and(STATUS_CODE.CODE.eq(SpecComponentState.ANALYZED.toString()))).fetchInto(SpecificationBasicComponentRecord.class));
         return basicsRecords;
     }
+
+    public List<SimpleSpecification> getSpecifications() {
+        List<SpecificationRecord> specifications = dslContext.selectFrom(SPECIFICATION).fetch();
+        List<SimpleSpecification> specList = new ArrayList<>();
+        SimpleSpecification spec;
+        for (SpecificationRecord specRecord : specifications){
+            spec = mapSpecificationFromEntity(specRecord);
+            specList.add(spec);
+        }
+        return specList;
+    }
+
+    public List<SimpleSource> getSources(){
+        List<SourceRecord> records = dslContext.selectFrom(SOURCE).fetch();
+        List<SimpleSource> sourceList = new ArrayList<>();
+        SimpleSource source;
+        for (SourceRecord sourceRecord : records){
+            source = mapSourceFromEntity (sourceRecord);
+            sourceList.add(source);
+        }
+        return sourceList;
+    }
+
+    private SimpleSpecification mapSpecificationFromEntity (SpecificationRecord specRecord){
+        SimpleSpecification spec = new SimpleSpecification();
+        spec.setSpecificationId(BigInteger.valueOf(specRecord.getSpecificationId()));
+        spec.setSpecificationName(specRecord.getSpecificationName());
+        return spec;
+    }
+
+    private SimpleSource mapSourceFromEntity (SourceRecord sourceRecord){
+        SimpleSource source = new SimpleSource();
+        source.setSourceId(BigInteger.valueOf(sourceRecord.getSourceId()));
+        source.setSourceName(sourceRecord.getSourceName());
+        return source;
+    }
+
+    public PageResponse<SpecificationList> getSpecificationComponents(SpecificationListRequest request) {
+
+        SelectOrderByStep select = null;
+
+        select = (select != null) ? select.union(getAllSpecificationAggregates(request))
+                    : getAllSpecificationAggregates(request);
+
+        select = (select != null) ? select.union(getAllSpecificationBasics(request))
+                : getAllSpecificationBasics(request);
+
+        if (select == null) {
+            PageResponse response = new PageResponse();
+            response.setList(Collections.emptyList());
+            response.setPage(request.getPageRequest().getPageIndex());
+            response.setSize(request.getPageRequest().getPageSize());
+            response.setLength(0);
+            return response;
+        }
+
+        PageRequest pageRequest = request.getPageRequest();
+        Field field = null;
+        switch (pageRequest.getSortActive()) {
+            case "componentID":
+                field = field("componentID");
+                break;
+            case "status":
+                field = field("status");
+                break;
+            case "componentType":
+                field = field("componentType");
+                break;
+            case "componentName":
+                field = field("componentName");
+                break;
+            case "description":
+                field = field("description");
+                break;
+            case "owner":
+                field = field("owner");
+                break;
+            case "updatedOn":
+                field = field("updatedOn");
+                break;
+        }
+
+        List<SortField> sortFields = new ArrayList<>();
+        if (field != null && pageRequest.getSortDirection() != null) {
+            switch (pageRequest.getSortDirection()) {
+                case "asc":
+                    sortFields.add(field.asc());
+                    break;
+                case "desc":
+                    sortFields.add(field.desc());
+                    break;
+            }
+        }
+        int count = dslContext.fetchCount(select);
+
+        SelectWithTiesAfterOffsetStep offsetStep = null;
+        if (!sortFields.isEmpty()) {
+            offsetStep = select.orderBy(sortFields)
+                    .limit(pageRequest.getOffset(), pageRequest.getPageSize());
+        } else {
+            if (pageRequest.getPageIndex() >= 0 && pageRequest.getPageSize() > 0) {
+                offsetStep = select
+                        .limit(pageRequest.getOffset(), pageRequest.getPageSize());
+            }
+        }
+
+        List<SpecificationList> result = ((offsetStep != null) ? offsetStep.fetch() : select.fetch())
+                .map((RecordMapper<Record, SpecificationList>) row -> {
+                    SpecificationList componentsList = new SpecificationList();
+                    componentsList.setComponentType(row.getValue("componentType", String.class));
+                    componentsList.setComponentId(row.getValue("componentID", ULong.class).toBigInteger());
+                    componentsList.setStatus(row.getValue("status", String.class));
+                    componentsList.setDescription(row.getValue("description", String.class));
+                    componentsList.setComponentName(row.getValue("componentName", String.class));
+                    return componentsList;
+                });
+
+        PageResponse<SpecificationList> response = new PageResponse();
+        response.setList(result);
+        response.setPage(pageRequest.getPageIndex());
+        response.setSize(pageRequest.getPageSize());
+        response.setLength(count);
+
+        return response;
+    }
+
+    private SelectOrderByStep getAllSpecificationBasics(SpecificationListRequest request) {
+        AppUser appUserOwner = APP_USER.as("owner");
+        AppUser appUserUpdater = APP_USER.as("updater");
+
+        List<Condition> conditions = new ArrayList();
+        if (request.getSpecificationId() != null){
+            conditions.add(SPECIFICATION.SPECIFICATION_ID.eq(request.getSpecificationId()));
+        }
+        if (request.getSourceId() != null){
+            conditions.add(SOURCE.SOURCE_ID.eq(request.getSourceId()));
+        }
+        List<Field> selectFields = new ArrayList<>();
+        selectFields.addAll(Arrays.asList(
+                inline("BASIC").as("componentType"),
+                SPECIFICATION_BASIC_COMPONENT.COMPONENT_ID.as("componentID"),
+                SPECIFICATION_BASIC_COMPONENT.COMPONENT_NAME.as("componentName"),
+                SPECIFICATION_BASIC_COMPONENT.DEFINITION.as("description"),
+                STATUS_CODE.CODE.as("status")));
+
+
+        return dslContext.select(selectFields)
+                .from(SPECIFICATION_BASIC_COMPONENT)
+                .join(SPECIFICATION)
+                .on(SPECIFICATION_BASIC_COMPONENT.SPECIFICATION_ID.eq(SPECIFICATION.SPECIFICATION_ID))
+                .join(SOURCE)
+                .on(SPECIFICATION.SOURCE_ID.eq(SOURCE.SOURCE_ID))
+                .join(STATUS_CODE)
+                .on(STATUS_CODE.STATUS_CODE_ID.eq(SPECIFICATION_BASIC_COMPONENT.STATUS_CODE_ID))
+                .where(conditions);
+    }
+
+    private SelectOrderByStep getAllSpecificationAggregates(SpecificationListRequest request) {
+        AppUser appUserOwner = APP_USER.as("owner");
+        AppUser appUserUpdater = APP_USER.as("updater");
+
+        List<Condition> conditions = new ArrayList();
+        if (request.getSpecificationId() != null){
+            conditions.add(SPECIFICATION.SPECIFICATION_ID.eq(request.getSpecificationId()));
+        }
+        if (request.getSourceId() != null){
+            conditions.add(SOURCE.SOURCE_ID.eq(request.getSourceId()));
+        }
+        List<Field> selectFields = new ArrayList<>();
+        selectFields.addAll(Arrays.asList(
+                inline("AGGREGATE").as("componentType"),
+                SPECIFICATION_AGGREGATE_COMPONENT.COMPONENT_ID.as("componentID"),
+                SPECIFICATION_AGGREGATE_COMPONENT.COMPONENT_NAME.as("componentName"),
+                SPECIFICATION_AGGREGATE_COMPONENT.DEFINITION.as("description"),
+                STATUS_CODE.CODE.as("status")));
+
+
+        return dslContext.select(selectFields)
+                .from(SPECIFICATION_AGGREGATE_COMPONENT)
+                .join(SPECIFICATION)
+                .on(SPECIFICATION_AGGREGATE_COMPONENT.SPECIFICATIONID.eq(SPECIFICATION.SPECIFICATION_ID))
+                .join(SOURCE)
+                .on(SPECIFICATION.SOURCE_ID.eq(SOURCE.SOURCE_ID))
+                .join(STATUS_CODE)
+                .on(STATUS_CODE.STATUS_CODE_ID.eq(SPECIFICATION_AGGREGATE_COMPONENT.STATUS_CODE_ID))
+                .where(conditions);
+    }
+
+    private Specification findSpecificationById(BigInteger specificationId) {
+        Specification specification = new Specification();
+        SpecificationRecord specRecord = dslContext.selectFrom(SPECIFICATION).where(SPECIFICATION.SPECIFICATION_ID.eq((Field<Long>) specificationId)).fetchOne();
+        specification.setBasedSpecificationId(BigInteger.valueOf(specRecord.getBasedSpecificationId()));
+        specification.setSpecificationTypeId(BigInteger.valueOf(specRecord.getSpecificationTypeId()));
+        specification.setSpecificationName(specRecord.getSpecificationName());
+        specification.setSpecificationId(BigInteger.valueOf(specRecord.getSpecificationId()));
+        specification.setSourceId(BigInteger.valueOf(specRecord.getSourceId()));
+        return specification;
+    }
+
+    private SpecificationList mapper(Record record) {
+        SpecificationList specificationList = new SpecificationList();
+
+        return specificationList;
+    }
+
+    private SelectOnConditionStep<Record2<String, String>> getSelectOnConditionStep() {
+            return dslContext.select(SOURCE.SOURCE_NAME, SPECIFICATION.SPECIFICATION_NAME)
+                    .from(SOURCE)
+                    .join(SPECIFICATION)
+                    .on(SOURCE.SOURCE_ID.eq(SPECIFICATION.SOURCE_ID));
+
+    }
 }
+

@@ -253,7 +253,7 @@ public class CCGapAnalysisService {
         CcBccpCreateRequest bccpCreateRequest = new CcBccpCreateRequest();
         ReleaseRecord release = releaseRepo.findReleaseBySpecification (specRecord.getSpecificationId());
         bccpCreateRequest.setReleaseId(release.getReleaseId().toBigInteger());
-        bccpCreateRequest.setBdtManifestId(BigInteger.valueOf(100000100));
+        bccpCreateRequest.setBdtManifestId(BigInteger.valueOf(100000266));
 
         BigInteger bccpManifestId = ccService.createBccp(user, bccpCreateRequest);
         BccpRecord bccpRecord = bccpReadRepo.getBccpByManifestId(bccpManifestId);
