@@ -8,7 +8,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import org.jooq.Check;
 import org.jooq.Condition;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
@@ -29,7 +28,6 @@ import org.jooq.TableField;
 import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
-import org.jooq.impl.Internal;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
@@ -115,7 +113,7 @@ public class SpecificationDataType extends TableImpl<SpecificationDataTypeRecord
     /**
      * The column <code>oagi.specification_data_type.constraint</code>.
      */
-    public final TableField<SpecificationDataTypeRecord, String> CONSTRAINT = createField(DSL.name("constraint"), SQLDataType.VARCHAR(100).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.VARCHAR)), this, "");
+    public final TableField<SpecificationDataTypeRecord, String> CONSTRAINT = createField(DSL.name("constraint"), SQLDataType.VARCHAR(1000).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.VARCHAR)), this, "");
 
     /**
      * The column <code>oagi.specification_data_type.constraint_type</code>.
@@ -284,13 +282,6 @@ public class SpecificationDataType extends TableImpl<SpecificationDataTypeRecord
             _specificationBasicComponent = new SpecificationBasicComponentPath(this, null, Keys.FKSPECIFICAT559853.getInverseKey());
 
         return _specificationBasicComponent;
-    }
-
-    @Override
-    public List<Check<SpecificationDataTypeRecord>> getChecks() {
-        return Arrays.asList(
-            Internal.createCheck(this, DSL.name("CONSTRAINT_1"), "`constraint_type` in ('ENUMERATION','PATTERN')", true)
-        );
     }
 
     @Override

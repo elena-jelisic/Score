@@ -129,6 +129,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.SpecificationAggregateCom
 import org.oagi.score.repo.api.impl.jooq.entity.tables.SpecificationAssociationComponent;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.SpecificationBasicComponent;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.SpecificationDataType;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.SpecificationDataTypeAttribute;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.SpecificationType;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.StatusCode;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.SuperAcc;
@@ -877,6 +878,11 @@ public class Oagi extends SchemaImpl {
     public final SpecificationDataType SPECIFICATION_DATA_TYPE = SpecificationDataType.SPECIFICATION_DATA_TYPE;
 
     /**
+     * The table <code>oagi.specification_data_type_attribute</code>.
+     */
+    public final SpecificationDataTypeAttribute SPECIFICATION_DATA_TYPE_ATTRIBUTE = SpecificationDataTypeAttribute.SPECIFICATION_DATA_TYPE_ATTRIBUTE;
+
+    /**
      * The table <code>oagi.specification_type</code>.
      */
     public final SpecificationType SPECIFICATION_TYPE = SpecificationType.SPECIFICATION_TYPE;
@@ -1107,6 +1113,7 @@ public class Oagi extends SchemaImpl {
             SpecificationAssociationComponent.SPECIFICATION_ASSOCIATION_COMPONENT,
             SpecificationBasicComponent.SPECIFICATION_BASIC_COMPONENT,
             SpecificationDataType.SPECIFICATION_DATA_TYPE,
+            SpecificationDataTypeAttribute.SPECIFICATION_DATA_TYPE_ATTRIBUTE,
             SpecificationType.SPECIFICATION_TYPE,
             StatusCode.STATUS_CODE,
             SuperAcc.SUPER_ACC,

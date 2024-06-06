@@ -123,6 +123,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.SpecificationAggregateCom
 import org.oagi.score.repo.api.impl.jooq.entity.tables.SpecificationAssociationComponent;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.SpecificationBasicComponent;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.SpecificationDataType;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.SpecificationDataTypeAttribute;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.SpecificationType;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.StatusCode;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.SuperAcc;
@@ -862,6 +863,11 @@ public class Tables {
      * The table <code>oagi.specification_data_type</code>.
      */
     public static final SpecificationDataType SPECIFICATION_DATA_TYPE = SpecificationDataType.SPECIFICATION_DATA_TYPE;
+
+    /**
+     * The table <code>oagi.specification_data_type_attribute</code>.
+     */
+    public static final SpecificationDataTypeAttribute SPECIFICATION_DATA_TYPE_ATTRIBUTE = SpecificationDataTypeAttribute.SPECIFICATION_DATA_TYPE_ATTRIBUTE;
 
     /**
      * The table <code>oagi.specification_type</code>.

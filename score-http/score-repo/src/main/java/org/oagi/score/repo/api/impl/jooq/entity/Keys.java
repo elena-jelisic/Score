@@ -125,6 +125,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.SpecificationAggregateCom
 import org.oagi.score.repo.api.impl.jooq.entity.tables.SpecificationAssociationComponent;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.SpecificationBasicComponent;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.SpecificationDataType;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.SpecificationDataTypeAttribute;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.SpecificationType;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.StatusCode;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.SuperAcc;
@@ -256,6 +257,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.records.SourceRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.SpecificationAggregateComponentRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.SpecificationAssociationComponentRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.SpecificationBasicComponentRecord;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.records.SpecificationDataTypeAttributeRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.SpecificationDataTypeRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.SpecificationRecord;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.SpecificationTypeRecord;
@@ -414,6 +416,7 @@ public class Keys {
     public static final UniqueKey<SpecificationAssociationComponentRecord> KEY_SPECIFICATION_ASSOCIATION_COMPONENT_PRIMARY = Internal.createUniqueKey(SpecificationAssociationComponent.SPECIFICATION_ASSOCIATION_COMPONENT, DSL.name("KEY_specification_association_component_PRIMARY"), new TableField[] { SpecificationAssociationComponent.SPECIFICATION_ASSOCIATION_COMPONENT.COMPONENT_ID }, true);
     public static final UniqueKey<SpecificationBasicComponentRecord> KEY_SPECIFICATION_BASIC_COMPONENT_PRIMARY = Internal.createUniqueKey(SpecificationBasicComponent.SPECIFICATION_BASIC_COMPONENT, DSL.name("KEY_specification_basic_component_PRIMARY"), new TableField[] { SpecificationBasicComponent.SPECIFICATION_BASIC_COMPONENT.COMPONENT_ID }, true);
     public static final UniqueKey<SpecificationDataTypeRecord> KEY_SPECIFICATION_DATA_TYPE_PRIMARY = Internal.createUniqueKey(SpecificationDataType.SPECIFICATION_DATA_TYPE, DSL.name("KEY_specification_data_type_PRIMARY"), new TableField[] { SpecificationDataType.SPECIFICATION_DATA_TYPE.DATA_TYPE_ID }, true);
+    public static final UniqueKey<SpecificationDataTypeAttributeRecord> KEY_SPECIFICATION_DATA_TYPE_ATTRIBUTE_PRIMARY = Internal.createUniqueKey(SpecificationDataTypeAttribute.SPECIFICATION_DATA_TYPE_ATTRIBUTE, DSL.name("KEY_specification_data_type_attribute_PRIMARY"), new TableField[] { SpecificationDataTypeAttribute.SPECIFICATION_DATA_TYPE_ATTRIBUTE.DT_ATTRIBUTE_ID }, true);
     public static final UniqueKey<SpecificationTypeRecord> KEY_SPECIFICATION_TYPE_PRIMARY = Internal.createUniqueKey(SpecificationType.SPECIFICATION_TYPE, DSL.name("KEY_specification_type_PRIMARY"), new TableField[] { SpecificationType.SPECIFICATION_TYPE.SPECIFICATION_TYPE_ID }, true);
     public static final UniqueKey<StatusCodeRecord> KEY_STATUS_CODE_PRIMARY = Internal.createUniqueKey(StatusCode.STATUS_CODE, DSL.name("KEY_status_code_PRIMARY"), new TableField[] { StatusCode.STATUS_CODE.STATUS_CODE_ID }, true);
     public static final UniqueKey<SuperAccRecord> KEY_SUPER_ACC_PRIMARY = Internal.createUniqueKey(SuperAcc.SUPER_ACC, DSL.name("KEY_super_acc_PRIMARY"), new TableField[] { SuperAcc.SUPER_ACC.SUPER_ACC_ID }, true);
