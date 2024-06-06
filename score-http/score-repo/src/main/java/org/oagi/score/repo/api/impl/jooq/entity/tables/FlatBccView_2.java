@@ -16,8 +16,10 @@ import org.jooq.Schema;
 import org.jooq.Select;
 import org.jooq.Stringly;
 import org.jooq.Table;
+import org.jooq.TableField;
 import org.jooq.TableOptions;
 import org.jooq.impl.DSL;
+import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.FlatBccView_2Record;
@@ -44,12 +46,35 @@ public class FlatBccView_2 extends TableImpl<FlatBccView_2Record> {
         return FlatBccView_2Record.class;
     }
 
+    /**
+     * The column <code>oagi.flat_bcc_view_2.object_class_term</code>. Object
+     * class name of the ACC concept. For OAGIS, this is generally name of a
+     * type with the "Type" truncated from the end. Per CCS the name is space
+     * separated. "ID" is expanded to "Identifier".
+     */
+    public final TableField<FlatBccView_2Record, String> OBJECT_CLASS_TERM = createField(DSL.name("object_class_term"), SQLDataType.VARCHAR(100).nullable(false), this, "Object class name of the ACC concept. For OAGIS, this is generally name of a type with the \"Type\" truncated from the end. Per CCS the name is space separated. \"ID\" is expanded to \"Identifier\".");
+
+    /**
+     * The column <code>oagi.flat_bcc_view_2.property</code>.
+     */
+    public final TableField<FlatBccView_2Record, String> PROPERTY = createField(DSL.name("property"), SQLDataType.VARCHAR(184).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.VARCHAR)), this, "");
+
+    /**
+     * The column <code>oagi.flat_bcc_view_2.path</code>.
+     */
+    public final TableField<FlatBccView_2Record, String> PATH = createField(DSL.name("path"), SQLDataType.VARCHAR(10000).nullable(false), this, "");
+
+    /**
+     * The column <code>oagi.flat_bcc_view_2.super_bcc_id</code>.
+     */
+    public final TableField<FlatBccView_2Record, Long> SUPER_BCC_ID = createField(DSL.name("super_bcc_id"), SQLDataType.BIGINT.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.BIGINT)), this, "");
+
     private FlatBccView_2(Name alias, Table<FlatBccView_2Record> aliased) {
         this(alias, aliased, (Field<?>[]) null, null);
     }
 
     private FlatBccView_2(Name alias, Table<FlatBccView_2Record> aliased, Field<?>[] parameters, Condition where) {
-        super(alias, null, aliased, parameters, DSL.comment("VIEW"), TableOptions.view("create view `flat_bcc_view_2` as select `oagi`.`acc`.`object_class_term` AS `object_class_term`,case when `oagi`.`dt_sc`.`dt_sc_id` is null then concat(concat(`original`.`object_class_term`,'. '),`oagi`.`bccp`.`property_term`) else concat(concat(concat(concat(`original`.`object_class_term`,'. '),`oagi`.`bccp`.`property_term`),'. '),concat(concat(concat(concat(`oagi`.`dt_sc`.`object_class_term`,'. '),`oagi`.`dt_sc`.`property_term`),'. '),`oagi`.`dt_sc`.`representation_term`)) end AS `property`,`fb`.`super_bcc_id` AS `super_bcc_id` from (((((`oagi`.`flat_bcc` `fb` join `oagi`.`acc` on(`oagi`.`acc`.`acc_id` = `fb`.`acc_id`)) join `oagi`.`acc` `original` on(`original`.`acc_id` = `fb`.`original_acc_id`)) join `oagi`.`bcc` on(`fb`.`bcc_id` = `oagi`.`bcc`.`bcc_id`)) join `oagi`.`bccp` on(`oagi`.`bcc`.`to_bccp_id` = `oagi`.`bccp`.`bccp_id`)) left join `oagi`.`dt_sc` on(`fb`.`dt_sc_id` = `oagi`.`dt_sc`.`dt_sc_id`)) order by `fb`.`super_bcc_id`"), where);
+        super(alias, null, aliased, parameters, DSL.comment("VIEW"), TableOptions.view("create view `flat_bcc_view_2` as select `oagi`.`acc`.`object_class_term` AS `object_class_term`,case when `oagi`.`dt_sc`.`dt_sc_id` is null then `oagi`.`bccp`.`property_term` else concat(concat(`oagi`.`bccp`.`property_term`,'. '),concat(concat(`oagi`.`dt_sc`.`property_term`,'. '),`oagi`.`dt_sc`.`representation_term`)) end AS `property`,`fb`.`Path` AS `path`,`fb`.`super_bcc_id` AS `super_bcc_id` from ((((`oagi`.`flat_bcc` `fb` join `oagi`.`acc` on(`oagi`.`acc`.`acc_id` = `fb`.`acc_id`)) join `oagi`.`bcc` on(`fb`.`bcc_id` = `oagi`.`bcc`.`bcc_id`)) join `oagi`.`bccp` on(`oagi`.`bcc`.`to_bccp_id` = `oagi`.`bccp`.`bccp_id`)) left join `oagi`.`dt_sc` on(`fb`.`dt_sc_id` = `oagi`.`dt_sc`.`dt_sc_id`))"), where);
     }
 
     /**

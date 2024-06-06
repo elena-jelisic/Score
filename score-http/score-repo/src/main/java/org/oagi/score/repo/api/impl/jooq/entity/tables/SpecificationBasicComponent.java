@@ -78,7 +78,7 @@ public class SpecificationBasicComponent extends TableImpl<SpecificationBasicCom
     /**
      * The column <code>oagi.specification_basic_component.definition</code>.
      */
-    public final TableField<SpecificationBasicComponentRecord, String> DEFINITION = createField(DSL.name("definition"), SQLDataType.VARCHAR(500).nullable(false), this, "");
+    public final TableField<SpecificationBasicComponentRecord, String> DEFINITION = createField(DSL.name("definition"), SQLDataType.VARCHAR(1500).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.VARCHAR)), this, "");
 
     /**
      * The column

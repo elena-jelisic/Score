@@ -90,7 +90,7 @@ public class FlatBcc extends TableImpl<FlatBccRecord> {
     /**
      * The column <code>oagi.flat_bcc.Path</code>.
      */
-    public final TableField<FlatBccRecord, String> PATH = createField(DSL.name("Path"), SQLDataType.VARCHAR(1000).nullable(false), this, "");
+    public final TableField<FlatBccRecord, String> PATH = createField(DSL.name("Path"), SQLDataType.VARCHAR(10000).nullable(false), this, "");
 
     private FlatBcc(Name alias, Table<FlatBccRecord> aliased) {
         this(alias, aliased, (Field<?>[]) null, null);

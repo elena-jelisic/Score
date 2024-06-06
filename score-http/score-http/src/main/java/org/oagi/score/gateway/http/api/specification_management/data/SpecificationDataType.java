@@ -4,7 +4,7 @@ package org.oagi.score.gateway.http.api.specification_management.data;
 import java.math.BigInteger;
 
 public class SpecificationDataType {
-    private BigInteger dataTypeId;
+    private Long dataTypeId;
     private String dataTypeName;
     private String definition;
     private BigInteger statusCodeId;
@@ -12,12 +12,39 @@ public class SpecificationDataType {
     private BigInteger dtId;
     private Byte isApproved;
     private BigInteger specificationId;
+    private SpecificationDataType basedDT;
+    private String constraint;
+    private String constraintType;
 
-    public BigInteger getDataTypeId() {
+    public SpecificationDataType getBasedDT() {
+        return basedDT;
+    }
+
+    public void setBasedDT(SpecificationDataType basedDT) {
+        this.basedDT = basedDT;
+    }
+
+    public String getConstraint() {
+        return constraint;
+    }
+
+    public void setConstraint(String constraint) {
+        this.constraint = constraint;
+    }
+
+    public String getConstraintType() {
+        return constraintType;
+    }
+
+    public void setConstraintType(String constraintType) {
+        this.constraintType = constraintType;
+    }
+
+    public Long getDataTypeId() {
         return dataTypeId;
     }
 
-    public void setDataTypeId(BigInteger dataTypeId) {
+    public void setDataTypeId(Long dataTypeId) {
         this.dataTypeId = dataTypeId;
     }
 

@@ -6,7 +6,13 @@ package org.oagi.score.repo.api.impl.jooq.entity;
 
 import org.jooq.Configuration;
 import org.jooq.Field;
+import org.oagi.score.repo.api.impl.jooq.entity.routines.FillTheFlatBccTable;
+import org.oagi.score.repo.api.impl.jooq.entity.routines.GetAllRelatedAccs;
 import org.oagi.score.repo.api.impl.jooq.entity.routines.Levenshtein;
+import org.oagi.score.repo.api.impl.jooq.entity.routines.ProcessAsccList;
+import org.oagi.score.repo.api.impl.jooq.entity.routines.ProcessBasedAcc;
+import org.oagi.score.repo.api.impl.jooq.entity.routines.ProcessBccList;
+import org.oagi.score.repo.api.impl.jooq.entity.routines.ProcessBccListFromBased;
 
 
 /**
@@ -14,6 +20,57 @@ import org.oagi.score.repo.api.impl.jooq.entity.routines.Levenshtein;
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Routines {
+
+    /**
+     * Call <code>oagi.fill_the_flat_bcc_table</code>
+     */
+    public static void fillTheFlatBccTable(
+          Configuration configuration
+        , Integer initialacc
+    ) {
+        FillTheFlatBccTable p = new FillTheFlatBccTable();
+        p.setInitialacc(initialacc);
+
+        p.execute(configuration);
+    }
+
+    /**
+     * Call <code>oagi.get_all_related_ACCs</code>
+     */
+    public static Long getAllRelatedAccs(
+          Configuration configuration
+        , Long accid
+    ) {
+        GetAllRelatedAccs f = new GetAllRelatedAccs();
+        f.setAccid(accid);
+
+        f.execute(configuration);
+        return f.getReturnValue();
+    }
+
+    /**
+     * Get <code>oagi.get_all_related_ACCs</code> as a field.
+     */
+    public static Field<Long> getAllRelatedAccs(
+          Long accid
+    ) {
+        GetAllRelatedAccs f = new GetAllRelatedAccs();
+        f.setAccid(accid);
+
+        return f.asField();
+    }
+
+    /**
+     * Get <code>oagi.get_all_related_ACCs</code> as a field.
+     */
+    public static Field<Long> getAllRelatedAccs(
+          Field<Long> accid
+    ) {
+        GetAllRelatedAccs f = new GetAllRelatedAccs();
+        f.setAccid(accid);
+
+        return f.asField();
+    }
 
     /**
      * Call <code>oagi.levenshtein</code>
@@ -57,5 +114,69 @@ public class Routines {
         f.setS2(s2);
 
         return f.asField();
+    }
+
+    /**
+     * Call <code>oagi.process_ascc_list</code>
+     */
+    public static void processAsccList(
+          Configuration configuration
+        , Integer originalaccmanifestid
+        , Integer associatingaccmanifestid
+        , byte[] initialpath
+    ) {
+        ProcessAsccList p = new ProcessAsccList();
+        p.setOriginalaccmanifestid(originalaccmanifestid);
+        p.setAssociatingaccmanifestid(associatingaccmanifestid);
+        p.setInitialpath(initialpath);
+
+        p.execute(configuration);
+    }
+
+    /**
+     * Call <code>oagi.process_based_acc</code>
+     */
+    public static void processBasedAcc(
+          Configuration configuration
+        , Integer originalaccmanifestid
+        , Integer basedaccmanifestid
+        , byte[] initialpath
+    ) {
+        ProcessBasedAcc p = new ProcessBasedAcc();
+        p.setOriginalaccmanifestid(originalaccmanifestid);
+        p.setBasedaccmanifestid(basedaccmanifestid);
+        p.setInitialpath(initialpath);
+
+        p.execute(configuration);
+    }
+
+    /**
+     * Call <code>oagi.process_bcc_list</code>
+     */
+    public static void processBccList(
+          Configuration configuration
+        , Integer accmanifestid
+    ) {
+        ProcessBccList p = new ProcessBccList();
+        p.setAccmanifestid(accmanifestid);
+
+        p.execute(configuration);
+    }
+
+    /**
+     * Call <code>oagi.process_bcc_list_from_based</code>
+     */
+    public static void processBccListFromBased(
+          Configuration configuration
+        , Integer originalaccmanifestid
+        , Integer basedaccmaninfestid
+        , byte[] path
+    ) {
+        ProcessBccListFromBased p = new ProcessBccListFromBased();
+        p.setOriginalaccmanifestid(originalaccmanifestid);
+        p.setBasedaccmaninfestid(basedaccmaninfestid);
+        p.setPath(path);
+
+        p.execute(configuration);
     }
 }

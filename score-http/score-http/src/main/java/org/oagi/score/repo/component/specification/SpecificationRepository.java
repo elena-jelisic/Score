@@ -160,20 +160,34 @@ public class SpecificationRepository {
     }
 
     private SpecificationDataType insertDataType(SpecificationDataType dataType, BigInteger specificationID) {
-        SpecificationDataTypeRecord dtRecord = new SpecificationDataTypeRecord();
-        dtRecord.setDataTypeName(dataType.getDataTypeName());
-        dtRecord.setDefinition(dataType.getDefinition());
-        dtRecord.setSpecificationId(specificationID.longValue());
-        StatusCodeRecord statusCodeRecord = getStatusByStatusCodeName(SpecComponentState.STAGED.toString());
-        dtRecord.setStatusCodeId(statusCodeRecord.getStatusCodeId());
-        dtRecord.setGapAnalysisCodeId(null);
-        dtRecord.setDtId(null);
-        dtRecord.setIsApproved(null);
+        SpecificationDataType basedDT = new SpecificationDataType();
+        SpecificationDataTypeRecord dtRecord;
+        dtRecord = dslContext.selectFrom(SPECIFICATION_DATA_TYPE).where(SPECIFICATION_DATA_TYPE.DATA_TYPE_NAME.eq(dataType.getDataTypeName())).fetchOne();
+        if (dtRecord == null) {
+            dtRecord = new SpecificationDataTypeRecord();
+            if (dataType.getBasedDT() != null){
+                basedDT = insertDataType(dataType.getBasedDT(), specificationID);
+                dtRecord.setBasedDtId(basedDT.getDataTypeId());
+            }
+            dtRecord.setDataTypeName(dataType.getDataTypeName());
+            dtRecord.setDefinition(dataType.getDefinition());
+            dtRecord.setSpecificationId(specificationID.longValue());
+            StatusCodeRecord statusCodeRecord = getStatusByStatusCodeName(SpecComponentState.STAGED.toString());
+            dtRecord.setStatusCodeId(statusCodeRecord.getStatusCodeId());
+            dtRecord.setConstraint(dataType.getConstraint());
+            dtRecord.setConstraintType(dataType.getConstraintType());
+            dtRecord.setGapAnalysisCodeId(null);
+            dtRecord.setDtId(null);
+            dtRecord.setIsApproved(null);
 
-        dataType.setDataTypeId(BigInteger.valueOf(dslContext.insertInto(SPECIFICATION_DATA_TYPE)
-                .set(dtRecord)
-                .returning(SPECIFICATION_DATA_TYPE.DATA_TYPE_ID).fetchOne()
-                .getDataTypeId()));
+            dataType.setDataTypeId(Long.valueOf(dslContext.insertInto(SPECIFICATION_DATA_TYPE)
+                    .set(dtRecord)
+                    .returning(SPECIFICATION_DATA_TYPE.DATA_TYPE_ID).fetchOne()
+                    .getDataTypeId()));
+        } else{
+            dataType.setDataTypeId(dtRecord.getDataTypeId());
+        }
+
         return dataType;
     }
 

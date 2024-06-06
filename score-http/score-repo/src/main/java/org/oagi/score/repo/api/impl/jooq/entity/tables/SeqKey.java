@@ -36,8 +36,6 @@ import org.oagi.score.repo.api.impl.jooq.entity.Keys;
 import org.oagi.score.repo.api.impl.jooq.entity.Oagi;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.AccManifest.AccManifestPath;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.AsccManifest.AsccManifestPath;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.BccManifest.BccManifestPath;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.SeqKey.SeqKeyPath;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.SeqKeyRecord;
 
 
@@ -161,7 +159,7 @@ public class SeqKey extends TableImpl<SeqKeyRecord> {
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.asList(Indexes.SEQ_KEY_SEQ_KEY_ASCC_MANIFEST_ID, Indexes.SEQ_KEY_SEQ_KEY_BCC_MANIFEST_ID, Indexes.SEQ_KEY_SEQ_KEY_FROM_ACC_MANIFEST_ID);
+        return Arrays.asList(Indexes.SEQ_KEY_SEQ_KEY_ASCC_MANIFEST_ID, Indexes.SEQ_KEY_SEQ_KEY_FROM_ACC_MANIFEST_ID);
     }
 
     @Override
@@ -176,7 +174,7 @@ public class SeqKey extends TableImpl<SeqKeyRecord> {
 
     @Override
     public List<ForeignKey<SeqKeyRecord, ?>> getReferences() {
-        return Arrays.asList(Keys.SEQ_KEY_FROM_ACC_MANIFEST_ID_FK, Keys.SEQ_KEY_ASCC_MANIFEST_ID_FK, Keys.SEQ_KEY_BCC_MANIFEST_ID_FK, Keys.SEQ_KEY_PREV_SEQ_KEY_ID_FK, Keys.SEQ_KEY_NEXT_SEQ_KEY_ID_FK);
+        return Arrays.asList(Keys.SEQ_KEY_FROM_ACC_MANIFEST_ID_FK, Keys.SEQ_KEY_ASCC_MANIFEST_ID_FK);
     }
 
     private transient AccManifestPath _accManifest;
@@ -201,44 +199,6 @@ public class SeqKey extends TableImpl<SeqKeyRecord> {
             _asccManifest = new AsccManifestPath(this, Keys.SEQ_KEY_ASCC_MANIFEST_ID_FK, null);
 
         return _asccManifest;
-    }
-
-    private transient BccManifestPath _bccManifest;
-
-    /**
-     * Get the implicit join path to the <code>oagi.bcc_manifest</code> table.
-     */
-    public BccManifestPath bccManifest() {
-        if (_bccManifest == null)
-            _bccManifest = new BccManifestPath(this, Keys.SEQ_KEY_BCC_MANIFEST_ID_FK, null);
-
-        return _bccManifest;
-    }
-
-    private transient SeqKeyPath _seqKeyPrevSeqKeyIdFk;
-
-    /**
-     * Get the implicit join path to the <code>oagi.seq_key</code> table, via
-     * the <code>seq_key_prev_seq_key_id_fk</code> key.
-     */
-    public SeqKeyPath seqKeyPrevSeqKeyIdFk() {
-        if (_seqKeyPrevSeqKeyIdFk == null)
-            _seqKeyPrevSeqKeyIdFk = new SeqKeyPath(this, Keys.SEQ_KEY_PREV_SEQ_KEY_ID_FK, null);
-
-        return _seqKeyPrevSeqKeyIdFk;
-    }
-
-    private transient SeqKeyPath _seqKeyNextSeqKeyIdFk;
-
-    /**
-     * Get the implicit join path to the <code>oagi.seq_key</code> table, via
-     * the <code>seq_key_next_seq_key_id_fk</code> key.
-     */
-    public SeqKeyPath seqKeyNextSeqKeyIdFk() {
-        if (_seqKeyNextSeqKeyIdFk == null)
-            _seqKeyNextSeqKeyIdFk = new SeqKeyPath(this, Keys.SEQ_KEY_NEXT_SEQ_KEY_ID_FK, null);
-
-        return _seqKeyNextSeqKeyIdFk;
     }
 
     @Override

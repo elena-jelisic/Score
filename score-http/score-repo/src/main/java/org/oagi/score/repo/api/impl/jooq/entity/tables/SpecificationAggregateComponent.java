@@ -76,13 +76,13 @@ public class SpecificationAggregateComponent extends TableImpl<SpecificationAggr
      * The column
      * <code>oagi.specification_aggregate_component.definition</code>.
      */
-    public final TableField<SpecificationAggregateComponentRecord, String> DEFINITION = createField(DSL.name("definition"), SQLDataType.VARCHAR(500).nullable(false), this, "");
+    public final TableField<SpecificationAggregateComponentRecord, String> DEFINITION = createField(DSL.name("definition"), SQLDataType.VARCHAR(1500).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.VARCHAR)), this, "");
 
     /**
      * The column
      * <code>oagi.specification_aggregate_component.component_name</code>.
      */
-    public final TableField<SpecificationAggregateComponentRecord, String> COMPONENT_NAME = createField(DSL.name("component_name"), SQLDataType.VARCHAR(50).nullable(false), this, "");
+    public final TableField<SpecificationAggregateComponentRecord, String> COMPONENT_NAME = createField(DSL.name("component_name"), SQLDataType.VARCHAR(50).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.VARCHAR)), this, "");
 
     /**
      * The column

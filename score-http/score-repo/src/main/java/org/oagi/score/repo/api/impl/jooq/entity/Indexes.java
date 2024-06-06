@@ -89,7 +89,6 @@ public class Indexes {
     public static final Index COMMENT_REFERENCE = Internal.createIndex(DSL.name("reference"), Comment.COMMENT, new OrderField[] { Comment.COMMENT.REFERENCE }, false);
     public static final Index LOG_REFERENCE = Internal.createIndex(DSL.name("reference"), Log.LOG, new OrderField[] { Log.LOG.REFERENCE }, false);
     public static final Index SEQ_KEY_SEQ_KEY_ASCC_MANIFEST_ID = Internal.createIndex(DSL.name("seq_key_ascc_manifest_id"), SeqKey.SEQ_KEY, new OrderField[] { SeqKey.SEQ_KEY.ASCC_MANIFEST_ID }, false);
-    public static final Index SEQ_KEY_SEQ_KEY_BCC_MANIFEST_ID = Internal.createIndex(DSL.name("seq_key_bcc_manifest_id"), SeqKey.SEQ_KEY, new OrderField[] { SeqKey.SEQ_KEY.BCC_MANIFEST_ID }, false);
     public static final Index SEQ_KEY_SEQ_KEY_FROM_ACC_MANIFEST_ID = Internal.createIndex(DSL.name("seq_key_from_acc_manifest_id"), SeqKey.SEQ_KEY, new OrderField[] { SeqKey.SEQ_KEY.FROM_ACC_MANIFEST_ID }, false);
     public static final Index RELEASE_SPECIFICATION_ID = Internal.createIndex(DSL.name("specification_id"), Release.RELEASE, new OrderField[] { Release.RELEASE.SPECIFICATION_ID }, false);
     public static final Index ACC_SUPER_ACC_ID = Internal.createIndex(DSL.name("super_acc_id"), Acc.ACC, new OrderField[] { Acc.ACC.SUPER_ACC_ID }, false);

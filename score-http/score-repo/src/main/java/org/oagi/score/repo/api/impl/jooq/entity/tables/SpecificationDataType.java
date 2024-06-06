@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import org.jooq.Check;
 import org.jooq.Condition;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
@@ -28,6 +29,7 @@ import org.jooq.TableField;
 import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
+import org.jooq.impl.Internal;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.ULong;
@@ -38,6 +40,7 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.CcGapAnalysisResultCode.C
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Dt.DtPath;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Specification.SpecificationPath;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.SpecificationBasicComponent.SpecificationBasicComponentPath;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.SpecificationDataType.SpecificationDataTypePath;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.StatusCode.StatusCodePath;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.SpecificationDataTypeRecord;
 
@@ -76,7 +79,7 @@ public class SpecificationDataType extends TableImpl<SpecificationDataTypeRecord
     /**
      * The column <code>oagi.specification_data_type.definition</code>.
      */
-    public final TableField<SpecificationDataTypeRecord, String> DEFINITION = createField(DSL.name("definition"), SQLDataType.VARCHAR(500).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.VARCHAR)), this, "");
+    public final TableField<SpecificationDataTypeRecord, String> DEFINITION = createField(DSL.name("definition"), SQLDataType.VARCHAR(1500).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.VARCHAR)), this, "");
 
     /**
      * The column <code>oagi.specification_data_type.status_code_id</code>.
@@ -103,6 +106,21 @@ public class SpecificationDataType extends TableImpl<SpecificationDataTypeRecord
      * The column <code>oagi.specification_data_type.specification_id</code>.
      */
     public final TableField<SpecificationDataTypeRecord, Long> SPECIFICATION_ID = createField(DSL.name("specification_id"), SQLDataType.BIGINT.nullable(false), this, "");
+
+    /**
+     * The column <code>oagi.specification_data_type.based_dt_id</code>.
+     */
+    public final TableField<SpecificationDataTypeRecord, Long> BASED_DT_ID = createField(DSL.name("based_dt_id"), SQLDataType.BIGINT.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.BIGINT)), this, "");
+
+    /**
+     * The column <code>oagi.specification_data_type.constraint</code>.
+     */
+    public final TableField<SpecificationDataTypeRecord, String> CONSTRAINT = createField(DSL.name("constraint"), SQLDataType.VARCHAR(100).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.VARCHAR)), this, "");
+
+    /**
+     * The column <code>oagi.specification_data_type.constraint_type</code>.
+     */
+    public final TableField<SpecificationDataTypeRecord, String> CONSTRAINT_TYPE = createField(DSL.name("constraint_type"), SQLDataType.VARCHAR(50).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.VARCHAR)), this, "");
 
     private SpecificationDataType(Name alias, Table<SpecificationDataTypeRecord> aliased) {
         this(alias, aliased, (Field<?>[]) null, null);
@@ -190,7 +208,7 @@ public class SpecificationDataType extends TableImpl<SpecificationDataTypeRecord
 
     @Override
     public List<ForeignKey<SpecificationDataTypeRecord, ?>> getReferences() {
-        return Arrays.asList(Keys.FKSPECIFICAT532397, Keys.FKSPECIFICAT36977, Keys.FKSPECIFICAT57299, Keys.FKSPECIFICAT57298);
+        return Arrays.asList(Keys.FKSPECIFICAT532397, Keys.FKSPECIFICAT36977, Keys.FKSPECIFICAT57299, Keys.FKSPECIFICAT57298, Keys.FKSPECIFICAT83539);
     }
 
     private transient StatusCodePath _statusCode;
@@ -242,6 +260,19 @@ public class SpecificationDataType extends TableImpl<SpecificationDataTypeRecord
         return _specification;
     }
 
+    private transient SpecificationDataTypePath _specificationDataType;
+
+    /**
+     * Get the implicit join path to the
+     * <code>oagi.specification_data_type</code> table.
+     */
+    public SpecificationDataTypePath specificationDataType() {
+        if (_specificationDataType == null)
+            _specificationDataType = new SpecificationDataTypePath(this, Keys.FKSPECIFICAT83539, null);
+
+        return _specificationDataType;
+    }
+
     private transient SpecificationBasicComponentPath _specificationBasicComponent;
 
     /**
@@ -253,6 +284,13 @@ public class SpecificationDataType extends TableImpl<SpecificationDataTypeRecord
             _specificationBasicComponent = new SpecificationBasicComponentPath(this, null, Keys.FKSPECIFICAT559853.getInverseKey());
 
         return _specificationBasicComponent;
+    }
+
+    @Override
+    public List<Check<SpecificationDataTypeRecord>> getChecks() {
+        return Arrays.asList(
+            Internal.createCheck(this, DSL.name("CONSTRAINT_1"), "`constraint_type` in ('ENUMERATION','PATTERN')", true)
+        );
     }
 
     @Override

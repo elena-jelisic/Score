@@ -38,7 +38,6 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.Bcc.BccPath;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.BccManifest.BccManifestPath;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.BccpManifest.BccpManifestPath;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Release.ReleasePath;
-import org.oagi.score.repo.api.impl.jooq.entity.tables.SeqKey.SeqKeyPath;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.records.BccManifestRecord;
 
 
@@ -202,7 +201,7 @@ public class BccManifest extends TableImpl<BccManifestRecord> {
 
     @Override
     public List<ForeignKey<BccManifestRecord, ?>> getReferences() {
-        return Arrays.asList(Keys.BCC_MANIFEST_RELEASE_ID_FK, Keys.BCC_MANIFEST_BCC_ID_FK, Keys.BCC_MANIFEST_SEQ_KEY_ID_FK, Keys.BCC_MANIFEST_FROM_ACC_MANIFEST_ID_FK, Keys.BCC_MANIFEST_TO_BCCP_MANIFEST_ID_FK, Keys.BCC_REPLACEMENT_BCC_MANIFEST_ID_FK, Keys.BCC_MANIFEST_PREV_BCC_MANIFEST_ID_FK, Keys.BCC_MANIFEST_NEXT_BCC_MANIFEST_ID_FK);
+        return Arrays.asList(Keys.BCC_MANIFEST_RELEASE_ID_FK, Keys.BCC_MANIFEST_BCC_ID_FK, Keys.BCC_MANIFEST_FROM_ACC_MANIFEST_ID_FK, Keys.BCC_MANIFEST_TO_BCCP_MANIFEST_ID_FK, Keys.BCC_REPLACEMENT_BCC_MANIFEST_ID_FK, Keys.BCC_MANIFEST_PREV_BCC_MANIFEST_ID_FK, Keys.BCC_MANIFEST_NEXT_BCC_MANIFEST_ID_FK);
     }
 
     private transient ReleasePath _release;
@@ -227,18 +226,6 @@ public class BccManifest extends TableImpl<BccManifestRecord> {
             _bcc = new BccPath(this, Keys.BCC_MANIFEST_BCC_ID_FK, null);
 
         return _bcc;
-    }
-
-    private transient SeqKeyPath _seqKey;
-
-    /**
-     * Get the implicit join path to the <code>oagi.seq_key</code> table.
-     */
-    public SeqKeyPath seqKey() {
-        if (_seqKey == null)
-            _seqKey = new SeqKeyPath(this, Keys.BCC_MANIFEST_SEQ_KEY_ID_FK, null);
-
-        return _seqKey;
     }
 
     private transient AccManifestPath _accManifest;

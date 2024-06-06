@@ -80,9 +80,11 @@ import org.oagi.score.repo.api.impl.jooq.entity.tables.DtScManifest;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.DtUsageRule;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Exception;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.FlatBcc;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.FlatBccView;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.FlatBccView_2;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Log;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.MappingSpecification;
+import org.oagi.score.repo.api.impl.jooq.entity.tables.MatchingCc;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Message;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.Module;
 import org.oagi.score.repo.api.impl.jooq.entity.tables.ModuleAccManifest;
@@ -630,6 +632,11 @@ public class Oagi extends SchemaImpl {
     /**
      * VIEW
      */
+    public final FlatBccView FLAT_BCC_VIEW = FlatBccView.FLAT_BCC_VIEW;
+
+    /**
+     * VIEW
+     */
     public final FlatBccView_2 FLAT_BCC_VIEW_2 = FlatBccView_2.FLAT_BCC_VIEW_2;
 
     /**
@@ -641,6 +648,11 @@ public class Oagi extends SchemaImpl {
      * The table <code>oagi.mapping_specification</code>.
      */
     public final MappingSpecification MAPPING_SPECIFICATION = MappingSpecification.MAPPING_SPECIFICATION;
+
+    /**
+     * VIEW
+     */
+    public final MatchingCc MATCHING_CC = MatchingCc.MATCHING_CC;
 
     /**
      * The table <code>oagi.message</code>.
@@ -1046,9 +1058,11 @@ public class Oagi extends SchemaImpl {
             DtUsageRule.DT_USAGE_RULE,
             Exception.EXCEPTION,
             FlatBcc.FLAT_BCC,
+            FlatBccView.FLAT_BCC_VIEW,
             FlatBccView_2.FLAT_BCC_VIEW_2,
             Log.LOG,
             MappingSpecification.MAPPING_SPECIFICATION,
+            MatchingCc.MATCHING_CC,
             Message.MESSAGE,
             Module.MODULE,
             ModuleAccManifest.MODULE_ACC_MANIFEST,

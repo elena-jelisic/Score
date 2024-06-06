@@ -100,6 +100,37 @@ public class MultiStandardService {
     private boolean elementIsRestriction(Element element) {
         return element.getElementsByTagName("xs:restriction").getLength() > 0;
     }
+    private boolean elementIsList(Element element) {
+        return element.getElementsByTagName("xs:list").getLength() > 0;
+    }
+    private boolean typeIsEnumeration(Element element) {
+        return element.getElementsByTagName("xs:enumeration").getLength() > 0;
+    }
+    private boolean typeIsPattern(Element element) {
+        return element.getElementsByTagName("xs:pattern").getLength() > 0;
+    }
+
+    private List<String> resolveEnumerationValues (Element element){
+        List<String> enumerationValues = new ArrayList<>();
+        Element enumerationElement;
+        NodeList enumerationElements = element.getElementsByTagName("xs:enumeration");
+        for (int i = 0; i < enumerationElements.getLength(); i++) {
+            enumerationElement = (Element) enumerationElements.item(i);
+            enumerationValues.add(enumerationElement.getAttribute("value"));
+        }
+        return enumerationValues;
+    }
+
+    private String resolvePattern (Element element){
+        String pattern = "";
+        Element patternElement;
+        NodeList patternElements = element.getElementsByTagName("xs:pattern");
+        for (int i = 0; i < patternElements.getLength(); i++) {
+            patternElement = (Element) patternElements.item(i);
+            pattern = patternElement.getAttribute("value");
+        }
+        return pattern;
+    }
 
     private boolean complexTypeIsDefinedByCompositor(Element complexType) {
         if (complexType.getElementsByTagName("xs:sequence").getLength() > 0) {
@@ -166,9 +197,7 @@ public class MultiStandardService {
                     basic.setAggregateComponentId(fromAggregate.getComponentId());
                     basic.setMinCardinality(resolveElementMinCardinality(element));
                     basic.setMaxCardinality(resolveElementMaxCardinality(element));
-                    SpecificationDataType dt = new SpecificationDataType();
-                    dt.setDataTypeName(elementType);
-                    basic.setDataType(dt);
+                    basic.setDataType(specificationDTManagement(elementType));
                     addBasicComponentToTheList(fromAggregate.getComponentName(), basic);
                 }
             }
@@ -195,9 +224,7 @@ public class MultiStandardService {
                     basic.setAggregateComponentId(fromAggregate.getComponentId());
                     basic.setMinCardinality(resolveElementMinCardinality(element));
                     basic.setMaxCardinality(resolveElementMaxCardinality(element));
-                    SpecificationDataType dt = new SpecificationDataType();
-                    dt.setDataTypeName(elementType);
-                    basic.setDataType(dt);
+                    basic.setDataType(specificationDTManagement(elementType));
                     addBasicComponentToTheList(fromAggregate.getComponentName(), basic);
                 } else if (complexTypeMapFull.containsKey(elementType)) {
                     SpecificationAssociationComponent association = new SpecificationAssociationComponent();
@@ -216,9 +243,7 @@ public class MultiStandardService {
                     basic.setAggregateComponentId(fromAggregate.getComponentId());
                     basic.setMinCardinality(resolveElementMinCardinality(element));
                     basic.setMaxCardinality(resolveElementMaxCardinality(element));
-                    SpecificationDataType dt = new SpecificationDataType();
-                    dt.setDataTypeName(elementType);
-                    basic.setDataType(dt);
+                    basic.setDataType(specificationDTManagement(elementType));
                     addBasicComponentToTheList(fromAggregate.getComponentName(), basic);
                 }
             }
@@ -236,9 +261,7 @@ public class MultiStandardService {
                     basic.setAggregateComponentId(fromAggregate.getComponentId());
                     basic.setMinCardinality(resolveElementMinCardinality(element));
                     basic.setMaxCardinality(resolveElementMaxCardinality(element));
-                    SpecificationDataType dt = new SpecificationDataType();
-                    dt.setDataTypeName(elementType);
-                    basic.setDataType(dt);
+                    basic.setDataType(specificationDTManagement(elementType));
                     addBasicComponentToTheList(fromAggregate.getComponentName(), basic);
                 } else if (simpleTypeMapFull.containsKey(elementType)) {
                     SpecificationBasicComponent basic = new SpecificationBasicComponent();
@@ -247,9 +270,7 @@ public class MultiStandardService {
                     basic.setAggregateComponentId(fromAggregate.getComponentId());
                     basic.setMinCardinality(resolveElementMinCardinality(element));
                     basic.setMaxCardinality(resolveElementMaxCardinality(element));
-                    SpecificationDataType dt = new SpecificationDataType();
-                    dt.setDataTypeName(elementType);
-                    basic.setDataType(dt);
+                    basic.setDataType(specificationDTManagement(elementType));
                     addBasicComponentToTheList(fromAggregate.getComponentName(), basic);
                 }
             }
@@ -260,6 +281,32 @@ public class MultiStandardService {
         return fromAggregate;
     }
 
+    private SpecificationDataType specificationDTManagement (String type){
+        SpecificationDataType dt = new SpecificationDataType();
+        if (simpleTypeMapFull.get(type)!= null){
+            if (elementIsRestriction(simpleTypeMapFull.get(type))){
+                Element restrictionElement = resolveRestriction(simpleTypeMapFull.get(type));
+                String baseType = resolveTheBaseType(restrictionElement);
+                SpecificationDataType baseDT = specificationDTManagement(baseType);
+                dt.setBasedDT(baseDT);
+                if (typeIsEnumeration(restrictionElement)){
+                    dt.setConstraintType(ConstraintType.ENUMERATION.toString());
+                    List<String> enumerationValues = resolveEnumerationValues(restrictionElement);
+                    dt.setConstraint(String.join(",", enumerationValues));
+                } else if (typeIsPattern(restrictionElement)){
+                    dt.setConstraintType(ConstraintType.PATTERN.toString());
+                    String pattern = resolvePattern(restrictionElement);
+                    dt.setConstraint(pattern);
+                }
+            } else if (elementIsList(simpleTypeMapFull.get(type))){
+                Element listElement = resolveListElement (simpleTypeMapFull.get(type));
+                dt.setConstraintType(ConstraintType.LIST.toString());
+                dt.setConstraint(resolveItemTypeInAList(listElement));
+            }
+        }
+        dt.setDataTypeName(type);
+        return dt;
+    }
     private void addBasicComponentToTheList (String aggregate, SpecificationBasicComponent basic){
             if (basicComponentsList.containsKey(aggregate)){
                 basicComponentsList.get(aggregate).add(basic);
@@ -373,8 +420,17 @@ public class MultiStandardService {
         NodeList extension = element.getElementsByTagName("xs:restriction");
         return (Element) extension.item(0);
     }
+
+    private Element resolveListElement (Element element){
+        NodeList list = element.getElementsByTagName("xs:list");
+        return (Element) list.item(0);
+    }
     private String resolveTheBaseType(Element element) {
         return element.getAttribute("base");
+    }
+
+    private String resolveItemTypeInAList (Element element){
+        return element.getAttribute("itemType");
     }
 
     private String resolveElementType(Element element) {

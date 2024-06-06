@@ -79,13 +79,13 @@ public class SpecificationAssociationComponent extends TableImpl<SpecificationAs
      * The column
      * <code>oagi.specification_association_component.definition</code>.
      */
-    public final TableField<SpecificationAssociationComponentRecord, String> DEFINITION = createField(DSL.name("definition"), SQLDataType.VARCHAR(500).nullable(false), this, "");
+    public final TableField<SpecificationAssociationComponentRecord, String> DEFINITION = createField(DSL.name("definition"), SQLDataType.VARCHAR(1500).defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.VARCHAR)), this, "");
 
     /**
      * The column
      * <code>oagi.specification_association_component.from_aggregate_component</code>.
      */
-    public final TableField<SpecificationAssociationComponentRecord, Long> FROM_AGGREGATE_COMPONENT = createField(DSL.name("from_aggregate_component"), SQLDataType.BIGINT.nullable(false), this, "");
+    public final TableField<SpecificationAssociationComponentRecord, Long> FROM_AGGREGATE_COMPONENT = createField(DSL.name("from_aggregate_component"), SQLDataType.BIGINT.defaultValue(DSL.field(DSL.raw("NULL"), SQLDataType.BIGINT)), this, "");
 
     /**
      * The column

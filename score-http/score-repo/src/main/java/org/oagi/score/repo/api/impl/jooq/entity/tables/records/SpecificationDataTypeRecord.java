@@ -132,6 +132,48 @@ public class SpecificationDataTypeRecord extends UpdatableRecordImpl<Specificati
         return (Long) get(7);
     }
 
+    /**
+     * Setter for <code>oagi.specification_data_type.based_dt_id</code>.
+     */
+    public void setBasedDtId(Long value) {
+        set(8, value);
+    }
+
+    /**
+     * Getter for <code>oagi.specification_data_type.based_dt_id</code>.
+     */
+    public Long getBasedDtId() {
+        return (Long) get(8);
+    }
+
+    /**
+     * Setter for <code>oagi.specification_data_type.constraint</code>.
+     */
+    public void setConstraint(String value) {
+        set(9, value);
+    }
+
+    /**
+     * Getter for <code>oagi.specification_data_type.constraint</code>.
+     */
+    public String getConstraint() {
+        return (String) get(9);
+    }
+
+    /**
+     * Setter for <code>oagi.specification_data_type.constraint_type</code>.
+     */
+    public void setConstraintType(String value) {
+        set(10, value);
+    }
+
+    /**
+     * Getter for <code>oagi.specification_data_type.constraint_type</code>.
+     */
+    public String getConstraintType() {
+        return (String) get(10);
+    }
+
     // -------------------------------------------------------------------------
     // Primary key information
     // -------------------------------------------------------------------------
@@ -155,7 +197,7 @@ public class SpecificationDataTypeRecord extends UpdatableRecordImpl<Specificati
     /**
      * Create a detached, initialised SpecificationDataTypeRecord
      */
-    public SpecificationDataTypeRecord(Long dataTypeId, String dataTypeName, String definition, Long statusCodeId, Long gapAnalysisCodeId, ULong dtId, Byte isApproved, Long specificationId) {
+    public SpecificationDataTypeRecord(Long dataTypeId, String dataTypeName, String definition, Long statusCodeId, Long gapAnalysisCodeId, ULong dtId, Byte isApproved, Long specificationId, Long basedDtId, String constraint, String constraintType) {
         super(SpecificationDataType.SPECIFICATION_DATA_TYPE);
 
         setDataTypeId(dataTypeId);
@@ -166,6 +208,9 @@ public class SpecificationDataTypeRecord extends UpdatableRecordImpl<Specificati
         setDtId(dtId);
         setIsApproved(isApproved);
         setSpecificationId(specificationId);
+        setBasedDtId(basedDtId);
+        setConstraint(constraint);
+        setConstraintType(constraintType);
         resetChangedOnNotNull();
     }
 }
