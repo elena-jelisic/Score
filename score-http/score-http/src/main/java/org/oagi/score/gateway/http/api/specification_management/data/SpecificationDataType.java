@@ -2,6 +2,7 @@ package org.oagi.score.gateway.http.api.specification_management.data;
 
 
 import java.math.BigInteger;
+import java.util.List;
 
 public class SpecificationDataType {
     private Long dataTypeId;
@@ -15,6 +16,7 @@ public class SpecificationDataType {
     private SpecificationDataType basedDT;
     private String constraint;
     private String constraintType;
+    private List<SpecificationDataTypeAttribute> attributeList;
 
     public SpecificationDataType getBasedDT() {
         return basedDT;
@@ -102,5 +104,13 @@ public class SpecificationDataType {
 
     public void setSpecificationId(BigInteger specificationId) {
         this.specificationId = specificationId;
+    }
+
+    public List<SpecificationDataTypeAttribute> getAttributeList() {
+        return attributeList;
+    }
+
+    public void setAttributeList(List<SpecificationDataTypeAttribute> attributeList) {
+        this.attributeList = attributeList;
     }
 }

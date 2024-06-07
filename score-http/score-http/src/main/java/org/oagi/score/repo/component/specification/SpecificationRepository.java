@@ -184,6 +184,22 @@ public class SpecificationRepository {
                     .set(dtRecord)
                     .returning(SPECIFICATION_DATA_TYPE.DATA_TYPE_ID).fetchOne()
                     .getDataTypeId()));
+
+            if (dataType.getAttributeList() != null){
+                for (SpecificationDataTypeAttribute att: dataType.getAttributeList()){
+                    SpecificationDataTypeAttributeRecord dtAttributeRecord = new SpecificationDataTypeAttributeRecord();
+                    dtAttributeRecord.setDtAttributeName(att.getDataTypeAttributeName());
+                    dtAttributeRecord.setDefinition(att.getDefinition());
+                    dtAttributeRecord.setMaxCardinality(att.getMaxCardinality());
+                    dtAttributeRecord.setMinCardinality(att.getMinCardinality());
+                    dtAttributeRecord.setFromDataTypeId(dataType.getDataTypeId());
+                    dtAttributeRecord.setToDataTypeId(insertDataType(att.getToDataType(), specificationID).getDataTypeId());
+                    att.setDataTypeAttributeId(Long.valueOf(dslContext.insertInto(SPECIFICATION_DATA_TYPE_ATTRIBUTE)
+                            .set(dtAttributeRecord)
+                            .returning(SPECIFICATION_DATA_TYPE_ATTRIBUTE.DT_ATTRIBUTE_ID).fetchOne()
+                            .getDtAttributeId()));
+                }
+            }
         } else{
             dataType.setDataTypeId(dtRecord.getDataTypeId());
         }

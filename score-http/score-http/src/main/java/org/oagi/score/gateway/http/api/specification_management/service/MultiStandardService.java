@@ -142,6 +142,9 @@ public class MultiStandardService {
     private boolean complexTypeIsDefinedAsComplexContent(Element complexType) {
         return complexType.getElementsByTagName("xs:complexContent").getLength() > 0;
     }
+    private boolean complexTypeISDefinedAsSimpleContent (Element complexType) {
+        return complexType.getElementsByTagName("xs:simpleContent").getLength() > 0;
+    }
 
     private String getTargetNamespace (){
         NodeList schemaElement = doc.getElementsByTagName("xs:schema");
@@ -181,15 +184,27 @@ public class MultiStandardService {
                     basic.setDataType(dt);
                     addBasicComponentToTheList(fromAggregate.getComponentName(), basic);
                 } else if (complexTypeMapFull.containsKey(elementType)) {
-                    SpecificationAssociationComponent association = new SpecificationAssociationComponent();
-                    association.setAssociationName(resolveElementName(element));
-                    association.setMinCardinality(resolveElementMinCardinality(element));
-                    association.setMaxCardinality(resolveElementMaxCardinality(element));
-                    association.setDefinition(resolveElementDefinition(element));
-                    association.setFromAggregateComponent(fromAggregate);
-                    SpecificationAggregateComponent toAggregate = resolveComplexTypeStructure(complexTypeMapFull.get(elementType));
-                    association.setToAggregateComponent(toAggregate);
-                    addAssociationComponentToTheList(fromAggregate.getComponentName(), association);
+                    if (complexTypeISDefinedAsSimpleContent(complexTypeMapFull.get(elementType))) {
+                        SpecificationBasicComponent basic = new SpecificationBasicComponent();
+                        basic.setComponentName(resolveElementName(element));
+                        basic.setDefinition(resolveElementDefinition(element));
+                        basic.setAggregateComponentId(fromAggregate.getComponentId());
+                        basic.setMinCardinality(resolveElementMinCardinality(element));
+                        basic.setMaxCardinality(resolveElementMaxCardinality(element));
+                        basic.setDataType(specificationDTManagement(elementType));
+                        addBasicComponentToTheList(fromAggregate.getComponentName(), basic);
+                    } else {
+                        SpecificationAssociationComponent association = new SpecificationAssociationComponent();
+                        association.setAssociationName(resolveElementName(element));
+                        association.setMinCardinality(resolveElementMinCardinality(element));
+                        association.setMaxCardinality(resolveElementMaxCardinality(element));
+                        association.setDefinition(resolveElementDefinition(element));
+                        association.setFromAggregateComponent(fromAggregate);
+                        SpecificationAggregateComponent toAggregate = resolveComplexTypeStructure(complexTypeMapFull.get(elementType));
+                        association.setToAggregateComponent(toAggregate);
+                        addAssociationComponentToTheList(fromAggregate.getComponentName(), association);
+                    }
+
                 } else if (simpleTypeMapFull.containsKey(elementType)) {
                     SpecificationBasicComponent basic = new SpecificationBasicComponent();
                     basic.setComponentName(resolveElementName(element));
@@ -227,15 +242,27 @@ public class MultiStandardService {
                     basic.setDataType(specificationDTManagement(elementType));
                     addBasicComponentToTheList(fromAggregate.getComponentName(), basic);
                 } else if (complexTypeMapFull.containsKey(elementType)) {
-                    SpecificationAssociationComponent association = new SpecificationAssociationComponent();
-                    association.setAssociationName(resolveElementName(element));
-                    association.setMinCardinality(resolveElementMinCardinality(element));
-                    association.setMaxCardinality(resolveElementMaxCardinality(element));
-                    association.setDefinition(resolveElementDefinition(element));
-                    association.setFromAggregateComponent(fromAggregate);
-                    SpecificationAggregateComponent toAggregate = resolveComplexTypeStructure(complexTypeMapFull.get(elementType));
-                    association.setToAggregateComponent(toAggregate);
-                    addAssociationComponentToTheList(fromAggregate.getComponentName(), association);
+                    if (complexTypeISDefinedAsSimpleContent(complexTypeMapFull.get(elementType))) {
+                        SpecificationBasicComponent basic = new SpecificationBasicComponent();
+                        basic.setComponentName(resolveElementName(element));
+                        basic.setDefinition(resolveElementDefinition(element));
+                        basic.setAggregateComponentId(fromAggregate.getComponentId());
+                        basic.setMinCardinality(resolveElementMinCardinality(element));
+                        basic.setMaxCardinality(resolveElementMaxCardinality(element));
+                        basic.setDataType(specificationDTManagement(elementType));
+                        addBasicComponentToTheList(fromAggregate.getComponentName(), basic);
+                    } else {
+                        SpecificationAssociationComponent association = new SpecificationAssociationComponent();
+                        association.setAssociationName(resolveElementName(element));
+                        association.setMinCardinality(resolveElementMinCardinality(element));
+                        association.setMaxCardinality(resolveElementMaxCardinality(element));
+                        association.setDefinition(resolveElementDefinition(element));
+                        association.setFromAggregateComponent(fromAggregate);
+                        SpecificationAggregateComponent toAggregate = resolveComplexTypeStructure(complexTypeMapFull.get(elementType));
+                        association.setToAggregateComponent(toAggregate);
+                        addAssociationComponentToTheList(fromAggregate.getComponentName(), association);
+                    }
+
                 } else if (simpleTypeMapFull.containsKey(elementType)) {
                     SpecificationBasicComponent basic = new SpecificationBasicComponent();
                     basic.setComponentName(resolveElementName(element));
@@ -302,6 +329,39 @@ public class MultiStandardService {
                 Element listElement = resolveListElement (simpleTypeMapFull.get(type));
                 dt.setConstraintType(ConstraintType.LIST.toString());
                 dt.setConstraint(resolveItemTypeInAList(listElement));
+            }
+        } else if (complexTypeMapFull.containsKey(type)){
+            if (elementIsExtension(complexTypeMapFull.get(type))){
+                Element extensionElement = resolveExtension(complexTypeMapFull.get(type));
+                String baseType = resolveTheBaseType(extensionElement);
+                SpecificationDataType baseDT = specificationDTManagement(baseType);
+                dt.setBasedDT(baseDT);
+                if (elementHasAttributes(complexTypeMapFull.get(type))){
+                    NodeList attributeList = complexTypeMapFull.get(type).getElementsByTagName("xs:attribute");
+                    List<SpecificationDataTypeAttribute> dtAttributeList = new ArrayList<>();
+                    for (int i = 0; i < attributeList.getLength(); i++) {
+                        Element element = (Element) attributeList.item(i);
+                        String elementType = resolveElementType(element);
+                        if (elementTypeIsPrimitive(elementType)) {
+                            SpecificationDataTypeAttribute dtAttribute = new SpecificationDataTypeAttribute();
+                            dtAttribute.setDataTypeAttributeName(resolveElementName(element));
+                            dtAttribute.setDefinition(resolveElementDefinition(element));
+                            dtAttribute.setMinCardinality(resolveElementMinCardinality(element));
+                            dtAttribute.setMaxCardinality(resolveElementMaxCardinality(element));
+                            dtAttribute.setToDataType(specificationDTManagement(elementType));
+                            dtAttributeList.add(dtAttribute);
+                        } else if (simpleTypeMapFull.containsKey(elementType)) {
+                            SpecificationDataTypeAttribute dtAttribute = new SpecificationDataTypeAttribute();
+                            dtAttribute.setDataTypeAttributeName(resolveElementName(element));
+                            dtAttribute.setDefinition(resolveElementDefinition(element));
+                            dtAttribute.setMinCardinality(resolveElementMinCardinality(element));
+                            dtAttribute.setMaxCardinality(resolveElementMaxCardinality(element));
+                            dtAttribute.setToDataType(specificationDTManagement(elementType));
+                            dtAttributeList.add(dtAttribute);
+                        }
+                    }
+                    dt.setAttributeList(dtAttributeList);
+                }
             }
         }
         dt.setDataTypeName(type);
