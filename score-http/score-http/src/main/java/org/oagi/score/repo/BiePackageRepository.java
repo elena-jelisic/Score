@@ -408,7 +408,10 @@ public class BiePackageRepository {
             conditions.addAll(contains(request.getDen(), ASCCP_MANIFEST.DEN));
         }
         if (StringUtils.hasLength(request.getBusinessContext())) {
-            conditions.addAll(contains(request.getBusinessContext(), BIZ_CTX.NAME));
+            conditions.add(or(Arrays.asList(request.getBusinessContext().split(",")).stream().map(e -> e.trim())
+                    .filter(e -> StringUtils.hasLength(e))
+                    .map(e -> and(contains(e, BIZ_CTX.NAME)))
+                    .collect(Collectors.toList())));
         }
         if (StringUtils.hasLength(request.getVersion())) {
             conditions.addAll(contains(request.getVersion(), TOP_LEVEL_ASBIEP.VERSION));
@@ -503,11 +506,12 @@ public class BiePackageRepository {
         bieList.setLastUpdateUser(record.get(APP_USER.as("updater").LOGIN_ID.as("last_update_user")));
         bieList.setState(BieState.valueOf(record.get(TOP_LEVEL_ASBIEP.STATE)));
         ULong sourceTopLevelAsbiepId = record.get(TOP_LEVEL_ASBIEP.SOURCE_TOP_LEVEL_ASBIEP_ID);
-        if (sourceTopLevelAsbiepId != null) {
+        ULong sourceReleaseId = record.get(TOP_LEVEL_ASBIEP.as("source").RELEASE_ID.as("source_release_id"));
+        if (sourceTopLevelAsbiepId != null && sourceReleaseId != null) {
             bieList.setSourceTopLevelAsbiepId(sourceTopLevelAsbiepId.toBigInteger());
             bieList.setSourceAction(record.get(TOP_LEVEL_ASBIEP.SOURCE_ACTION));
             bieList.setSourceTimestamp(Date.from(record.get(TOP_LEVEL_ASBIEP.SOURCE_TIMESTAMP).atZone(ZoneId.systemDefault()).toInstant()));
-            bieList.setSourceReleaseId(record.get(TOP_LEVEL_ASBIEP.as("source").RELEASE_ID.as("source_release_id")).toBigInteger());
+            bieList.setSourceReleaseId(sourceReleaseId.toBigInteger());
             bieList.setSourceDen(record.get(ASCCP_MANIFEST.as("source_asccp_manifest").DEN.as("source_den")));
             bieList.setSourceReleaseNum(record.get(RELEASE.as("source_release").RELEASE_NUM.as("source_release_num")));
         }

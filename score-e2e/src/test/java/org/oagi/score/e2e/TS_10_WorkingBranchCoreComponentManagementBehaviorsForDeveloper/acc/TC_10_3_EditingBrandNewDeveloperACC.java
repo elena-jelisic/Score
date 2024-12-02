@@ -271,9 +271,9 @@ public class TC_10_3_EditingBrandNewDeveloperACC extends BaseTest {
         accPanel = accViewEditPage.getACCPanel(accNode);
         click(accPanel.getComponentTypeSelectField());
         waitFor(ofMillis(1000L));
-        assertEquals(1, getDriver().findElements(By.xpath("//mat-option//span[.=\" Base (Abstract) \"]//ancestor::mat-option")).size());
-        assertEquals(1, getDriver().findElements(By.xpath("//mat-option//span[.=\" Semantic Group \"]//ancestor::mat-option")).size());
-        assertEquals(1, getDriver().findElements(By.xpath("//mat-option//span[.=\" Semantics \"]//ancestor::mat-option")).size());
+        assertEquals(1, getDriver().findElements(By.xpath("//mat-option//span[.=\"Base (Abstract)\"]//ancestor::mat-option")).size());
+        assertEquals(1, getDriver().findElements(By.xpath("//mat-option//span[.=\"Semantic Group\"]//ancestor::mat-option")).size());
+        assertEquals(1, getDriver().findElements(By.xpath("//mat-option//span[.=\"Semantics\"]//ancestor::mat-option")).size());
         escape(getDriver());
     }
 
@@ -299,9 +299,10 @@ public class TC_10_3_EditingBrandNewDeveloperACC extends BaseTest {
         accPanel.setNamespace(namespace.getUri());
         accViewEditPage.hitUpdateButton();
         accViewEditPage.clickOnDropDownMenuByPath("/" + acc.getDen());
-
         assertEquals(0, getDriver().findElements(By.xpath("//span[contains(text(), \"Create OAGi Extension Component\")]")).size());
-        escape(getDriver());
+
+        accViewEditPage.openPage();
+        accNode = accViewEditPage.getNodeByPath("/" + acc.getDen());
         accPanel = accViewEditPage.getACCPanel(accNode);
         accPanel.setComponentType("Semantics");
         accViewEditPage.hitUpdateButton();
@@ -346,9 +347,10 @@ public class TC_10_3_EditingBrandNewDeveloperACC extends BaseTest {
         accPanel.setNamespace(namespace.getUri());
         accViewEditPage.hitUpdateButton();
         accViewEditPage.clickOnDropDownMenuByPath("/" + acc.getDen());
-
         assertEquals(0, getDriver().findElements(By.xpath("//span[contains(text(), \"Create OAGi Extension Component\")]")).size());
-        escape(getDriver());
+
+        accViewEditPage.openPage();
+        accNode = accViewEditPage.getNodeByPath("/" + acc.getDen());
         accPanel = accViewEditPage.getACCPanel(accNode);
         accPanel.setComponentType("Semantics");
         accViewEditPage.hitUpdateButton();
@@ -387,9 +389,10 @@ public class TC_10_3_EditingBrandNewDeveloperACC extends BaseTest {
         accPanel.setNamespace(namespace.getUri());
         accViewEditPage.hitUpdateButton();
         accViewEditPage.clickOnDropDownMenuByPath("/" + acc.getDen());
-
         assertEquals(0, getDriver().findElements(By.xpath("//span[contains(text(), \"Create OAGi Extension Component\")]")).size());
-        escape(getDriver());
+
+        accViewEditPage.openPage();
+        accNode = accViewEditPage.getNodeByPath("/" + acc.getDen());
         accPanel = accViewEditPage.getACCPanel(accNode);
         accPanel.setComponentType("Semantics");
         accViewEditPage.hitUpdateButton();
@@ -429,7 +432,10 @@ public class TC_10_3_EditingBrandNewDeveloperACC extends BaseTest {
         // cannot create extension component when the namespace is not set
         accViewEditPage.clickOnDropDownMenuByPath("/" + acc.getDen());
         assertEquals(1, getDriver().findElements(By.xpath("//span[contains(text(), \"Create OAGi Extension Component\")]")).size());
-        escape(getDriver());
+
+        accViewEditPage.openPage();
+        accNode = accViewEditPage.getNodeByPath("/" + acc.getDen());
+        accPanel = accViewEditPage.getACCPanel(accNode);
         accViewEditPage.createOAGiExtensionComponent("/" + acc.getDen());
         click(elementToBeClickable(getDriver(), By.xpath(
                 "//mat-dialog-container//span[contains(text(), \"Create\")]//ancestor::button[1]")));

@@ -417,7 +417,7 @@ public class TC_10_21_EditingRevisionDeveloperBCCP extends BaseTest {
         assertFalse(dtPanel.getQualifierField().isEnabled());
         assertEquals(dataType.getQualifier(), getText(dtPanel.getQualifierField()));
         assertFalse(dtPanel.getDefinitionSourceField().isEnabled());
-        assertFalse(dtPanel.getDefinitionField().isEnabled());
+        assertEquals("true", dtPanel.getDefinitionField().getAttribute("readonly"));
     }
 
     @Test
@@ -449,6 +449,7 @@ public class TC_10_21_EditingRevisionDeveloperBCCP extends BaseTest {
         BCCPChangeBDTDialog bccpChangeBDTDialog = bccpViewEditPage.openChangeBDTDialog();
         assertTrue(bccpChangeBDTDialog.isOpened());
     }
+
     @Test
     public void test_TA_10_21_3() {
         AppUserObject developer = getAPIFactory().getAppUserAPI().createRandomDeveloperAccount(false);
