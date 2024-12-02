@@ -1,4 +1,4 @@
-import {ComponentFixture, fakeAsync, TestBed} from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {DisabledComponent} from './disabled.component';
 
@@ -6,7 +6,7 @@ describe('DisabledComponent', () => {
   let component: DisabledComponent;
   let fixture: ComponentFixture<DisabledComponent>;
 
-  beforeEach(fakeAsync(() => {
+  beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [ DisabledComponent ]
     })

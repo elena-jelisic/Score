@@ -1,4 +1,4 @@
-import {ComponentFixture, fakeAsync, TestBed} from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {AccDetailComponent} from './acc-detail.component';
 
@@ -6,7 +6,7 @@ describe('AccDetailComponent', () => {
   let component: AccDetailComponent;
   let fixture: ComponentFixture<AccDetailComponent>;
 
-  beforeEach(fakeAsync(() => {
+  beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [AccDetailComponent]
     })

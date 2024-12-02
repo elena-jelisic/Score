@@ -522,7 +522,6 @@ public class TC_5_3_OAGISDevelopersAuthorizedManagementOfBusinessContexts extend
             editBusinessContextPage.hitUpdateButton();
 
             ViewEditBIEPage viewEditBIEPage = homePage.getBIEMenu().openViewEditBIESubMenu();
-            viewEditBIEPage.showAdvancedSearchPanel();
             viewEditBIEPage.setBusinessContext(newName);
             viewEditBIEPage.hitSearchButton();
 
@@ -545,7 +544,6 @@ public class TC_5_3_OAGISDevelopersAuthorizedManagementOfBusinessContexts extend
         // Test 'Name' field
         contextMenu = homePage.getContextMenu();
         viewEditBusinessContextPage = contextMenu.openViewEditBusinessContextSubMenu();
-        viewEditBusinessContextPage.showAdvancedSearchPanel();
         viewEditBusinessContextPage.setName(businessContext.getName());
         viewEditBusinessContextPage.hitSearchButton();
         assertBusinessContextNameInTheSearchResultsAtFirst(

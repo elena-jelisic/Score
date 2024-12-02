@@ -13,8 +13,6 @@ import {ModuleSetReleaseListComponent} from './module-set-release-list/module-se
 import {
   ModuleSetReleaseValidationDialogComponent
 } from './module-set-release-detail/module-set-release-validation-dialog/module-set-release-validation-dialog.component';
-import {SearchBarModule} from '../../common/search-bar/search-bar.module';
-import {ColumnSelectorModule} from '../../common/column-selector/column-selector.module';
 
 const routes: Routes = [
   {
@@ -51,9 +49,7 @@ const routes: Routes = [
     MaterialModule,
     CommonModule,
     ScoreCommonModule,
-    DragDropModule,
-    SearchBarModule,
-    ColumnSelectorModule
+    DragDropModule
   ],
   declarations: [
     ModuleSetReleaseListComponent,

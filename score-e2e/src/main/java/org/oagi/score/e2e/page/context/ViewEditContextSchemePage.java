@@ -1,7 +1,6 @@
 package org.oagi.score.e2e.page.context;
 
 import org.oagi.score.e2e.page.Page;
-import org.oagi.score.e2e.page.SearchBarPage;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 
@@ -10,7 +9,7 @@ import java.time.LocalDateTime;
 /**
  * An interface of 'View/Edit Context Scheme' page.
  */
-public interface ViewEditContextSchemePage extends Page, SearchBarPage {
+public interface ViewEditContextSchemePage extends Page {
 
     /**
      * Return the UI element of the 'Updater' select field.
@@ -67,6 +66,13 @@ public interface ViewEditContextSchemePage extends Page, SearchBarPage {
      * @param name Name
      */
     void setName(String name);
+
+    /**
+     * Return the UI element of the 'Search' button.
+     *
+     * @return the UI element of the 'Search' button
+     */
+    WebElement getSearchButton();
 
     /**
      * Hit the 'Search' button.

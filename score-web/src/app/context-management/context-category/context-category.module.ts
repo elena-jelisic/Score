@@ -9,9 +9,6 @@ import {ContextCategoryCreateComponent} from './context-category-create/context-
 import {ContextCategoryDetailComponent} from './context-category-detail/context-category-detail.component';
 import {AuthService} from '../../authentication/auth.service';
 import {ConfirmDialogModule} from '../../common/confirm-dialog/confirm-dialog.module';
-import {SearchBarModule} from '../../common/search-bar/search-bar.module';
-import {ColumnSelectorModule} from '../../common/column-selector/column-selector.module';
-import {ScoreCommonModule} from '../../common/score-common.module';
 
 const routes: Routes = [
   {
@@ -37,17 +34,14 @@ const routes: Routes = [
 ];
 
 @NgModule({
-    imports: [
-        RouterModule.forChild(routes),
-        FormsModule,
-        ReactiveFormsModule,
-        MaterialModule,
-        ConfirmDialogModule,
-        CommonModule,
-        SearchBarModule,
-        ColumnSelectorModule,
-        ScoreCommonModule
-    ],
+  imports: [
+    RouterModule.forChild(routes),
+    FormsModule,
+    ReactiveFormsModule,
+    MaterialModule,
+    ConfirmDialogModule,
+    CommonModule
+  ],
   declarations: [
     ContextCategoryListComponent,
     ContextCategoryCreateComponent,

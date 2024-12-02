@@ -1,4 +1,4 @@
-import {ComponentFixture, fakeAsync, TestBed} from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {PendingComponent} from './pending.component';
 
@@ -6,7 +6,7 @@ describe('PendingComponent', () => {
   let component: PendingComponent;
   let fixture: ComponentFixture<PendingComponent>;
 
-  beforeEach(fakeAsync(() => {
+  beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [ PendingComponent ]
     })

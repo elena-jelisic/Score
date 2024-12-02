@@ -16,8 +16,6 @@ import {SearchOptionsDialogModule} from '../search-options-dialog/search-options
 import {FindUsagesDialogModule} from '../find-usages-dialog/find-usages-dialog.module';
 import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
 import {TagService} from '../../tag-management/domain/tag.service';
-import {SearchBarModule} from '../../common/search-bar/search-bar.module';
-import {ColumnSelectorModule} from '../../common/column-selector/column-selector.module';
 
 const routes: Routes = [
   {
@@ -33,23 +31,21 @@ const routes: Routes = [
 ];
 
 @NgModule({
-    imports: [
-        RouterModule.forChild(routes),
-        FormsModule,
-        ReactiveFormsModule,
-        MaterialModule,
-        MatInputModule,
-        CommonModule,
-        TranslateModule,
-        ScoreCommonModule,
-        SearchOptionsDialogModule,
-        FindUsagesDialogModule,
-        DragDropModule,
-        AngularSplitModule,
-        FontAwesomeModule,
-        SearchBarModule,
-        ColumnSelectorModule
-    ],
+  imports: [
+    RouterModule.forChild(routes),
+    FormsModule,
+    ReactiveFormsModule,
+    MaterialModule,
+    MatInputModule,
+    CommonModule,
+    TranslateModule,
+    ScoreCommonModule,
+    SearchOptionsDialogModule,
+    FindUsagesDialogModule,
+    DragDropModule,
+    AngularSplitModule,
+    FontAwesomeModule
+  ],
   declarations: [
     AccDetailComponent,
     AppendAssociationDialogComponent,

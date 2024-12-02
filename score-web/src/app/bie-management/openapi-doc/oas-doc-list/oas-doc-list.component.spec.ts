@@ -1,4 +1,4 @@
-import {ComponentFixture, fakeAsync, TestBed} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {OasDocListComponent} from './oas-doc-list.component';
 
@@ -6,14 +6,12 @@ describe('OasDocListComponent', () => {
   let component: OasDocListComponent;
   let fixture: ComponentFixture<OasDocListComponent>;
 
-  beforeEach(fakeAsync(() => {
-    TestBed.configureTestingModule({
-      declarations: [OasDocListComponent]
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      declarations: [ OasDocListComponent ]
     })
-      .compileComponents();
-  }));
+    .compileComponents();
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(OasDocListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

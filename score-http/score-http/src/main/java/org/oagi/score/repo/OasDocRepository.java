@@ -136,10 +136,7 @@ public class OasDocRepository {
 
         public SelectBieForOasDocListArguments setBusinessContext(String businessContext) {
             if (StringUtils.hasLength(businessContext)) {
-                conditions.add(or(Arrays.asList(businessContext.split(",")).stream().map(e -> e.trim())
-                        .filter(e -> StringUtils.hasLength(e))
-                        .map(e -> and(contains(e, BIZ_CTX.NAME)))
-                        .collect(Collectors.toList())));
+                conditions.addAll(contains(businessContext, BIZ_CTX.NAME));
             }
             return this;
         }
@@ -260,59 +257,53 @@ public class OasDocRepository {
             return this;
         }
 
-        public SelectBieForOasDocListArguments setSort(String sortKey, String direction) {
-            if (StringUtils.hasLength(sortKey)) {
-                Field field = null;
+        public SelectBieForOasDocListArguments setSort(String field, String direction) {
+            if (StringUtils.hasLength(field)) {
                 SortField<?> sortField = null;
-                switch (sortKey) {
+                switch (field) {
                     case "state":
-                        field = TOP_LEVEL_ASBIEP.STATE;
-                        break;
+                        if ("asc".equals(direction)) {
+                            sortField = TOP_LEVEL_ASBIEP.STATE.asc();
+                        } else if ("desc".equals(direction)) {
+                            sortField = TOP_LEVEL_ASBIEP.STATE.desc();
+                        }
 
-                    case "branch":
-                    case "releaseNum":
-                        field = RELEASE.RELEASE_NUM;
-                        break;
-
-                    case "den":
-                        field = ASCCP_MANIFEST.DEN;
                         break;
 
                     case "topLevelAsccpPropertyTerm":
-                        field = ASCCP.PROPERTY_TERM;
+                        if ("asc".equals(direction)) {
+                            sortField = ASCCP.PROPERTY_TERM.asc();
+                        } else if ("desc".equals(direction)) {
+                            sortField = ASCCP.PROPERTY_TERM.desc();
+                        }
+
                         break;
 
-                    case "owner":
-                        field = APP_USER.LOGIN_ID;
+                    case "den":
+                        if ("asc".equals(direction)) {
+                            sortField = ASCCP_MANIFEST.DEN.asc();
+                        } else if ("desc".equals(direction)) {
+                            sortField = ASCCP_MANIFEST.DEN.desc();
+                        }
                         break;
 
-                    case "businessContexts":
-                        field = BIZ_CTX.NAME;
-                        break;
+                    case "releaseNum":
+                        if ("asc".equals(direction)) {
+                            sortField = RELEASE.RELEASE_NUM.asc();
+                        } else if ("desc".equals(direction)) {
+                            sortField = RELEASE.RELEASE_NUM.desc();
+                        }
 
-                    case "version":
-                        field = TOP_LEVEL_ASBIEP.VERSION;
-                        break;
-
-                    case "status":
-                        field = TOP_LEVEL_ASBIEP.STATUS;
-                        break;
-
-                    case "remark":
-                        field = ASBIEP.REMARK;
                         break;
 
                     case "lastUpdateTimestamp":
-                        field = TOP_LEVEL_ASBIEP.LAST_UPDATE_TIMESTAMP;
-                        break;
-                }
+                        if ("asc".equals(direction)) {
+                            sortField = TOP_LEVEL_ASBIEP.LAST_UPDATE_TIMESTAMP.asc();
+                        } else if ("desc".equals(direction)) {
+                            sortField = TOP_LEVEL_ASBIEP.LAST_UPDATE_TIMESTAMP.desc();
+                        }
 
-                if (field != null) {
-                    if ("asc".equals(direction)) {
-                        sortField = field.asc();
-                    } else if ("desc".equals(direction)) {
-                        sortField = field.desc();
-                    }
+                        break;
                 }
 
                 if (sortField != null) {
@@ -371,7 +362,6 @@ public class OasDocRepository {
             return selectBieForOasDocList(this, type);
         }
     }
-
     private <E> PaginationResponse<E> selectBieForOasDocList(SelectBieForOasDocListArguments arguments, Class<? extends E> type) {
         SelectOnConditionStep<Record> step = getSelectOnConditionStep(arguments);
         SelectConnectByStep<Record> conditionStep = step.where(arguments.getConditions());

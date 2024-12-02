@@ -191,7 +191,8 @@
                                     (click)="copyLink(node, $event)">
                             link
                           </mat-icon>
-                          <mat-icon class="context-menu-icon"
+                          <mat-icon [style.visibility]="dataSource.isExpandable(node) ? '' : 'hidden'"
+                                    class="context-menu-icon"
                                     [matMenuTriggerFor]="contextMenu"
                                     [matMenuTriggerData]="{'menuId': 'contextMenu'}"
                                     (click)="contextMenuItem = node; $event.stopPropagation();">more_vert
@@ -203,16 +204,10 @@
 
                   <!-- Context Menu Area -->
                   <mat-menu class="context-menu" #contextMenu="matMenu">
-                    <button mat-menu-item (click)="copyPath(contextMenuItem)">
-                      <span class="context-menu-item">Copy Path</span>
-                    </button>
-                    <mat-divider *ngIf="dataSource && dataSource.isExpandable(contextMenuItem)"></mat-divider>
-                    <button mat-menu-item (click)="dataSource.expandDescendants(contextMenuItem, 2)"
-                            *ngIf="dataSource && dataSource.isExpandable(contextMenuItem)">
+                    <button mat-menu-item (click)="dataSource.expandDescendants(contextMenuItem, 2)">
                       <span class="context-menu-item">Expand 2</span>
                     </button>
-                    <button mat-menu-item (click)="dataSource.expandDescendants(contextMenuItem, 3)"
-                            *ngIf="dataSource && dataSource.isExpandable(contextMenuItem)">
+                    <button mat-menu-item (click)="dataSource.expandDescendants(contextMenuItem, 3)">
                       <span class="context-menu-item">Expand 3</span>
                     </button>
                     <mat-divider *ngIf="canReuseBIE(contextMenuItem) || canCreateBIEFromThis(contextMenuItem)"></mat-divider>
@@ -253,24 +248,24 @@
                             [matTooltipDisabled]="canExtend(contextMenuItem)">
                       <span class="context-menu-item">Create ABIE Extension Globally</span>
                     </button>
-                    <mat-divider *ngIf="canEdit && dataSource && dataSource.isExpandable(contextMenuItem)"></mat-divider>
+                    <mat-divider *ngIf="canEdit"></mat-divider>
                     <button mat-menu-item (click)="enableChildren(contextMenuItem)"
-                            *ngIf="canEdit && dataSource && dataSource.isExpandable(contextMenuItem)"
+                            *ngIf="canEdit"
                             [disabled]="!isUsableChildren(contextMenuItem)">
                       <span class="context-menu-item">Enable Children</span>
                     </button>
                     <button mat-menu-item (click)="setMaxCardinality(contextMenuItem)"
-                            *ngIf="canEdit && dataSource && dataSource.isExpandable(contextMenuItem)"
+                            *ngIf="canEdit"
                             [disabled]="!isCardinalityEditable(contextMenuItem)">
                       <span class="context-menu-item">Set Children Max Cardinality to 1</span>
                     </button>
-                    <mat-divider *ngIf="canEdit && dataSource && dataSource.isExpandable(contextMenuItem)"></mat-divider>
+                    <mat-divider *ngIf="canEdit"></mat-divider>
                     <button mat-menu-item (click)="checkNillableOnChildBCCs(contextMenuItem)"
-                            *ngIf="canEdit && dataSource && dataSource.isExpandable(contextMenuItem)">
+                            *ngIf="canEdit">
                       <span class="context-menu-item">Check nillable on Child BCCs</span>
                     </button>
                     <button mat-menu-item (click)="uncheckNillableOnChildBCCs(contextMenuItem)"
-                            *ngIf="canEdit && dataSource && dataSource.isExpandable(contextMenuItem)">
+                            *ngIf="canEdit">
                       <span class="context-menu-item">Uncheck nillable on Child BCCs</span>
                     </button>
                   </mat-menu>
@@ -313,11 +308,13 @@
                       </div>
                       <div class="row">
                         <div class="col-md-12 col-sm-12">
-                          <mat-form-field>
+                          <mat-form-field class="{{ !canEdit ? 'mat-form-field-disabled' : '' }}">
                             <mat-label>Business Contexts</mat-label>
                             <mat-chip-grid #businessContextChipList>
                               @for (businessContext of businessContexts; track businessContext) {
                                 <mat-chip-row
+                                    [disabled]="!canEdit"
+                                    [selectable]="false"
                                     [removable]="isBusinessContextRemovable"
                                     (removed)="removeBusinessContext(businessContext)">
                                   {{ businessContext.name }}
@@ -331,14 +328,16 @@
                                 #businessContextInput
                                 [formControl]="businessContextCtrl"
                                 [matAutocomplete]="auto"
+                                [matAutocompleteDisabled]="!canEdit"
                                 [matChipInputFor]="businessContextChipList"
                                 [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
                                 [matChipInputAddOnBlur]="addOnBlur">
                             </mat-chip-grid>
                             <mat-autocomplete #auto="matAutocomplete" (optionSelected)="addBusinessContext($event)">
-                              @for (businessContext of filteredBusinessContexts | async; track businessContext) {
-                                <mat-option [value]="businessContext">{{ businessContext.name }}</mat-option>
-                              }
+                              <mat-option *ngFor="let businessContext of filteredBusinessContexts | async"
+                                          [value]="businessContext">
+                                {{ businessContext.name }}
+                              </mat-option>
                             </mat-autocomplete>
                           </mat-form-field>
                         </div>
@@ -405,13 +404,11 @@
                         <div class="col-12">
                           <mat-form-field>
                             <mat-label>Context Definition</mat-label>
-                            <div class="textarea-container">
-                              <textarea matInput rows="6"
-                                        placeholder="Context Definition"
-                                        [(ngModel)]="asAbieDetail().asbiep.definition"
-                                        [readonly]="!isEditable(selectedNode)">
-                              </textarea>
-                            </div>
+                            <textarea matInput rows="6"
+                                      placeholder="Context Definition"
+                                      [(ngModel)]="asAbieDetail().asbiep.definition"
+                                      [disabled]="!isEditable(selectedNode)">
+                            </textarea>
                           </mat-form-field>
                         </div>
                       </div>
@@ -419,17 +416,10 @@
                         <div class="col-12">
                           <mat-form-field>
                             <mat-label>Component Definition</mat-label>
-                            <div class="textarea-container">
-                              <textarea matInput rows="6"
-                                        placeholder="Component Definition" [readonly]="true"
-                                        value="{{ asAbieDetail().asccp.definition || ' ' }}">
-                              </textarea>
-                              <button mat-icon-button mat-small-icon-button *ngIf="used(selectedNode)"
-                                      (click)="copyToDefinition(asAbieDetail().asccp.definition, asAbieDetail().asbiep)"
-                                      matTooltip="Copy to Context Definition">
-                                <mat-icon>content_paste</mat-icon>
-                              </button>
-                            </div>
+                            <textarea matInput rows="6"
+                                      placeholder="Component Definition" [disabled]="true"
+                                      value="{{ asAbieDetail().asccp.definition || ' ' }}">
+                            </textarea>
                           </mat-form-field>
                         </div>
                       </div>
@@ -437,17 +427,10 @@
                         <div class="col-12">
                           <mat-form-field>
                             <mat-label>Type Definition</mat-label>
-                            <div class="textarea-container">
-                              <textarea matInput rows="6"
-                                        placeholder="Type Definition" [readonly]="true"
-                                        value="{{ asAbieDetail().acc.definition || ' ' }}">
-                              </textarea>
-                              <button mat-icon-button mat-small-icon-button *ngIf="used(selectedNode)"
-                                      (click)="copyToDefinition(asAbieDetail().acc.definition, asAbieDetail().asbiep)"
-                                      matTooltip="Copy to Context Definition">
-                                <mat-icon>content_paste</mat-icon>
-                              </button>
-                            </div>
+                            <textarea matInput rows="6"
+                                      placeholder="Type Definition" [disabled]="true"
+                                      value="{{ asAbieDetail().acc.definition || ' ' }}">
+                            </textarea>
                           </mat-form-field>
                         </div>
                       </div>
@@ -591,13 +574,11 @@
                         <div class="col-12">
                           <mat-form-field>
                             <mat-label>Context Definition</mat-label>
-                            <div class="textarea-container">
-                              <textarea matInput rows="6"
-                                        placeholder="Context Definition"
-                                        [(ngModel)]="asAsbiepDetail().asbie.definition"
-                                        [readonly]="!isEditable(selectedNode)">
-                              </textarea>
-                            </div>
+                            <textarea matInput rows="6"
+                                      placeholder="Context Definition"
+                                      [(ngModel)]="asAsbiepDetail().asbie.definition"
+                                      [disabled]="!isEditable(selectedNode)">
+                            </textarea>
                           </mat-form-field>
                         </div>
                       </div>
@@ -699,17 +680,10 @@
 
                         <mat-form-field>
                           <mat-label>Context Definition</mat-label>
-                          <div class="textarea-container">
-                            <textarea matInput rows="6"
-                                      placeholder="Context Definition"
-                                      [value]="reusedNodeDetail.asbiep.definition"
-                                      [readonly]="true"></textarea>
-                            <button mat-icon-button mat-small-icon-button *ngIf="used(selectedNode)"
-                                    (click)="copyToDefinition(reusedNodeDetail.asbiep.definition, asAsbiepDetail().asbie)"
-                                    matTooltip="Copy to Context Definition">
-                              <mat-icon>content_paste</mat-icon>
-                            </button>
-                          </div>
+                          <textarea matInput rows="6"
+                                    placeholder="Context Definition"
+                                    [value]="reusedNodeDetail.asbiep.definition"
+                                    [disabled]="true"></textarea>
                         </mat-form-field>
                       </div>
 
@@ -717,17 +691,10 @@
                         <div class="col-md-12 col-sm-12">
                           <mat-form-field>
                             <mat-label>Association Definition</mat-label>
-                            <div class="textarea-container">
-                              <textarea matInput rows="6"
-                                        placeholder="Association Definition" [readonly]="true"
-                                        value="{{ asAsbiepDetail().ascc.definition || ' ' }}">
-                              </textarea>
-                              <button mat-icon-button mat-small-icon-button *ngIf="used(selectedNode)"
-                                      (click)="copyToDefinition(asAsbiepDetail().ascc.definition, asAsbiepDetail().asbie)"
-                                      matTooltip="Copy to Context Definition">
-                                <mat-icon>content_paste</mat-icon>
-                              </button>
-                            </div>
+                            <textarea matInput rows="6"
+                                      placeholder="Association Definition" [disabled]="true"
+                                      value="{{ asAsbiepDetail().ascc.definition || ' ' }}">
+                            </textarea>
                           </mat-form-field>
                         </div>
                       </div>
@@ -736,17 +703,10 @@
                         <div class="col-md-12 col-sm-12">
                           <mat-form-field>
                             <mat-label>Component Definition</mat-label>
-                            <div class="textarea-container">
-                              <textarea matInput rows="6"
-                                        placeholder="Component Definition" [readonly]="true"
-                                        value="{{ asAsbiepDetail().asccp.definition || ' ' }}">
-                              </textarea>
-                              <button mat-icon-button mat-small-icon-button *ngIf="used(selectedNode)"
-                                      (click)="copyToDefinition(asAsbiepDetail().asccp.definition, asAsbiepDetail().asbie)"
-                                      matTooltip="Copy to Context Definition">
-                                <mat-icon>content_paste</mat-icon>
-                              </button>
-                            </div>
+                            <textarea matInput rows="6"
+                                      placeholder="Component Definition" [disabled]="true"
+                                      value="{{ asAsbiepDetail().asccp.definition || ' ' }}">
+                            </textarea>
                           </mat-form-field>
                         </div>
                       </div>
@@ -755,17 +715,10 @@
                         <div class="col-md-12 col-sm-12">
                           <mat-form-field>
                             <mat-label>Type Definition</mat-label>
-                            <div class="textarea-container">
-                              <textarea matInput rows="6"
-                                        placeholder="Type Definition" [readonly]="true"
-                                        value="{{ asAsbiepDetail().acc.definition || ' ' }}">
-                              </textarea>
-                              <button mat-icon-button mat-small-icon-button *ngIf="used(selectedNode)"
-                                      (click)="copyToDefinition(asAsbiepDetail().acc.definition, asAsbiepDetail().asbie)"
-                                      matTooltip="Copy to Context Definition">
-                                <mat-icon>content_paste</mat-icon>
-                              </button>
-                            </div>
+                            <textarea matInput rows="6"
+                                      placeholder="Type Definition" [disabled]="true"
+                                      value="{{ asAsbiepDetail().acc.definition || ' ' }}">
+                            </textarea>
                           </mat-form-field>
                         </div>
                       </div>
@@ -1122,13 +1075,11 @@
                         <div class="col-12">
                           <mat-form-field>
                             <mat-label>Context Definition</mat-label>
-                            <div class="textarea-container">
-                              <textarea matInput rows="6"
-                                        placeholder="Context Definition"
-                                        [(ngModel)]="asBbiepDetail().bbie.definition"
-                                        [readonly]="!isEditable(selectedNode)">
-                              </textarea>
-                            </div>
+                            <textarea matInput rows="6"
+                                      placeholder="Context Definition"
+                                      [(ngModel)]="asBbiepDetail().bbie.definition"
+                                      [disabled]="!isEditable(selectedNode)">
+                            </textarea>
                           </mat-form-field>
                         </div>
                       </div>
@@ -1137,17 +1088,10 @@
                         <div class="col-lg-12 col-md-12 col-sm-12">
                           <mat-form-field>
                             <mat-label>Association Definition</mat-label>
-                            <div class="textarea-container">
-                              <textarea matInput rows="6"
-                                        placeholder="Association Definition" [readonly]="true"
-                                        value="{{ asBbiepDetail().bcc.definition || ' ' }}">
-                              </textarea>
-                              <button mat-icon-button mat-small-icon-button *ngIf="used(selectedNode)"
-                                      (click)="copyToDefinition(asBbiepDetail().bcc.definition, asBbiepDetail().bbie)"
-                                      matTooltip="Copy to Context Definition">
-                                <mat-icon>content_paste</mat-icon>
-                              </button>
-                            </div>
+                            <textarea matInput rows="6"
+                                      placeholder="Association Definition" [disabled]="true"
+                                      value="{{ asBbiepDetail().bcc.definition || ' ' }}">
+                            </textarea>
                           </mat-form-field>
                         </div>
                       </div>
@@ -1156,17 +1100,10 @@
                         <div class="col-lg-12 col-md-12 col-sm-12">
                           <mat-form-field>
                             <mat-label>Component Definition</mat-label>
-                            <div class="textarea-container">
-                              <textarea matInput rows="6"
-                                        placeholder="Component Definition" [readonly]="true"
-                                        value="{{ asBbiepDetail().bccp.definition || ' ' }}">
-                              </textarea>
-                              <button mat-icon-button mat-small-icon-button *ngIf="used(selectedNode)"
-                                      (click)="copyToDefinition(asBbiepDetail().bccp.definition, asBbiepDetail().bbie)"
-                                      matTooltip="Copy to Context Definition">
-                                <mat-icon>content_paste</mat-icon>
-                              </button>
-                            </div>
+                            <textarea matInput rows="6"
+                                      placeholder="Component Definition" [disabled]="true"
+                                      value="{{ asBbiepDetail().bccp.definition || ' ' }}">
+                            </textarea>
                           </mat-form-field>
                         </div>
                       </div>
@@ -1505,13 +1442,11 @@
                         <div class="col-12">
                           <mat-form-field>
                             <mat-label>Context Definition</mat-label>
-                            <div class="textarea-container">
-                              <textarea matInput rows="6"
-                                        placeholder="Context Definition"
-                                        [(ngModel)]="asBbieScDetail().bbieSc.definition"
-                                        [readonly]="!isEditable(selectedNode)">
-                              </textarea>
-                            </div>
+                            <textarea matInput rows="6"
+                                      placeholder="Context Definition"
+                                      [(ngModel)]="asBbieScDetail().bbieSc.definition"
+                                      [disabled]="!isEditable(selectedNode)">
+                            </textarea>
                           </mat-form-field>
                         </div>
                       </div>
@@ -1520,17 +1455,10 @@
                         <div class="col-12">
                           <mat-form-field>
                             <mat-label>Component Definition</mat-label>
-                            <div class="textarea-container">
-                              <textarea matInput rows="6"
-                                        placeholder="Component Definition" [readonly]="true"
-                                        value="{{ asBbieScDetail().bdtSc.definition || ' ' }}">
-                              </textarea>
-                              <button mat-icon-button mat-small-icon-button *ngIf="used(selectedNode)"
-                                      (click)="copyToDefinition(asBbieScDetail().bdtSc.definition, asBbieScDetail().bbieSc)"
-                                      matTooltip="Copy to Context Definition">
-                                <mat-icon>content_paste</mat-icon>
-                              </button>
-                            </div>
+                            <textarea matInput rows="6"
+                                      placeholder="Component Definition" [disabled]="true"
+                                      value="{{ asBbieScDetail().bdtSc.definition || ' ' }}">
+                            </textarea>
                           </mat-form-field>
                         </div>
                       </div>

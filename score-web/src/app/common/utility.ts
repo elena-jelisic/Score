@@ -3,7 +3,6 @@ import * as CryptoJS from 'crypto-js';
 import {FormControl} from '@angular/forms';
 import {ReplaySubject} from 'rxjs';
 import {UserToken} from '../authentication/domain/auth';
-import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 
 export function base64Encode(str): string {
   return CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(str));
@@ -131,27 +130,6 @@ export function saveBooleanProperty(userToken: UserToken, key: string, value: bo
   localStorage.setItem(itemKey, btoa(JSON.stringify({value})));
 }
 
-export function loadProperty(userToken: UserToken, key: string, defaultValue: string): string {
-  if (!userToken || !key) {
-    return defaultValue;
-  }
-
-  const itemKey = 'X-Score-' + key + '[' + userToken.username + ']';
-  try {
-    return JSON.parse(atob(localStorage.getItem(itemKey))).value;
-  } catch (ignore) {
-    return defaultValue;
-  }
-}
-
-export function saveProperty(userToken: UserToken, key: string, value: string) {
-  if (!userToken || !key) {
-    return;
-  }
-  const itemKey = 'X-Score-' + key + '[' + userToken.username + ']';
-  localStorage.setItem(itemKey, btoa(JSON.stringify({value})));
-}
-
 export function loadBranch(userToken: UserToken, type: string): number | undefined {
   if (!userToken || !type) {
     return undefined;
@@ -235,44 +213,13 @@ export class UnboundedPipe implements PipeTransform {
 
 @Pipe({name: 'highlight'})
 export class HighlightSearch implements PipeTransform {
-  constructor(private sanitizer: DomSanitizer) {}
 
-  transform(value: string, keyword: string, classes?: string[]): SafeHtml {
-    if (!value) {
+  transform(value: any, keyword: string): any {
+    if (!keyword) {
       return value;
     }
-
-    // Escape HTML special characters in value
-    const escapedValue = this.escapeHtml(value);
-
-    if (!keyword) {
-      return escapedValue;
-    }
-
-    // Escape HTML special characters and special regex characters in the keyword
-    const escapedKeyword = this.escapeHtml(keyword).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const re = new RegExp(escapedKeyword, 'gi');
-
-    // Replace matched keyword with <mark> tags
-    const highlightedValue = escapedValue.replace(
-      re,
-      match => `<mark${classes ? ` class="${classes.join(' ')}"` : ''}>${match}</mark>`
-    );
-
-    // Return the sanitized HTML to Angular
-    return this.sanitizer.bypassSecurityTrustHtml(highlightedValue);
-  }
-
-  // Helper function to escape HTML special characters
-  private escapeHtml(text: string): string {
-    const map: { [key: string]: string } = {
-      '&': '&amp;',
-      '<': '&lt;',
-      '>': '&gt;',
-      '"': '&quot;',
-      "'": '&#39;',
-    };
-    return text.replace(/[&<>"']/g, m => map[m]);
+    const re = new RegExp(keyword, 'gi');
+    return value.replace(re, '<mark>$&</mark>');
   }
 }
 

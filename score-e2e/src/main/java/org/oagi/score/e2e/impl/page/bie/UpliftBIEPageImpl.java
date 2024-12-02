@@ -2,7 +2,6 @@ package org.oagi.score.e2e.impl.page.bie;
 
 import org.oagi.score.e2e.impl.PageHelper;
 import org.oagi.score.e2e.impl.page.BasePageImpl;
-import org.oagi.score.e2e.impl.page.BaseSearchBarPageImpl;
 import org.oagi.score.e2e.page.BasePage;
 import org.oagi.score.e2e.page.bie.UpliftBIEPage;
 import org.oagi.score.e2e.page.bie.UpliftBIEVerificationPage;
@@ -16,8 +15,7 @@ import java.time.format.DateTimeFormatter;
 import static java.time.Duration.ofMillis;
 import static org.oagi.score.e2e.impl.PageHelper.*;
 
-public class UpliftBIEPageImpl extends BaseSearchBarPageImpl implements UpliftBIEPage {
-
+public class UpliftBIEPageImpl extends BasePageImpl implements UpliftBIEPage {
     private static final By SOURCE_BRANCH_SELECT_FIELD_LOCATOR =
             By.xpath("//*[contains(text(), \"Source Branch\")]//ancestor::mat-form-field[1]//mat-select");
 
@@ -33,6 +31,9 @@ public class UpliftBIEPageImpl extends BaseSearchBarPageImpl implements UpliftBI
     private static final By UPDATER_SELECT_FIELD_LOCATOR =
             By.xpath("//*[contains(text(), \"Updater\")]//ancestor::div[1]/mat-select[1]");
 
+    private static final By DEN_FIELD_LOCATOR =
+            By.xpath("//mat-label[contains(text(), \"DEN\")]//ancestor::mat-form-field//input");
+
     private static final By BUSINESS_CONTEXT_FIELD_LOCATOR =
             By.xpath("//input[contains(@placeholder, \"Business Context\")]");
 
@@ -45,6 +46,8 @@ public class UpliftBIEPageImpl extends BaseSearchBarPageImpl implements UpliftBI
     private static final By UPDATED_END_DATE_FIELD_LOCATOR =
             By.xpath("//input[contains(@placeholder, \"Updated end date\")]");
 
+    private static final By SEARCH_BUTTON_LOCATOR =
+            By.xpath("//span[contains(text(), \"Search\")]//ancestor::button[1]");
     private static final By NEXT_BUTTON_LOCATOR =
             By.xpath("//span[contains(text(), \"Next\")]//ancestor::button[1]");
 
@@ -151,7 +154,7 @@ public class UpliftBIEPageImpl extends BaseSearchBarPageImpl implements UpliftBI
 
     @Override
     public WebElement getDenField() {
-        return getInputFieldInSearchBar();
+        return visibilityOfElementLocated(getDriver(), DEN_FIELD_LOCATOR);
     }
 
     @Override
@@ -189,6 +192,11 @@ public class UpliftBIEPageImpl extends BaseSearchBarPageImpl implements UpliftBI
     public void setUpdatedEndDate(LocalDateTime updatedEndDate) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
         sendKeys(getUpdatedEndDateField(), formatter.format(updatedEndDate));
+    }
+
+    @Override
+    public WebElement getSearchButton() {
+        return elementToBeClickable(getDriver(), SEARCH_BUTTON_LOCATOR);
     }
 
     @Override

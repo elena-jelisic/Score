@@ -1,13 +1,12 @@
 package org.oagi.score.e2e.page.bie;
 
 import org.oagi.score.e2e.page.Dialog;
-import org.oagi.score.e2e.page.SearchBarPage;
 import org.openqa.selenium.WebElement;
 
 /**
  * An interface of 'BIE Transfer Ownership' dialog.
  */
-public interface TransferBIEOwnershipDialog extends Dialog, SearchBarPage {
+public interface TransferBIEOwnershipDialog extends Dialog {
 
     /**
      * Return the UI element of the 'Login ID' field.
@@ -50,6 +49,13 @@ public interface TransferBIEOwnershipDialog extends Dialog, SearchBarPage {
      * @param organization Organization
      */
     void setOrganization(String organization);
+
+    /**
+     * Return the UI element of the 'Search' button.
+     *
+     * @return the UI element of the 'Search' button
+     */
+    WebElement getSearchButton();
 
     /**
      * Hit the 'Search' button

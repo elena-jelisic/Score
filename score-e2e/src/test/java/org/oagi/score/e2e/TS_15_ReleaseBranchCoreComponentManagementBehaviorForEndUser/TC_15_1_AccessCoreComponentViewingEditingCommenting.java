@@ -511,11 +511,7 @@ public class TC_15_1_AccessCoreComponentViewingEditingCommenting extends BaseTes
         HomePage homePage = loginPage().signIn(endUser.getLoginId(), endUser.getPassword());
         CoreComponentMenu coreComponentMenu = homePage.getCoreComponentMenu();
         ViewEditCoreComponentPage viewEditCoreComponentPage = coreComponentMenu.openViewEditCoreComponentSubMenu();
-        viewEditCoreComponentPage.showAdvancedSearchPanel();
         viewEditCoreComponentPage.setBranch(branch);
-        viewEditCoreComponentPage.setOwner(endUser.getLoginId());
-        viewEditCoreComponentPage.hitSearchButton();
-
         WebElement tr = viewEditCoreComponentPage.getTableRecordByValue(acc.getDen());
         WebElement td = viewEditCoreComponentPage.getColumnByName(tr, "select");
         assertEnabled(td.findElement(By.tagName("mat-checkbox")));
@@ -531,7 +527,6 @@ public class TC_15_1_AccessCoreComponentViewingEditingCommenting extends BaseTes
 
         viewEditCoreComponentPage.hitMoveToQAButton();
 
-        viewEditCoreComponentPage.showAdvancedSearchPanel();
         viewEditCoreComponentPage.setState("QA");
         escape(getDriver());
         viewEditCoreComponentPage.hitSearchButton();
@@ -556,7 +551,6 @@ public class TC_15_1_AccessCoreComponentViewingEditingCommenting extends BaseTes
         viewEditCoreComponentPage.hitBackToWIPButton();
         viewEditCoreComponentPage.openPage();
         waitFor(Duration.ofMillis(8000L));
-        viewEditCoreComponentPage.showAdvancedSearchPanel();
         viewEditCoreComponentPage.setBranch(branch);
         viewEditCoreComponentPage.setState("WIP");
         escape(getDriver());
@@ -581,7 +575,6 @@ public class TC_15_1_AccessCoreComponentViewingEditingCommenting extends BaseTes
         viewEditCoreComponentPage.hitMoveToQAButton();
         viewEditCoreComponentPage.openPage();
         waitFor(Duration.ofMillis(8000L));
-        viewEditCoreComponentPage.showAdvancedSearchPanel();
         viewEditCoreComponentPage.setBranch(branch);
         viewEditCoreComponentPage.setState("QA");
         escape(getDriver());
@@ -603,7 +596,6 @@ public class TC_15_1_AccessCoreComponentViewingEditingCommenting extends BaseTes
         viewEditCoreComponentPage.hitMoveToProductionButton();
         viewEditCoreComponentPage.openPage();
         waitFor(Duration.ofMillis(8000L));
-        viewEditCoreComponentPage.showAdvancedSearchPanel();
         viewEditCoreComponentPage.setBranch(branch);
         viewEditCoreComponentPage.setState("Production");
         escape(getDriver());

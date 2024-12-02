@@ -1,7 +1,6 @@
 package org.oagi.score.e2e.impl.page.oas;
 
 import org.oagi.score.e2e.impl.page.BasePageImpl;
-import org.oagi.score.e2e.impl.page.BaseSearchBarPageImpl;
 import org.oagi.score.e2e.obj.OpenAPIDocumentObject;
 import org.oagi.score.e2e.page.BasePage;
 import org.oagi.score.e2e.page.oas.CreateOpenAPIDocumentPage;
@@ -18,7 +17,7 @@ import java.time.format.DateTimeFormatter;
 import static java.time.Duration.ofMillis;
 import static org.oagi.score.e2e.impl.PageHelper.*;
 
-public class OpenAPIDocumentPageImpl extends BaseSearchBarPageImpl implements OpenAPIDocumentPage {
+public class OpenAPIDocumentPageImpl extends BasePageImpl implements OpenAPIDocumentPage {
 
     private static final By UPDATER_SELECT_FIELD_LOCATOR =
             By.xpath("//*[contains(text(), \"Updater\")]//ancestor::div[1]/mat-select[1]");
@@ -32,8 +31,14 @@ public class OpenAPIDocumentPageImpl extends BaseSearchBarPageImpl implements Op
     private static final By UPDATED_END_DATE_FIELD_LOCATOR =
             By.xpath("//input[contains(@placeholder, \"Updated end date\")]");
 
+    private static final By TITLE_FIELD_LOCATOR =
+            By.xpath("//mat-label[contains(text(), \"Title\")]//ancestor::mat-form-field//input");
+
     private static final By DESCRIPTION_FIELD_LOCATOR =
             By.xpath("//mat-label[contains(text(), \"Description\")]//ancestor::mat-form-field//input");
+
+    private static final By SEARCH_BUTTON_LOCATOR =
+            By.xpath("//span[contains(text(), \"Search\")]//ancestor::button[1]");
 
     private static final By NEW_OPENAPI_DOCUMENT_BUTTON_LOCATOR =
             By.xpath("//span[contains(text(), \"New OpenAPI Document\")]//ancestor::button[1]");
@@ -101,7 +106,7 @@ public class OpenAPIDocumentPageImpl extends BaseSearchBarPageImpl implements Op
 
     @Override
     public WebElement getTitleField() {
-        return getInputFieldInSearchBar();
+        return visibilityOfElementLocated(getDriver(), TITLE_FIELD_LOCATOR);
     }
 
     @Override
@@ -117,6 +122,11 @@ public class OpenAPIDocumentPageImpl extends BaseSearchBarPageImpl implements Op
     @Override
     public void setDescription(String description) {
         sendKeys(getDescriptionField(), description);
+    }
+
+    @Override
+    public WebElement getSearchButton() {
+        return elementToBeClickable(getDriver(), SEARCH_BUTTON_LOCATOR);
     }
 
     @Override
@@ -144,11 +154,11 @@ public class OpenAPIDocumentPageImpl extends BaseSearchBarPageImpl implements Op
     public void setItemsPerPage(int items) {
         WebElement itemsPerPageField = elementToBeClickable(getDriver(),
                 By.xpath("//div[.=\" Items per page: \"]/following::mat-form-field//mat-select"));
-        click(getDriver(), itemsPerPageField);
+        click(itemsPerPageField);
         waitFor(ofMillis(500L));
         WebElement itemField = elementToBeClickable(getDriver(),
                 By.xpath("//span[contains(text(), \"" + items + "\")]//ancestor::mat-option//div[1]//preceding-sibling::span"));
-        click(getDriver(), itemField);
+        click(itemField);
         waitFor(ofMillis(500L));
     }
 

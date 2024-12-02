@@ -2,7 +2,6 @@ package org.oagi.score.e2e.page.core_component;
 
 import org.oagi.score.e2e.obj.AppUserObject;
 import org.oagi.score.e2e.page.Page;
-import org.oagi.score.e2e.page.SearchBarPage;
 import org.oagi.score.e2e.page.bie.EditBIEPage;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
@@ -13,7 +12,7 @@ import java.time.LocalDateTime;
 /**
  * An interface of 'View/Edit Core Component' page.
  */
-public interface ViewEditCoreComponentPage extends Page, SearchBarPage {
+public interface ViewEditCoreComponentPage extends Page {
 
     /**
      * Return the UI element of the 'Branch' select field.
@@ -163,33 +162,16 @@ public interface ViewEditCoreComponentPage extends Page, SearchBarPage {
     WebElement getComponentTypeSelectField();
 
     /**
+     * Return the UI element of the 'Search' button.
+     *
+     * @return the UI element of the 'Search' button
+     */
+    WebElement getSearchButton();
+
+    /**
      * Hit the 'Search' button.
      */
     void hitSearchButton();
-
-    /**
-     * Return the UI element of the 'Browser View' toggle button.
-     *
-     * @return the UI element of the 'Browser View' toggle button.
-     */
-    WebElement getBrowserViewToggleButton();
-
-    /**
-     * Return the UI element of the 'Browser View' toggle label.
-     *
-     * @return the UI element of the 'Browser View' toggle label
-     */
-    WebElement getBrowserViewToggleLabel();
-
-    /**
-     * Toggle to the browser view.
-     */
-    void toggleToBrowserView();
-
-    /**
-     * Toggle to the dev view.
-     */
-    void toggleToDevView();
 
     /**
      * Open the page of the ACC filtered by `den` and `branch`.

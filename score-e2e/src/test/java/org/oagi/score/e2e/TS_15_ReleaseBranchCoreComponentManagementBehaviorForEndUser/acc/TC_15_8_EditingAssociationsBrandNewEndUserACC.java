@@ -153,7 +153,6 @@ public class TC_15_8_EditingAssociationsBrandNewEndUserACC extends BaseTest {
         accViewEditPage = viewEditCoreComponentPage.openACCViewEditPageByManifestID(acc.getAccManifestId());
         appendASCCPDialog = accViewEditPage.appendPropertyAtLast("/" + acc.getDen());
         appendASCCPDialog.selectAssociation("Account Identifiers. Named Identifiers");
-        click(getDialogButtonByName(getDriver(), "Proceed anyway"));
 
         String xpathExpr = "//score-multi-actions-snack-bar//div[contains(@class, \"message\")]";
         String snackBarMessage = getText(visibilityOfElementLocated(getDriver(), By.xpath(xpathExpr)));
@@ -295,11 +294,9 @@ public class TC_15_8_EditingAssociationsBrandNewEndUserACC extends BaseTest {
 
         appendASCCPDialog = accViewEditPage.insertPropertyBefore("/" + acc.getDen() + "/" + asccp.getPropertyTerm());
         appendASCCPDialog.selectAssociation(asccp_before.getDen());
-        click(getDialogButtonByName(getDriver(), "Proceed anyway"));
 
         appendASCCPDialog = accViewEditPage.insertPropertyAfter("/" + acc.getDen() + "/" + asccp.getPropertyTerm());
         appendASCCPDialog.selectAssociation(asccp_after.getDen());
-        click(getDialogButtonByName(getDriver(), "Proceed anyway"));
 
         viewEditCoreComponentPage.openPage();
         accViewEditPage = viewEditCoreComponentPage.openACCViewEditPageByManifestID(acc.getAccManifestId());
@@ -734,7 +731,6 @@ public class TC_15_8_EditingAssociationsBrandNewEndUserACC extends BaseTest {
 
         appendBCCPDialog = accViewEditPage.appendPropertyAtLast("/" + acc.getDen());
         appendBCCPDialog.selectAssociation("Accrued Amount");
-        click(getDialogButtonByName(getDriver(), "Proceed anyway"));
 
         String xpathExpr = "//score-multi-actions-snack-bar//div[contains(@class, \"message\")]";
         String snackBarMessage = getText(visibilityOfElementLocated(getDriver(), By.xpath(xpathExpr)));
@@ -1220,11 +1216,9 @@ public class TC_15_8_EditingAssociationsBrandNewEndUserACC extends BaseTest {
 
         appendASCCPDialog = accViewEditPage.insertPropertyBefore("/" + acc.getDen() + "/" + asccp.getPropertyTerm());
         appendASCCPDialog.selectAssociation(asccp_before.getDen());
-        click(getDialogButtonByName(getDriver(), "Proceed anyway"));
 
         appendASCCPDialog = accViewEditPage.insertPropertyAfter("/" + acc.getDen() + "/" + asccp.getPropertyTerm());
         appendASCCPDialog.selectAssociation(asccp_after.getDen());
-        click(getDialogButtonByName(getDriver(), "Proceed anyway"));
 
         viewEditCoreComponentPage.openPage();
         accViewEditPage = viewEditCoreComponentPage.openACCViewEditPageByManifestID(acc.getAccManifestId());
@@ -1493,7 +1487,6 @@ public class TC_15_8_EditingAssociationsBrandNewEndUserACC extends BaseTest {
         }
         click(tr.findElement(By.className("mat-column-" + "select")));
         click(elementToBeClickable(getDriver(), APPLY_BUTTON_LOCATOR));
-        click(getDialogButtonByName(getDriver(), "Proceed anyway"));
 
         String xpathExpr = "//score-multi-actions-snack-bar//div[contains(@class, \"message\")]";
         String snackBarMessage = getText(visibilityOfElementLocated(getDriver(), By.xpath(xpathExpr)));
@@ -1584,7 +1577,7 @@ public class TC_15_8_EditingAssociationsBrandNewEndUserACC extends BaseTest {
             viewEditCoreComponentPage.hitSearchButton();
 
             WebElement tr = viewEditCoreComponentPage.getTableRecordByValue(acc.getDen());
-            WebElement td = viewEditCoreComponentPage.getColumnByName(tr, "owner");
+            WebElement td = viewEditCoreComponentPage.getColumnByName(tr, "transferOwnership");
             assertTrue(td.findElement(By.className("mat-icon")).isEnabled());
 
             TransferCCOwnershipDialog transferCCOwnershipDialog =
@@ -1620,7 +1613,7 @@ public class TC_15_8_EditingAssociationsBrandNewEndUserACC extends BaseTest {
             viewEditCoreComponentPage.hitSearchButton();
 
             WebElement tr = viewEditCoreComponentPage.getTableRecordByValue(acc.getDen());
-            WebElement td = viewEditCoreComponentPage.getColumnByName(tr, "owner");
+            WebElement td = viewEditCoreComponentPage.getColumnByName(tr, "transferOwnership");
             assertTrue(td.findElement(By.className("mat-icon")).isEnabled());
 
             TransferCCOwnershipDialog transferCCOwnershipDialog =

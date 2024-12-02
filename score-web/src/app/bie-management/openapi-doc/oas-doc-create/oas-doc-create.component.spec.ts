@@ -6,7 +6,7 @@ describe('OasDocCreateComponent', () => {
   let component: OasDocCreateComponent;
   let fixture: ComponentFixture<OasDocCreateComponent>;
 
-  beforeEach(fakeAsync () => {
+  beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ OasDocCreateComponent ]
     })

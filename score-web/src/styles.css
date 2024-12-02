@@ -120,14 +120,6 @@ b {
   white-space: nowrap;
 }
 
-.f10 {
-  font-size: 10px !important;
-}
-
-.f11 {
-  font-size: 11px !important;
-}
-
 .f12 {
   font-size: 12px !important;
 }
@@ -177,11 +169,6 @@ div.context-section > .mat-mdc-card {
 
 table {
   width: 100%;
-}
-
-/* score-table-column-resize directive works properly because of this. */
-th > div {
-  position: relative;
 }
 
 .mat-mdc-form-field {
@@ -812,7 +799,11 @@ score-confirm-dialog > div {
 }
 
 td.mat-mdc-cell {
-  padding-right: 16px !important;
+  padding-right: 8px !important;
+}
+
+td.mat-mdc-cell:last-child {
+  padding-right: 0 !important;
 }
 
 th.mat-mdc-header-cell, td.mat-mdc-cell {
@@ -975,21 +966,6 @@ span.context-menu-item.disabled, span.context-menu-item[disabled] {
   background-color: #fff;
   border-color: #333;
   border: 1px solid;
-}
-
-.table-container {
-  position: relative;
-}
-
-.score-column-container {
-  display: flex;
-  flex-shrink: 0;
-  align-self: flex-end;
-  flex-flow: row-reverse;
-}
-
-.table-wrapper {
-  flex-grow: 1;
 }
 
 /* Angular 17 fixes */
@@ -1222,24 +1198,4 @@ div.mat-form-field-wrapper div.mat-form-field-flex div.mat-form-field-infix {
 
 .notiTooltip .mdc-tooltip__surface {
   max-width: unset !important;
-}
-
-.mdc-text-field--filled.mdc-text-field--disabled .mdc-floating-label, .mdc-text-field--filled.mdc-text-field--disabled .mdc-floating-label--float-above {
-  color: inherit !important;
-}
-
-.mdc-text-field--filled:not(.mdc-text-field--disabled) .mdc-floating-label, .mdc-text-field--filled:not(.mdc-text-field--disabled) .mdc-floating-label--float-above {
-  color: inherit !important;
-}
-
-.mdc-text-field--filled.mdc-text-field--disabled .mdc-text-field__input {
-  color: inherit !important;
-}
-
-.mat-mdc-checkbox.mat-mdc-checkbox-disabled label {
-  color: inherit !important;
-}
-
-.mat-mdc-select-disabled {
-  color: inherit !important;
 }

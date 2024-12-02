@@ -10,8 +10,6 @@ import {MaterialModule} from '../material.module';
 import {ConfirmDialogModule} from '../common/confirm-dialog/confirm-dialog.module';
 import {ScoreCommonModule} from '../common/score-common.module';
 import {MarkdownModule} from 'ngx-markdown';
-import {SearchBarModule} from '../common/search-bar/search-bar.module';
-import {ColumnSelectorModule} from '../common/column-selector/column-selector.module';
 
 const routes: Routes = [
   {
@@ -40,9 +38,7 @@ const routes: Routes = [
     ConfirmDialogModule,
     CommonModule,
     ScoreCommonModule,
-    MarkdownModule,
-    SearchBarModule,
-    ColumnSelectorModule
+    MarkdownModule
   ],
   declarations: [
     MessageViewComponent,

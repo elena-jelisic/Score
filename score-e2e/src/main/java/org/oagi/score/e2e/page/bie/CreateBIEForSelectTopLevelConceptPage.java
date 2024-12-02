@@ -1,7 +1,6 @@
 package org.oagi.score.e2e.page.bie;
 
 import org.oagi.score.e2e.page.Page;
-import org.oagi.score.e2e.page.SearchBarPage;
 import org.openqa.selenium.WebElement;
 
 import java.time.LocalDateTime;
@@ -9,7 +8,7 @@ import java.time.LocalDateTime;
 /**
  * An interface of 'Create BIE - Select Top-Level Concept' page.
  */
-public interface CreateBIEForSelectTopLevelConceptPage extends Page, SearchBarPage {
+public interface CreateBIEForSelectTopLevelConceptPage extends Page {
 
     /**
      * Return the UI element of the page subtitle.
@@ -155,6 +154,13 @@ public interface CreateBIEForSelectTopLevelConceptPage extends Page, SearchBarPa
      * @param module Module
      */
     void setModule(String module);
+
+    /**
+     * Return the UI element of the 'Search' button.
+     *
+     * @return the UI element of the 'Search' button
+     */
+    WebElement getSearchButton();
 
     /**
      * Hit the 'Search' button

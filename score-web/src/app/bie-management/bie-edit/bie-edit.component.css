@@ -35,12 +35,6 @@
   height: 16px;
 }
 
-.mat-tree-node > span {
-  cursor: pointer;
-  padding-right: 2px !important;
-  margin-right: 10px;
-}
-
 .mat-tree-node .abie, .mat-tree-node .asbiep, .mat-tree-node .asbiep-extension {
   color: #4078c0 !important;
   font-weight: bold !important;
@@ -275,21 +269,4 @@
 
 .f12 {
   font-size: 12px;
-}
-
-.textarea-container {
-  position: relative;
-}
-
-.textarea-container textarea {
-  width: 100%;
-  height: 100%;
-  box-sizing: border-box;
-  padding-right: 26px;
-}
-
-.textarea-container button {
-  position: absolute;
-  top: 0;
-  right: 0;
 }

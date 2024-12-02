@@ -1,7 +1,6 @@
 package org.oagi.score.e2e.impl.page.business_term;
 
 import org.oagi.score.e2e.impl.page.BasePageImpl;
-import org.oagi.score.e2e.impl.page.BaseSearchBarPageImpl;
 import org.oagi.score.e2e.page.business_term.AssignBusinessTermBIEPage;
 import org.oagi.score.e2e.page.business_term.AssignBusinessTermBTPage;
 import org.openqa.selenium.By;
@@ -14,9 +13,9 @@ import java.time.format.DateTimeFormatter;
 import static java.time.Duration.ofMillis;
 import static org.oagi.score.e2e.impl.PageHelper.*;
 
-public class AssignBusinessTermBIEPageImpl extends BaseSearchBarPageImpl implements AssignBusinessTermBIEPage {
+public class AssignBusinessTermBIEPageImpl extends BasePageImpl implements AssignBusinessTermBIEPage {
 
-    private static final By BRANCH_SELECT_FIELD_LOCATOR = By.xpath("//div[contains(@class, \"branch-selector\")]//mat-select[1]");
+    private static final By BRANCH_SELECT_FIELD_LOCATOR = By.xpath("//*[contains(text(), \"Branch\")]//ancestor::div[1]/mat-select[1]");
 
     private static final By STATE_SELECT_FIELD_LOCATOR = By.xpath("//*[contains(text(), \"State\")]//ancestor::div[1]/mat-select[1]");
 
@@ -32,9 +31,13 @@ public class AssignBusinessTermBIEPageImpl extends BaseSearchBarPageImpl impleme
 
     private static final By TYPE_SELECT_FIELD_LOCATOR = By.xpath("//*[contains(text(), \"Type\")]//ancestor::div[1]/mat-select[1]");
 
+    private static final By DEN_FIELD_LOCATOR = By.xpath("//input[contains(@placeholder, \"DEN\")]");
+
     private static final By BUSINESS_CONTEXT_FIELD_LOCATOR = By.xpath("//mat-label[contains(text(), \"Business Context\")]//ancestor::div[1]/input");
 
     private static final By TOP_LEVEL_BIE_FIELD_LOCATOR = By.xpath("//mat-label[contains(text(), \"Top Level BIE\")]//ancestor::div[1]/input");
+
+    private static final By SEARCH_BUTTON_LOCATOR = By.xpath("//span[contains(text(), \"Search\")]//ancestor::button[1]");
 
     private static final By NEXT_BUTTON_LOCATOR = By.xpath("//span[contains(text(), \"Next\")]//ancestor::button[1]");
 
@@ -76,7 +79,7 @@ public class AssignBusinessTermBIEPageImpl extends BaseSearchBarPageImpl impleme
     @Override
     public void setBranch(String branch) {
         retry(() -> {
-            click(getDriver(), getBranchSelectField());
+            click(getBranchSelectField());
             WebElement optionField = visibilityOfElementLocated(getDriver(), By.xpath("//span[contains(text(), \"" + branch + "\")]//ancestor::mat-option[1]"));
             click(optionField);
             waitFor(ofMillis(500L));
@@ -128,12 +131,22 @@ public class AssignBusinessTermBIEPageImpl extends BaseSearchBarPageImpl impleme
 
     @Override
     public WebElement getBIEDenField() {
-        return getInputFieldInSearchBar();
+        return visibilityOfElementLocated(getDriver(), DEN_FIELD_LOCATOR);
     }
 
     @Override
     public void setBIEDenField(String bieDen) {
         sendKeys(getBIEDenField(), bieDen);
+    }
+
+    @Override
+    public WebElement getTopLevelBIEField() {
+        return visibilityOfElementLocated(getDriver(), TOP_LEVEL_BIE_FIELD_LOCATOR);
+    }
+
+    @Override
+    public void setTopLevelBIE(String topLevelBIE) {
+        sendKeys(getTopLevelBIEField(), topLevelBIE);
     }
 
     @Override
@@ -185,6 +198,11 @@ public class AssignBusinessTermBIEPageImpl extends BaseSearchBarPageImpl impleme
     public void setUpdatedEndDate(LocalDateTime updatedEndDate) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
         sendKeys(getUpdatedEndDateField(), formatter.format(updatedEndDate));
+    }
+
+    @Override
+    public WebElement getSearchButton() {
+        return elementToBeClickable(getDriver(), SEARCH_BUTTON_LOCATOR);
     }
 
     @Override

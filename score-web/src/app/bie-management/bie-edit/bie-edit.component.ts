@@ -34,7 +34,10 @@ import {
 import {CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {AbstractControl, FormControl, FormGroupDirective, NgForm, ValidationErrors, Validators} from '@angular/forms';
-import {BusinessContext, BusinessContextListRequest} from '../../context-management/business-context/domain/business-context';
+import {
+  BusinessContext,
+  BusinessContextListRequest
+} from '../../context-management/business-context/domain/business-context';
 import {COMMA, ENTER} from '@angular/cdk/keycodes';
 import {MatSort} from '@angular/material/sort';
 import {MatPaginator} from '@angular/material/paginator';
@@ -53,8 +56,6 @@ import {ErrorStateMatcher} from '@angular/material/core';
 import {MultiActionsSnackBarComponent} from '../../common/multi-actions-snack-bar/multi-actions-snack-bar.component';
 import {BieListDialogComponent} from '../bie-list-dialog/bie-list-dialog.component';
 import {WebPageInfoService} from '../../basis/basis.service';
-import {SettingsPreferencesService} from '../../settings-management/settings-preferences/domain/settings-preferences.service';
-import {PreferencesInfo} from '../../settings-management/settings-preferences/domain/preferences';
 
 
 @Component({
@@ -69,6 +70,7 @@ export class BieEditComponent implements OnInit, ChangeListener<BieFlatNode> {
   paddingPixel = 12;
 
   topLevelAsbiepId: number;
+  queryPath: string;
   rootNode: BieEditAbieNode;
 
   innerY: number = window.innerHeight;
@@ -129,7 +131,6 @@ export class BieEditComponent implements OnInit, ChangeListener<BieFlatNode> {
   @ViewChild('businessContextInput') businessContextInput: ElementRef<HTMLInputElement>;
   @ViewChild('matAutocomplete') matAutocomplete: MatAutocomplete;
 
-  preferencesInfo: PreferencesInfo;
   HIDE_CARDINALITY_PROPERTY_KEY = 'BIE-Settings-Hide-Cardinality';
   HIDE_UNUSED_PROPERTY_KEY = 'BIE-Settings-Hide-Unused';
 
@@ -160,7 +161,6 @@ export class BieEditComponent implements OnInit, ChangeListener<BieFlatNode> {
               private dialog: MatDialog,
               private confirmDialogService: ConfirmDialogService,
               private businessTermService: BusinessTermService,
-              private preferencesService: SettingsPreferencesService,
               private auth: AuthService,
               private stompService: RxStompService,
               private clipboard: Clipboard,
@@ -172,24 +172,14 @@ export class BieEditComponent implements OnInit, ChangeListener<BieFlatNode> {
     this.route.paramMap.pipe(
       switchMap((params: ParamMap) => {
         this.topLevelAsbiepId = parseInt(params.get('id'), 10);
-
-        const businessContextRequest = new BusinessContextListRequest();
-        if (this.isTenantEnabled) {
-          businessContextRequest.filters.isBieEditing = true;
-        }
-        businessContextRequest.page = new PageRequest('name', 'asc', -1, -1);
-
         return forkJoin([
           this.service.getGraphNode(this.topLevelAsbiepId),
           this.service.getUsedBieList(this.topLevelAsbiepId),
           this.service.getRefBieList(this.topLevelAsbiepId),
           this.service.getRootNode(this.topLevelAsbiepId),
-          this.bizCtxService.getBusinessContextsByTopLevelAsbiepId(this.topLevelAsbiepId),
-          this.bizCtxService.getBusinessContextList(businessContextRequest),
-          this.preferencesService.load(this.auth.getUserToken())
+          this.bizCtxService.getBusinessContextsByTopLevelAsbiepId(this.topLevelAsbiepId)
         ]);
-      })).subscribe(([ccGraph, usedBieList, refBieList, rootNode,
-                       bizCtxResp, allBizCtxResp, preferencesInfo]) => {
+      })).subscribe(([ccGraph, usedBieList, refBieList, rootNode, bizCtxResp]) => {
       this.initRootNode(rootNode);
 
       if (this.state === 'WIP' && (this.access !== 'CanEdit' && !this.auth.isAdmin())) {
@@ -200,20 +190,19 @@ export class BieEditComponent implements OnInit, ChangeListener<BieFlatNode> {
         return;
       }
 
-      this.allBusinessContexts = allBizCtxResp.list;
       this.businessContextCtrl = new FormControl({
-        disabled: false
+        disabled: !this.canEdit
       });
       this.businessContexts = bizCtxResp.list;
       this.businessContextUpdating = false;
       this.filteredBusinessContexts = this.businessContextCtrl.valueChanges.pipe(
         startWith(null),
         map((value: string | BusinessContext | null) => value ? this._filter(value) : this._filter()));
-      this.preferencesInfo = preferencesInfo;
+      this._loadAllBusinessContexts();
 
       const database = new BieFlatNodeDatabase<BieFlatNode>(ccGraph,
         this.rootNode, this.topLevelAsbiepId, usedBieList, refBieList);
-      this.dataSource = new BieFlatNodeDataSource<BieFlatNode>(database, this.service, [this,]);
+      this.dataSource = new BieFlatNodeDataSource<BieFlatNode>(database, this.service, [this, ]);
       this.searcher = new BieFlatNodeDataSourceSearcher<BieFlatNode>(this.dataSource, database);
       this.dataSource.init();
       this.dataSource.hideCardinality = loadBooleanProperty(this.auth.getUserToken(), this.HIDE_CARDINALITY_PROPERTY_KEY, false);
@@ -247,17 +236,10 @@ export class BieEditComponent implements OnInit, ChangeListener<BieFlatNode> {
     });
   }
 
-  extractDelimiter(path: string): string {
-    // Regular expression to find non-alphanumeric characters as delimiter
-    const delimiterMatch = path.match(/[^a-zA-Z0-9]/);
-    return delimiterMatch ? delimiterMatch[0] : '/';
-  }
-
   goToPath(path: string) {
     let curNode = this.dataSource.data[0];
     let idx = 0;
-    let delimiter = this.extractDelimiter(path);
-    path.split(delimiter)
+    path.split('/')
       .map(e => decodeURI(e))
       .map(e => e.replace(new RegExp('\\s', 'g'), '')).forEach(nodeName => {
       for (const node of this.dataSource.data.slice(idx)) {
@@ -374,11 +356,10 @@ export class BieEditComponent implements OnInit, ChangeListener<BieFlatNode> {
       this.toggleTreeUsed(this.cursorNode);
     } else if ($event.key === 'o' || $event.key === 'O') {
       this.menuTriggerList.toArray().filter(e => !!e.menuData)
-        .filter(e => e.menuData.menuId === 'contextMenu')
-        .forEach(trigger => {
-          this.contextMenuItem = node;
-          trigger.openMenu();
-        });
+        .filter(e => e.menuData.menuId === 'contextMenu').forEach(trigger => {
+        this.contextMenuItem = node;
+        trigger.openMenu();
+      });
     } else if ($event.key === 'Enter') {
       this.onClick(this.cursorNode);
     } else {
@@ -429,13 +410,6 @@ export class BieEditComponent implements OnInit, ChangeListener<BieFlatNode> {
 
   openNewEditBieTab(node: BieFlatNode) {
     window.open('/profile_bie/' + node.topLevelAsbiepId, '_blank');
-  }
-
-  copyToDefinition(sourceStr: string, targetObj: object) {
-    targetObj['definition'] = sourceStr;
-    this.snackBar.open('Copied to definition', '', {
-      duration: 3000
-    });
   }
 
   get state(): string {
@@ -621,21 +595,6 @@ export class BieEditComponent implements OnInit, ChangeListener<BieFlatNode> {
     return !!node && node.bieType.toUpperCase() === 'ASBIEP' && !node.locked && node.derived;
   }
 
-  copyPath(node: BieFlatNode) {
-    if (!node) {
-      return;
-    }
-
-    const delimiter = this.preferencesInfo.viewSettingsInfo.treeSettings.delimiter;
-    let queryPath = node.queryPath;
-    queryPath = queryPath.replaceAll('/', delimiter);
-
-    this.clipboard.copy(queryPath);
-    this.snackBar.open('Copied to clipboard', '', {
-      duration: 3000
-    });
-  }
-
   copyLink(node: BieFlatNode, $event?) {
     if ($event) {
       $event.preventDefault();
@@ -652,7 +611,7 @@ export class BieEditComponent implements OnInit, ChangeListener<BieFlatNode> {
     const queryPath = url.substring(0, idIdx + topLevelAsbiepId.length) + '/' + node.queryPath;
 
     this.clipboard.copy(queryPath);
-    this.snackBar.open('Copied to clipboard', '', {
+    this.snackBar.open('Link copied', '', {
       duration: 3000
     });
   }
@@ -672,7 +631,7 @@ export class BieEditComponent implements OnInit, ChangeListener<BieFlatNode> {
     ]).subscribe(([ccGraph, usedBieList, refBieList]) => {
       const database = new BieFlatNodeDatabase<BieFlatNode>(ccGraph,
         this.rootNode, this.topLevelAsbiepId, usedBieList, refBieList);
-      this.dataSource = new BieFlatNodeDataSource<BieFlatNode>(database, this.service, [this,]);
+      this.dataSource = new BieFlatNodeDataSource<BieFlatNode>(database, this.service, [this, ]);
       this.searcher = new BieFlatNodeDataSourceSearcher<BieFlatNode>(this.dataSource, database);
       this.dataSource.init();
 
@@ -708,7 +667,6 @@ export class BieEditComponent implements OnInit, ChangeListener<BieFlatNode> {
     const dialogRef = this.dialog.open(ReuseBieDialogComponent, {
       data: {
         asccpManifestId: asbiepNode.asccpNode.manifestId,
-        den: asbiepNode.asccpNode.den,
         releaseId: this.rootNode.releaseId,
         topLevelAsbiepId: this.topLevelAsbiepId
       },
@@ -2064,6 +2022,18 @@ export class BieEditComponent implements OnInit, ChangeListener<BieFlatNode> {
     return node.detail as BieEditBbieScNodeDetail;
   }
 
+  _loadAllBusinessContexts() {
+    const request = new BusinessContextListRequest();
+    if (this.isTenantEnabled) {
+      request.filters.isBieEditing = true;
+    }
+    request.page = new PageRequest('name', 'asc', -1, -1);
+    this.bizCtxService.getBusinessContextList(request)
+      .subscribe(resp => {
+        this.allBusinessContexts = resp.list;
+      });
+  }
+
   get isBusinessContextRemovable(): boolean {
     return (!this.businessContextUpdating && this.businessContexts.length > 1);
   }
@@ -2095,7 +2065,6 @@ export class BieEditComponent implements OnInit, ChangeListener<BieFlatNode> {
         });
       }, err => {
         this.businessContextUpdating = false;
-        throw err;
       });
   }
 
@@ -2119,7 +2088,6 @@ export class BieEditComponent implements OnInit, ChangeListener<BieFlatNode> {
 class BiePatternTestShowOnDirtyErrorStateMatcher implements ErrorStateMatcher {
   constructor(private biePattern: FormControl) {
   }
-
   isErrorState(control: AbstractControl | null, form: FormGroupDirective | NgForm | null): boolean {
     return (this.biePattern.dirty || control.dirty) && control.invalid;
   }

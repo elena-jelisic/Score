@@ -2,14 +2,12 @@ package org.oagi.score.e2e.page.module;
 
 import org.oagi.score.e2e.obj.ModuleSetReleaseObject;
 import org.oagi.score.e2e.page.Page;
-import org.oagi.score.e2e.page.SearchBarPage;
 import org.openqa.selenium.WebElement;
 
 /**
  * An interface of 'View/Edit Module Set Release' page.
  */
-public interface ViewEditModuleSetReleasePage extends Page, SearchBarPage {
-
+public interface ViewEditModuleSetReleasePage extends Page {
     CreateModuleSetReleasePage hitNewModuleSetReleaseButton();
 
     WebElement getNewModuleSetReleaseButton();
@@ -17,6 +15,8 @@ public interface ViewEditModuleSetReleasePage extends Page, SearchBarPage {
     EditModuleSetReleasePage openModuleSetReleaseByName(ModuleSetReleaseObject moduleSetRelease);
 
     EditModuleSetReleasePage openModuleSetReleaseByName(String name);
+
+    WebElement getSearchButton();
 
     void hitSearchButton();
 

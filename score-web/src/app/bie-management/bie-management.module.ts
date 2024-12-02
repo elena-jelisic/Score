@@ -42,8 +42,6 @@ import {
   BieAcceptOwnershipTransferRequestComponent
 } from './bie-accept-ownership-transfer-request/bie-accept-ownership-transfer-request.component';
 import {BiePackageModule} from './bie-package/bie-package.module';
-import {SearchBarModule} from '../common/search-bar/search-bar.module';
-import {ColumnSelectorModule} from '../common/column-selector/column-selector.module';
 
 const routes: Routes = [
   {
@@ -146,9 +144,7 @@ const routes: Routes = [
     MatDialogModule,
     NgxMatSelectSearchModule,
     AngularSplitModule,
-    FontAwesomeModule,
-    SearchBarModule,
-    ColumnSelectorModule
+    FontAwesomeModule
   ],
   declarations: [
     BieCreateBizCtxComponent,

@@ -1,12 +1,12 @@
 package org.oagi.score.e2e.page.core_component;
 
 import org.oagi.score.e2e.page.Dialog;
-import org.oagi.score.e2e.page.SearchBarPage;
 import org.openqa.selenium.WebElement;
 
-public interface DTCreateDialog extends Dialog, SearchBarPage {
-
+public interface DTCreateDialog extends Dialog {
     void selectBasedDTByDEN(String den);
+
+    WebElement getSearchButton();
 
     WebElement getCreateButton();
 
@@ -21,5 +21,4 @@ public interface DTCreateDialog extends Dialog, SearchBarPage {
     WebElement getDENField();
 
     void hitCreateButton();
-
 }

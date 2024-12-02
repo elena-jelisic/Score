@@ -1,6 +1,6 @@
 package org.oagi.score.e2e.impl.page.bie;
 
-import org.oagi.score.e2e.impl.page.BaseSearchBarPageImpl;
+import org.oagi.score.e2e.impl.page.BasePageImpl;
 import org.oagi.score.e2e.obj.AppUserObject;
 import org.oagi.score.e2e.obj.ReleaseObject;
 import org.oagi.score.e2e.obj.TopLevelASBIEPObject;
@@ -18,10 +18,10 @@ import java.time.format.DateTimeFormatter;
 import static java.time.Duration.ofMillis;
 import static org.oagi.score.e2e.impl.PageHelper.*;
 
-public class ViewEditBIEPageImpl extends BaseSearchBarPageImpl implements ViewEditBIEPage {
+public class ViewEditBIEPageImpl extends BasePageImpl implements ViewEditBIEPage {
 
     private static final By BRANCH_SELECT_FIELD_LOCATOR =
-            By.xpath("//div[contains(@class, \"branch-selector\")]//mat-select[1]");
+            By.xpath("//*[contains(text(), \"Branch\")]//ancestor::mat-form-field[1]//mat-select");
 
     private static final By STATE_SELECT_FIELD_LOCATOR =
             By.xpath("//*[contains(text(), \"State\")]//ancestor::mat-form-field[1]//mat-select");
@@ -31,6 +31,9 @@ public class ViewEditBIEPageImpl extends BaseSearchBarPageImpl implements ViewEd
 
     private static final By UPDATER_SELECT_FIELD_LOCATOR =
             By.xpath("//*[contains(text(), \"Updater\")]//ancestor::div[1]/mat-select[1]");
+
+    private static final By DEN_FIELD_LOCATOR =
+            By.xpath("//input[contains(@placeholder, \"DEN\")]");
 
     private static final By BUSINESS_CONTEXT_FIELD_LOCATOR =
             By.xpath("//input[contains(@placeholder, \"Business Context\")]");
@@ -43,6 +46,9 @@ public class ViewEditBIEPageImpl extends BaseSearchBarPageImpl implements ViewEd
 
     private static final By UPDATED_END_DATE_FIELD_LOCATOR =
             By.xpath("//input[contains(@placeholder, \"Updated end date\")]");
+
+    private static final By SEARCH_BUTTON_LOCATOR =
+            By.xpath("//span[contains(text(), \"Search\")]//ancestor::button[1]");
 
     private static final By NEW_BIE_BUTTON_LOCATOR =
             By.xpath("//button[contains(@mattooltip, \"New BIE\")]");
@@ -87,10 +93,10 @@ public class ViewEditBIEPageImpl extends BaseSearchBarPageImpl implements ViewEd
 
     @Override
     public void setBranch(String branch) {
-        click(getDriver(), getBranchSelectField());
+        click(getBranchSelectField());
         sendKeys(visibilityOfElementLocated(getDriver(), DROPDOWN_SEARCH_FIELD_LOCATOR), branch);
         WebElement searchedSelectField = visibilityOfElementLocated(getDriver(),
-                By.xpath("//div[@class = \"cdk-overlay-container\"]//mat-option//span[text() = \"" + branch + "\"]"));
+                By.xpath("//mat-option//span[text() = \"" + branch + "\"]"));
         click(searchedSelectField);
         escape(getDriver());
     }
@@ -141,7 +147,7 @@ public class ViewEditBIEPageImpl extends BaseSearchBarPageImpl implements ViewEd
 
     @Override
     public WebElement getDENField() {
-        return getInputFieldInSearchBar();
+        return visibilityOfElementLocated(getDriver(), DEN_FIELD_LOCATOR);
     }
 
     @Override
@@ -182,6 +188,11 @@ public class ViewEditBIEPageImpl extends BaseSearchBarPageImpl implements ViewEd
     }
 
     @Override
+    public WebElement getSearchButton() {
+        return elementToBeClickable(getDriver(), SEARCH_BUTTON_LOCATOR);
+    }
+
+    @Override
     public void hitSearchButton() {
         click(getSearchButton());
         invisibilityOfLoadingContainerElement(getDriver());
@@ -207,11 +218,11 @@ public class ViewEditBIEPageImpl extends BaseSearchBarPageImpl implements ViewEd
     public void setItemsPerPage(int items) {
         WebElement itemsPerPageField = elementToBeClickable(getDriver(),
                 By.xpath("//div[.=\" Items per page: \"]/following::mat-form-field//mat-select"));
-        click(getDriver(), itemsPerPageField);
+        click(itemsPerPageField);
         waitFor(ofMillis(500L));
         WebElement itemField = elementToBeClickable(getDriver(),
                 By.xpath("//span[contains(text(), \"" + items + "\")]//ancestor::mat-option//div[1]//preceding-sibling::span"));
-        click(getDriver(), itemField);
+        click(itemField);
         waitFor(ofMillis(500L));
     }
 
@@ -239,7 +250,7 @@ public class ViewEditBIEPageImpl extends BaseSearchBarPageImpl implements ViewEd
 
     @Override
     public TransferBIEOwnershipDialog openTransferBIEOwnershipDialog(WebElement tr) {
-        WebElement td = getColumnByName(tr, "owner");
+        WebElement td = getColumnByName(tr, "transferOwnership");
         click(td.findElement(By.tagName("mat-icon")));
 
         TransferBIEOwnershipDialog transferBIEOwnershipDialog =
@@ -269,7 +280,6 @@ public class ViewEditBIEPageImpl extends BaseSearchBarPageImpl implements ViewEd
     @Override
     public EditBIEPage openEditBIEPage(TopLevelASBIEPObject topLevelASBIEP) {
         ReleaseObject release = getAPIFactory().getReleaseAPI().getReleaseById(topLevelASBIEP.getReleaseId());
-        showAdvancedSearchPanel();
         setBranch(release.getReleaseNumber());
         setDEN(topLevelASBIEP.getDen());
         setState(topLevelASBIEP.getState());
@@ -345,7 +355,6 @@ public class ViewEditBIEPageImpl extends BaseSearchBarPageImpl implements ViewEd
 
     @Override
     public void discard(TopLevelASBIEPObject topLevelASBIEP) {
-        showAdvancedSearchPanel();
         setBranch(topLevelASBIEP.getReleaseNumber());
         setOwner(getAPIFactory().getAppUserAPI().getAppUserByID(topLevelASBIEP.getOwnerUserId()).getLoginId());
         setDEN(topLevelASBIEP.getPropertyTerm());

@@ -84,7 +84,6 @@ public class TC_28_1_BIEsTab extends BaseTest {
         HomePage.TotalBIEsByStatesPanel totalBIEsByStatesPanel = homePage.openTotalBIEsByStatesPanel();
 
         ViewEditBIEPage viewEditBIEPageForWIP = totalBIEsByStatesPanel.clickStateProgressBar("WIP");
-        viewEditBIEPageForWIP.showAdvancedSearchPanel();
         viewEditBIEPageForWIP.setOwner(developer.getLoginId());
         viewEditBIEPageForWIP.hitSearchButton();
 
@@ -95,7 +94,6 @@ public class TC_28_1_BIEsTab extends BaseTest {
         click(homePage.getScoreLogo()); // to go to the home page again.
         click(homePage.getBIEsTab());
         ViewEditBIEPage viewEditBIEPageForQA = totalBIEsByStatesPanel.clickStateProgressBar("QA");
-        viewEditBIEPageForQA.showAdvancedSearchPanel();
         viewEditBIEPageForQA.setOwner(developer.getLoginId());
         viewEditBIEPageForQA.hitSearchButton();
 
@@ -106,7 +104,6 @@ public class TC_28_1_BIEsTab extends BaseTest {
         click(homePage.getScoreLogo()); // to go to the home page again.
         click(homePage.getBIEsTab());
         ViewEditBIEPage viewEditBIEPageForProduction = totalBIEsByStatesPanel.clickStateProgressBar("Production");
-        viewEditBIEPageForProduction.showAdvancedSearchPanel();
         viewEditBIEPageForProduction.setOwner(developer.getLoginId());
         viewEditBIEPageForProduction.hitSearchButton();
 

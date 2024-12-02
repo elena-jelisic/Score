@@ -2,7 +2,6 @@ package org.oagi.score.e2e.page.bie;
 
 import org.oagi.score.e2e.obj.BusinessContextObject;
 import org.oagi.score.e2e.page.Page;
-import org.oagi.score.e2e.page.SearchBarPage;
 import org.openqa.selenium.WebElement;
 
 import java.time.LocalDateTime;
@@ -11,7 +10,7 @@ import java.util.List;
 /**
  * An interface of 'Copy BIE - Select Business Contexts' page.
  */
-public interface CopyBIEForSelectBusinessContextsPage extends Page, SearchBarPage {
+public interface CopyBIEForSelectBusinessContextsPage extends Page {
 
     /**
      * Return the UI element of the page subtitle.
@@ -75,6 +74,13 @@ public interface CopyBIEForSelectBusinessContextsPage extends Page, SearchBarPag
      * @param name Name
      */
     void setName(String name);
+
+    /**
+     * Return the UI element of the 'Search' button.
+     *
+     * @return the UI element of the 'Search' button
+     */
+    WebElement getSearchButton();
 
     /**
      * Hit the 'Search' button.

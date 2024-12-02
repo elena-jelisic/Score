@@ -1,4 +1,4 @@
-import {ComponentFixture, fakeAsync, TestBed} from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {TransferOwnershipListComponent} from './transfer-ownership-list.component';
 
@@ -6,7 +6,7 @@ describe('AccountListComponent', () => {
   let component: TransferOwnershipListComponent;
   let fixture: ComponentFixture<TransferOwnershipListComponent>;
 
-  beforeEach(fakeAsync(() => {
+  beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [TransferOwnershipListComponent]
     })

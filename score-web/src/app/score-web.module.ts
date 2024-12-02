@@ -1,5 +1,5 @@
 import {NgModule} from '@angular/core';
-import {ActivatedRouteSnapshot, BaseRouteReuseStrategy, RouteReuseStrategy, RouterModule} from '@angular/router';
+import {RouterModule} from '@angular/router';
 import {BrowserModule} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {FlexLayoutModule} from '@angular/flex-layout';
@@ -47,18 +47,12 @@ export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
 }
 
-class ShouldReuseRouteFalseRouteReuseStrategy extends BaseRouteReuseStrategy {
-  shouldReuseRoute(future: ActivatedRouteSnapshot, curr: ActivatedRouteSnapshot): boolean {
-    return false;
-  }
-}
-
 @NgModule({
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
     FlexLayoutModule,
-    RouterModule.forRoot(SCORE_WEBAPP_ROUTES, { onSameUrlNavigation: 'reload' }),
+    RouterModule.forRoot(SCORE_WEBAPP_ROUTES),
     HttpClientModule,
     TranslateModule.forRoot({
       loader: {
@@ -104,10 +98,6 @@ class ShouldReuseRouteFalseRouteReuseStrategy extends BaseRouteReuseStrategy {
   ],
   providers: [
     MatIconRegistry,
-    {
-      provide: RouteReuseStrategy,
-      useClass: ShouldReuseRouteFalseRouteReuseStrategy
-    },
     AuthService,
     WebPageInfoService,
     MailService,

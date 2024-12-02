@@ -1,7 +1,6 @@
 package org.oagi.score.e2e.impl.page.core_component;
 
 import org.oagi.score.e2e.impl.page.BasePageImpl;
-import org.oagi.score.e2e.impl.page.BaseSearchBarPageImpl;
 import org.oagi.score.e2e.obj.*;
 import org.oagi.score.e2e.page.BasePage;
 import org.oagi.score.e2e.page.core_component.*;
@@ -18,16 +17,16 @@ import static java.time.Duration.ofMillis;
 import static java.time.Duration.ofSeconds;
 import static org.oagi.score.e2e.impl.PageHelper.*;
 
-public class ViewEditCoreComponentPageImpl extends BaseSearchBarPageImpl implements ViewEditCoreComponentPage {
+public class ViewEditCoreComponentPageImpl extends BasePageImpl implements ViewEditCoreComponentPage {
 
     public static final By CONTINUE_UPDATE_BUTTON_IN_DIALOG_LOCATOR =
             By.xpath("//mat-dialog-container//span[contains(text(), \"Update\")]//ancestor::button");
     public static final By CONTINUE_TO_DELETE_BUTTON_IN_DIALOG_LOCATOR =
             By.xpath("//mat-dialog-container//span[contains(text(), \"Delete\")]//ancestor::button");
     private static final By BRANCH_SELECT_FIELD_LOCATOR =
-            By.xpath("//div[contains(@class, \"branch-selector\")]//mat-select[1]");
+            By.xpath("//*[contains(text(), \"Branch\")]//ancestor::mat-form-field[1]//mat-select");
     private static final By CC_TYPE_SELECT_FIELD_LOCATOR =
-            By.xpath("//*[text() = \"Types\"]//ancestor::button");
+            By.xpath("//*[text() = \"Type\"]//ancestor::mat-form-field[1]//mat-select");
     private static final By STATE_SELECT_FIELD_LOCATOR =
             By.xpath("//mat-label[contains(text(), \"State\")]//ancestor::mat-form-field[1]//mat-select");
     private static final By OWNER_SELECT_FIELD_LOCATOR =
@@ -38,10 +37,8 @@ public class ViewEditCoreComponentPageImpl extends BaseSearchBarPageImpl impleme
             By.xpath("//input[contains(@placeholder, \"Updated start date\")]");
     private static final By UPDATED_END_DATE_FIELD_LOCATOR =
             By.xpath("//input[contains(@placeholder, \"Updated end date\")]");
-    private static final By BROWSER_VIEW_TOGGLE_BUTTON_LOCATOR =
-            By.xpath("//section[contains(@class, \"browser-mode-toggle-section\")]//mat-slide-toggle");
-    private static final By BROWSER_VIEW_TOGGLE_LABEL_LOCATOR =
-            By.xpath("//section[contains(@class, \"browser-mode-toggle-section\")]//mat-label");
+    private static final By SEARCH_BUTTON_LOCATOR =
+            By.xpath("//span[contains(text(), \"Search\")]//ancestor::button[1]");
 
     public ViewEditCoreComponentPageImpl(BasePage parent) {
         super(parent);
@@ -75,7 +72,7 @@ public class ViewEditCoreComponentPageImpl extends BaseSearchBarPageImpl impleme
             click(getDriver(), getBranchSelectField());
             waitFor(ofSeconds(2L));
             WebElement optionField = visibilityOfElementLocated(getDriver(),
-                    By.xpath("//div[@class = \"cdk-overlay-container\"]//mat-option//span[text() = \"" + branch + "\"]"));
+                    By.xpath("//mat-option//span[text() = \"" + branch + "\"]"));
             click(getDriver(), optionField);
             escape(getDriver());
         });
@@ -90,13 +87,10 @@ public class ViewEditCoreComponentPageImpl extends BaseSearchBarPageImpl impleme
 
     @Override
     public void setTypeSelect(String type) {
-        retry(() -> {
-            click(getDriver(), getTypeSelectField());
-            visibilityOfElementLocated(getDriver(), By.xpath("//div[@class=\"cdk-overlay-container\"]"));
-        });
+        click(getDriver(), getTypeSelectField());
         waitFor(ofMillis(2000L));
         WebElement optionField = elementToBeClickable(getDriver(),
-                By.xpath("//div[@class=\"cdk-overlay-container\"]//div[contains(@class, \"column\")]//span[text() = \"" + type + "\"]//ancestor::mat-checkbox"));
+                By.xpath("//mat-option//span[text() = \"" + type + "\"]"));
         click(getDriver(), optionField);
         escape(getDriver());
     }
@@ -157,7 +151,7 @@ public class ViewEditCoreComponentPageImpl extends BaseSearchBarPageImpl impleme
 
     @Override
     public WebElement getDENField() {
-        return getInputFieldInSearchBar();
+        return visibilityOfElementLocated(getDriver(), By.xpath("//input[contains(@placeholder, \"DEN\")]"));
     }
 
     @Override
@@ -338,7 +332,7 @@ public class ViewEditCoreComponentPageImpl extends BaseSearchBarPageImpl impleme
 
     @Override
     public TransferCCOwnershipDialog openTransferCCOwnershipDialog(WebElement tr) {
-        WebElement td = getColumnByName(tr, "owner");
+        WebElement td = getColumnByName(tr, "transferOwnership");
         click(td.findElement(By.className("mat-icon")));
 
         TransferCCOwnershipDialog transferCCOwnershipDialog =
@@ -450,6 +444,11 @@ public class ViewEditCoreComponentPageImpl extends BaseSearchBarPageImpl impleme
     }
 
     @Override
+    public WebElement getSearchButton() {
+        return elementToBeClickable(getDriver(), SEARCH_BUTTON_LOCATOR);
+    }
+
+    @Override
     public void hitSearchButton() {
         waitFor(ofMillis(3000L));
         retry(() -> {
@@ -457,32 +456,6 @@ public class ViewEditCoreComponentPageImpl extends BaseSearchBarPageImpl impleme
             waitFor(ofMillis(1000L));
         });
         invisibilityOfLoadingContainerElement(getDriver());
-    }
-
-    @Override
-    public WebElement getBrowserViewToggleButton() {
-        return elementToBeClickable(getDriver(), BROWSER_VIEW_TOGGLE_BUTTON_LOCATOR);
-    }
-
-    @Override
-    public WebElement getBrowserViewToggleLabel() {
-        return visibilityOfElementLocated(getDriver(), BROWSER_VIEW_TOGGLE_LABEL_LOCATOR);
-    }
-
-    @Override
-    public void toggleToBrowserView() {
-        String browserViewToggleLabel = getText(getBrowserViewToggleLabel());
-        if ("Dev View".equals(browserViewToggleLabel)) {
-            click(getBrowserViewToggleButton());
-        }
-    }
-
-    @Override
-    public void toggleToDevView() {
-        String browserViewToggleLabel = getText(getBrowserViewToggleLabel());
-        if ("Browser View".equals(browserViewToggleLabel)) {
-            click(getBrowserViewToggleButton());
-        }
     }
 
     @Override
@@ -519,26 +492,23 @@ public class ViewEditCoreComponentPageImpl extends BaseSearchBarPageImpl impleme
     public void setItemsPerPage(int items) {
         WebElement itemsPerPageField = elementToBeClickable(getDriver(),
                 By.xpath("//div[.=\" Items per page: \"]/following::mat-form-field//mat-select"));
-        click(getDriver(), itemsPerPageField);
+        click(itemsPerPageField);
         waitFor(Duration.ofMillis(500L));
         WebElement itemField = elementToBeClickable(getDriver(),
                 By.xpath("//span[contains(text(), \"" + items + "\")]//ancestor::mat-option//div[1]//preceding-sibling::span"));
-        click(getDriver(), itemField);
+        click(itemField);
         waitFor(Duration.ofMillis(500L));
     }
 
     @Override
     public void selectAllComponentTypes() {
-        retry(() -> {
-            click(getDriver(), getTypeSelectField());
-            visibilityOfElementLocated(getDriver(), By.xpath("//div[@class=\"cdk-overlay-container\"]"));
-        });
+        click(getDriver(), getTypeSelectField());
         List<String> componentTypes = new ArrayList<>(List.of("ACC", "ASCCP", "BCCP", "CDT", "BDT", "ASCC", "BCC"));
         boolean selected;
         for (String componentType : componentTypes) {
-            WebElement optionField = elementToBeClickable(getDriver(),
-                    By.xpath("//div[@class=\"cdk-overlay-container\"]//div[contains(@class, \"column\")]//span[text() = \"" + componentType + "\"]//ancestor::mat-checkbox"));
-            selected = optionField.getAttribute("ng-reflect-model").equals("true");
+            WebElement optionField = visibilityOfElementLocated(getDriver(),
+                    By.xpath("//span[text()=\"" + componentType + "\"]//ancestor::mat-option"));
+            selected = optionField.getAttribute("aria-selected").equals("true");
             if (!selected) {
                 click(getDriver(), optionField);
             }

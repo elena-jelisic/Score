@@ -1,7 +1,6 @@
 package org.oagi.score.e2e.impl.page.context;
 
 import org.oagi.score.e2e.impl.page.BasePageImpl;
-import org.oagi.score.e2e.impl.page.BaseSearchBarPageImpl;
 import org.oagi.score.e2e.obj.BusinessContextObject;
 import org.oagi.score.e2e.page.BasePage;
 import org.oagi.score.e2e.page.context.CreateBusinessContextPage;
@@ -15,7 +14,7 @@ import java.time.format.DateTimeFormatter;
 import static java.time.Duration.ofMillis;
 import static org.oagi.score.e2e.impl.PageHelper.*;
 
-public class ViewEditBusinessContextPageImpl extends BaseSearchBarPageImpl implements ViewEditBusinessContextPage {
+public class ViewEditBusinessContextPageImpl extends BasePageImpl implements ViewEditBusinessContextPage {
 
     private static final By UPDATER_SELECT_FIELD_LOCATOR =
             By.xpath("//*[contains(text(), \"Updater\")]//ancestor::div[1]/mat-select[1]");
@@ -28,6 +27,12 @@ public class ViewEditBusinessContextPageImpl extends BaseSearchBarPageImpl imple
 
     private static final By UPDATED_END_DATE_FIELD_LOCATOR =
             By.xpath("//input[contains(@placeholder, \"Updated end date\")]");
+
+    private static final By NAME_FIELD_LOCATOR =
+            By.xpath("//input[contains(@placeholder, \"Name\")]");
+
+    private static final By SEARCH_BUTTON_LOCATOR =
+            By.xpath("//span[contains(text(), \"Search\")]//ancestor::button[1]");
 
     private static final By NEW_BUSINESS_CONTEXT_BUTTON_LOCATOR =
             By.xpath("//span[contains(text(), \"New Business Context\")]//ancestor::button[1]");
@@ -94,12 +99,17 @@ public class ViewEditBusinessContextPageImpl extends BaseSearchBarPageImpl imple
 
     @Override
     public WebElement getNameField() {
-        return getInputFieldInSearchBar();
+        return visibilityOfElementLocated(getDriver(), NAME_FIELD_LOCATOR);
     }
 
     @Override
     public void setName(String name) {
         sendKeys(getNameField(), name);
+    }
+
+    @Override
+    public WebElement getSearchButton() {
+        return elementToBeClickable(getDriver(), SEARCH_BUTTON_LOCATOR);
     }
 
     @Override
@@ -149,7 +159,6 @@ public class ViewEditBusinessContextPageImpl extends BaseSearchBarPageImpl imple
 
     @Override
     public EditBusinessContextPage openEditBusinessContextPageByBusinessContextName(String businessContextName) throws NoSuchElementException {
-        showAdvancedSearchPanel();
         setName(businessContextName);
 
         return retry(() -> {

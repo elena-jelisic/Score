@@ -1,12 +1,11 @@
 package org.oagi.score.e2e.page.core_component;
 
 import org.oagi.score.e2e.page.Dialog;
-import org.oagi.score.e2e.page.SearchBarPage;
 import org.openqa.selenium.WebElement;
 
 import java.time.LocalDateTime;
 
-public interface BCCPCreateDialog extends Dialog, SearchBarPage {
+public interface BCCPCreateDialog extends Dialog {
 
     /**
      * Return the UI element of the 'State' select field.
@@ -147,6 +146,13 @@ public interface BCCPCreateDialog extends Dialog, SearchBarPage {
      * @param module Module
      */
     void setModule(String module);
+
+    /**
+     * Return the UI element of the 'Search' button.
+     *
+     * @return the UI element of the 'Search' button
+     */
+    WebElement getSearchButton();
 
     /**
      * Hit the 'Search' button

@@ -2,14 +2,12 @@ package org.oagi.score.e2e.page.module;
 
 import org.oagi.score.e2e.obj.ModuleSetObject;
 import org.oagi.score.e2e.page.Page;
-import org.oagi.score.e2e.page.SearchBarPage;
 import org.openqa.selenium.WebElement;
 
 /**
  * An interface of 'View/Edit Module Set' page.
  */
-public interface ViewEditModuleSetPage extends Page, SearchBarPage {
-
+public interface ViewEditModuleSetPage extends Page {
     WebElement getNewModuleSetButton();
 
     CreateModuleSetPage hitNewModuleSetButton();
@@ -17,6 +15,8 @@ public interface ViewEditModuleSetPage extends Page, SearchBarPage {
     EditModuleSetPage openModuleSetByName(ModuleSetObject moduleSet);
 
     EditModuleSetPage openModuleSetByName(String moduleSetName);
+
+    WebElement getSearchButton();
 
     void hitSearchButton();
 

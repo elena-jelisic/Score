@@ -1,4 +1,4 @@
-import {fakeAsync, ComponentFixture, TestBed} from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {BusinessTermUploadFileComponent} from './business-term-upload-file.component';
 
@@ -6,7 +6,7 @@ describe('BiztermCreateComponent', () => {
   let component: BusinessTermUploadFileComponent;
   let fixture: ComponentFixture<BusinessTermUploadFileComponent>;
 
-  beforeEach(fakeAsync(() => {
+  beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [BusinessTermUploadFileComponent]
     })

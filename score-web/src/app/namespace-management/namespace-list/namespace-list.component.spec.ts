@@ -1,4 +1,4 @@
-import {ComponentFixture, fakeAsync, TestBed} from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {NamespaceListComponent} from './namespace-list.component';
 
@@ -6,7 +6,7 @@ describe('NamespaceListComponent', () => {
   let component: NamespaceListComponent;
   let fixture: ComponentFixture<NamespaceListComponent>;
 
-  beforeEach(fakeAsync(() => {
+  beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [NamespaceListComponent]
     })

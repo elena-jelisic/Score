@@ -1,4 +1,4 @@
-import {ComponentFixture, fakeAsync, TestBed} from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {ContextCategoryListComponent} from './context-category-list.component';
 
@@ -6,7 +6,7 @@ describe('ContextCategoryListComponent', () => {
   let component: ContextCategoryListComponent;
   let fixture: ComponentFixture<ContextCategoryListComponent>;
 
-  beforeEach(fakeAsync(() => {
+  beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [ContextCategoryListComponent]
     })

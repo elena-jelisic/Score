@@ -10,8 +10,6 @@ import {AgencyIdListValueDialogComponent} from './agency-id-list-value-dialog/ag
 import {AgencyIdListDetailComponent} from './agency-id-list-detail/agency-id-list-detail.component';
 import {ConfirmDialogModule} from '../common/confirm-dialog/confirm-dialog.module';
 import {ScoreCommonModule} from '../common/score-common.module';
-import {SearchBarModule} from '../common/search-bar/search-bar.module';
-import {ColumnSelectorModule} from '../common/column-selector/column-selector.module';
 
 const routes: Routes = [
   {
@@ -39,9 +37,7 @@ const routes: Routes = [
     MaterialModule,
     ConfirmDialogModule,
     CommonModule,
-    ScoreCommonModule,
-    SearchBarModule,
-    ColumnSelectorModule
+    ScoreCommonModule
   ],
   declarations: [
     AgencyIdListListComponent,

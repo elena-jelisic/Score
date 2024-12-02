@@ -1,4 +1,4 @@
-import {ComponentFixture, fakeAsync, TestBed} from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {SettingsAccountComponent} from './settings-account.component';
 
@@ -6,7 +6,7 @@ describe('SettingsProfileComponent', () => {
   let component: SettingsAccountComponent;
   let fixture: ComponentFixture<SettingsAccountComponent>;
 
-  beforeEach(fakeAsync(() => {
+  beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [SettingsAccountComponent]
     })

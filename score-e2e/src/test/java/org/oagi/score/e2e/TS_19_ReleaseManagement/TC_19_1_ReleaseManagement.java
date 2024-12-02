@@ -238,7 +238,6 @@ public class TC_19_1_ReleaseManagement extends BaseTest {
 
         HomePage homePage = loginPage().signIn(developer.getLoginId(), developer.getPassword());
         ViewEditReleasePage viewEditReleasePage = homePage.getCoreComponentMenu().openViewEditReleaseSubMenu();
-        viewEditReleasePage.showAdvancedSearchPanel();
         viewEditReleasePage.setState("Draft");
         viewEditReleasePage.hitSearchButton();
         assertEquals(0, viewEditReleasePage.getTotalNumberOfItems());
@@ -624,7 +623,6 @@ public class TC_19_1_ReleaseManagement extends BaseTest {
         assertEquals("Draft", randomRelease.getState());
 
         ViewEditCoreComponentPage viewEditCoreComponentPage = homePage.getCoreComponentMenu().openViewEditCoreComponentSubMenu();
-        viewEditCoreComponentPage.showAdvancedSearchPanel();
         viewEditCoreComponentPage.setBranch(newReleaseNum);
         viewEditCoreComponentPage.setOwner(devx.getLoginId());
 
@@ -764,7 +762,6 @@ public class TC_19_1_ReleaseManagement extends BaseTest {
         ViewEditCoreComponentPage viewEditCoreComponentPage = homePage.getCoreComponentMenu().openViewEditCoreComponentSubMenu();
         viewEditCoreComponentPage.openPage();
         waitFor(Duration.ofMillis(500));
-        viewEditCoreComponentPage.showAdvancedSearchPanel();
         viewEditCoreComponentPage.setDEN(conditions.ACCreleaseTA3devxcandidate.getObjectClassTerm());
         viewEditCoreComponentPage.setOwner(devx.getLoginId());
         escape(getDriver());

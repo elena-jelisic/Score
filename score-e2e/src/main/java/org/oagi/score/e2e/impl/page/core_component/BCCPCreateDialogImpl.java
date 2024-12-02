@@ -1,6 +1,5 @@
 package org.oagi.score.e2e.impl.page.core_component;
 
-import org.oagi.score.e2e.impl.page.SearchBarPageImpl;
 import org.oagi.score.e2e.obj.BCCPObject;
 import org.oagi.score.e2e.page.core_component.BCCPCreateDialog;
 import org.oagi.score.e2e.page.core_component.BCCPViewEditPage;
@@ -14,7 +13,7 @@ import java.time.format.DateTimeFormatter;
 import static java.time.Duration.ofMillis;
 import static org.oagi.score.e2e.impl.PageHelper.*;
 
-public class BCCPCreateDialogImpl extends SearchBarPageImpl implements BCCPCreateDialog {
+public class BCCPCreateDialogImpl implements BCCPCreateDialog {
 
     private static final By STATE_SELECT_FIELD_LOCATOR =
             By.xpath("//mat-dialog-container//*[contains(text(), \"State\")]//ancestor::mat-form-field[1]//mat-select");
@@ -40,11 +39,17 @@ public class BCCPCreateDialogImpl extends SearchBarPageImpl implements BCCPCreat
     private static final By UPDATED_END_DATE_FIELD_LOCATOR =
             By.xpath("//mat-dialog-container//input[contains(@placeholder, \"Updated end date\")]");
 
+    private static final By DEN_FIELD_LOCATOR =
+            By.xpath("//mat-dialog-container//input[contains(@placeholder, \"DEN\")]");
+
     private static final By DEFINITION_FIELD_LOCATOR =
             By.xpath("//mat-dialog-container//input[contains(@placeholder, \"Definition\")]");
 
     private static final By MODULE_FIELD_LOCATOR =
             By.xpath("//mat-dialog-container//input[contains(@placeholder, \"Module\")]");
+
+    private static final By SEARCH_BUTTON_LOCATOR =
+            By.xpath("//mat-dialog-container//span[contains(text(), \"Search\")]//ancestor::button[1]");
 
     private static final By CANCEL_BUTTON_LOCATOR =
             By.xpath("//mat-dialog-container//span[contains(text(), \"Cancel\")]//ancestor::button[1]");
@@ -57,9 +62,12 @@ public class BCCPCreateDialogImpl extends SearchBarPageImpl implements BCCPCreat
     private String branch;
 
     public BCCPCreateDialogImpl(ViewEditCoreComponentPageImpl parent, String branch) {
-        super(parent.getDriver(), "//mat-dialog-container");
         this.parent = parent;
         this.branch = branch;
+    }
+
+    private WebDriver getDriver() {
+        return this.parent.getDriver();
     }
 
     @Override
@@ -173,7 +181,7 @@ public class BCCPCreateDialogImpl extends SearchBarPageImpl implements BCCPCreat
 
     @Override
     public WebElement getDENField() {
-        return getInputFieldInSearchBar();
+        return visibilityOfElementLocated(getDriver(), DEN_FIELD_LOCATOR);
     }
 
     @Override
@@ -202,6 +210,11 @@ public class BCCPCreateDialogImpl extends SearchBarPageImpl implements BCCPCreat
     }
 
     @Override
+    public WebElement getSearchButton() {
+        return elementToBeClickable(getDriver(), SEARCH_BUTTON_LOCATOR);
+    }
+
+    @Override
     public void hitSearchButton() {
         click(getSearchButton());
         waitFor(ofMillis(500L));
@@ -226,11 +239,11 @@ public class BCCPCreateDialogImpl extends SearchBarPageImpl implements BCCPCreat
     public void setItemsPerPage(int items) {
         WebElement itemsPerPageField = elementToBeClickable(getDriver(),
                 By.xpath("//mat-dialog-container//div[.=\" Items per page: \"]/following::mat-form-field//mat-select"));
-        click(getDriver(), itemsPerPageField);
+        click(itemsPerPageField);
         waitFor(ofMillis(500L));
         WebElement itemField = elementToBeClickable(getDriver(),
                 By.xpath("//mat-dialog-container//span[contains(text(), \"" + items + "\")]//ancestor::mat-option//div[1]//preceding-sibling::span"));
-        click(getDriver(), itemField);
+        click(itemField);
         waitFor(ofMillis(500L));
     }
 

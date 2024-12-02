@@ -1,6 +1,5 @@
 package org.oagi.score.e2e.impl.page.core_component;
 
-import org.oagi.score.e2e.impl.page.SearchBarPageImpl;
 import org.oagi.score.e2e.page.core_component.TransferCCOwnershipDialog;
 import org.openqa.selenium.*;
 
@@ -8,13 +7,19 @@ import java.time.Duration;
 
 import static org.oagi.score.e2e.impl.PageHelper.*;
 
-public class TransferCCOwnershipDialogImpl extends SearchBarPageImpl implements TransferCCOwnershipDialog {
+public class TransferCCOwnershipDialogImpl implements TransferCCOwnershipDialog {
+
+    private static final By LOGIN_ID_FIELD_LOCATOR
+            = By.xpath("//score-transfer-ownership-dialog//mat-label[contains(text(), \"Login ID\")]//ancestor::div[1]/input");
 
     private static final By NAME_FIELD_LOCATOR
             = By.xpath("//score-transfer-ownership-dialog//mat-label[contains(text(), \"Name\")]//ancestor::div[1]/input");
 
     private static final By ORGANIZATION_FIELD_LOCATOR
             = By.xpath("//score-transfer-ownership-dialog//mat-label[contains(text(), \"Organization\")]//ancestor::div[1]/input");
+
+    private static final By SEARCH_BUTTON_LOCATOR =
+            By.xpath("//score-transfer-ownership-dialog//*[contains(text(), \"Search\")]//ancestor::button[1]");
 
     private static final By TRANSFER_BUTTON_LOCATOR =
             By.xpath("//score-transfer-ownership-dialog//*[contains(text(), \"Transfer\")]//ancestor::button[1]");
@@ -25,8 +30,11 @@ public class TransferCCOwnershipDialogImpl extends SearchBarPageImpl implements 
     private ViewEditCoreComponentPageImpl parent;
 
     public TransferCCOwnershipDialogImpl(ViewEditCoreComponentPageImpl parent) {
-        super(parent.getDriver(), "//score-transfer-ownership-dialog");
         this.parent = parent;
+    }
+
+    private WebDriver getDriver() {
+        return this.parent.getDriver();
     }
 
     @Override
@@ -46,7 +54,7 @@ public class TransferCCOwnershipDialogImpl extends SearchBarPageImpl implements 
 
     @Override
     public WebElement getLoginIDField() {
-        return getInputFieldInSearchBar();
+        return visibilityOfElementLocated(getDriver(), LOGIN_ID_FIELD_LOCATOR);
     }
 
     @Override
@@ -72,6 +80,11 @@ public class TransferCCOwnershipDialogImpl extends SearchBarPageImpl implements 
     @Override
     public void setOrganization(String organization) {
         sendKeys(getOrganizationField(), organization);
+    }
+
+    @Override
+    public WebElement getSearchButton() {
+        return elementToBeClickable(getDriver(), SEARCH_BUTTON_LOCATOR);
     }
 
     @Override
@@ -105,11 +118,11 @@ public class TransferCCOwnershipDialogImpl extends SearchBarPageImpl implements 
     public void setItemsPerPage(int items) {
         WebElement itemsPerPageField = elementToBeClickable(getDriver(),
                 By.xpath("//score-transfer-ownership-dialog//div[.=\" Items per page: \"]/following::mat-form-field//mat-select"));
-        click(getDriver(), itemsPerPageField);
+        click(itemsPerPageField);
         waitFor(Duration.ofMillis(500L));
         WebElement itemField = elementToBeClickable(getDriver(),
                 By.xpath("//score-transfer-ownership-dialog//span[contains(text(), \"" + items + "\")]//ancestor::mat-option//div[1]//preceding-sibling::span"));
-        click(getDriver(), itemField);
+        click(itemField);
         waitFor(Duration.ofMillis(500L));
     }
 

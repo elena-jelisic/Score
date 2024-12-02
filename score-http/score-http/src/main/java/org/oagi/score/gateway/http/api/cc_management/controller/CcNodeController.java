@@ -5,7 +5,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.oagi.score.gateway.http.api.cc_management.data.*;
 import org.oagi.score.gateway.http.api.cc_management.data.node.*;
 import org.oagi.score.gateway.http.api.cc_management.service.CcNodeService;
-import org.oagi.score.gateway.http.configuration.security.SessionService;
 import org.oagi.score.repo.component.asccp.UpdateAsccpRoleOfAccRepositoryResponse;
 import org.oagi.score.repo.component.bccp.UpdateBccpBdtRepositoryResponse;
 import org.oagi.score.service.common.data.AccessPrivilege;
@@ -22,7 +21,6 @@ import java.util.*;
 
 import static org.oagi.score.gateway.http.api.cc_management.data.CcType.ACC;
 import static org.oagi.score.gateway.http.api.cc_management.data.CcType.valueOf;
-import static org.oagi.score.repo.api.impl.utils.StringUtils.hasLength;
 
 @RestController
 public class CcNodeController {
@@ -32,8 +30,6 @@ public class CcNodeController {
 
     @Autowired
     private ObjectMapper objectMapper;
-    @Autowired
-    private SessionService sessionService;
 
     @RequestMapping(value = "/core_component/acc/{manifestId:[\\d]+}",
             method = RequestMethod.GET,
@@ -302,35 +298,6 @@ public class CcNodeController {
             default:
                 throw new UnsupportedOperationException();
         }
-    }
-
-    @RequestMapping(value = "/core_component/acc/{manifestId:[\\d]+}/verify_append",
-            method = RequestMethod.POST,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public CcVerifyAppendResponse verifyAppendNode(@AuthenticationPrincipal AuthenticatedPrincipal user,
-                                             @PathVariable("manifestId") BigInteger manifestId,
-                                             @RequestBody CcVerifyAppendRequest request) {
-
-        request.setAccManifestId(manifestId);
-
-        if (hasLength(request.getPropertyTerm())) {
-            return service.hasSamePropertyTerm(sessionService.asScoreUser(user),
-                    request.getAccManifestId(), request.getPropertyTerm());
-        }
-        else if (request.getBasedAccManifestId() != null) {
-            return service.verifySetBasedAcc(sessionService.asScoreUser(user),
-                    request.getAccManifestId(), request.getBasedAccManifestId());
-        }
-        else if (request.getAsccpManifestId() != null) {
-            return service.verifyAppendAsccp(sessionService.asScoreUser(user),
-                    request.getAccManifestId(), request.getAsccpManifestId());
-        }
-        else if (request.getBccpManifestId() != null) {
-            return service.verifyAppendBccp(sessionService.asScoreUser(user),
-                    request.getAccManifestId(), request.getBccpManifestId());
-        }
-
-        throw new IllegalArgumentException("No association manifest found.");
     }
 
     @RequestMapping(value = "/core_component/acc/{manifestId:[\\d]+}/append",

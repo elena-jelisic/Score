@@ -4,7 +4,6 @@ import org.oagi.score.e2e.obj.BusinessContextObject;
 import org.oagi.score.e2e.obj.ReleaseObject;
 import org.oagi.score.e2e.obj.TopLevelASBIEPObject;
 import org.oagi.score.e2e.page.Page;
-import org.oagi.score.e2e.page.SearchBarPage;
 import org.openqa.selenium.WebElement;
 
 import java.io.File;
@@ -14,7 +13,7 @@ import java.util.function.Function;
 /**
  * An interface of 'Express BIE' page.
  */
-public interface ExpressBIEPage extends Page, SearchBarPage {
+public interface ExpressBIEPage extends Page {
 
     void selectBIEForExpression(TopLevelASBIEPObject topLevelASBIEP);
 
@@ -67,6 +66,8 @@ public interface ExpressBIEPage extends Page, SearchBarPage {
     WebElement getDENField();
 
     void setDEN(String den);
+
+    WebElement getSearchButton();
 
     void hitSearchButton();
 

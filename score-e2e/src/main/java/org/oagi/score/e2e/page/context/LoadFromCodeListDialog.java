@@ -1,7 +1,6 @@
 package org.oagi.score.e2e.page.context;
 
 import org.oagi.score.e2e.page.Dialog;
-import org.oagi.score.e2e.page.SearchBarPage;
 import org.openqa.selenium.WebElement;
 
 import java.time.LocalDateTime;
@@ -9,7 +8,7 @@ import java.time.LocalDateTime;
 /**
  * An interface of 'Load from Code List' dialog.
  */
-public interface LoadFromCodeListDialog extends Dialog, SearchBarPage {
+public interface LoadFromCodeListDialog extends Dialog {
 
     /**
      * Return the UI element of the 'Branch' select field.
@@ -94,6 +93,13 @@ public interface LoadFromCodeListDialog extends Dialog, SearchBarPage {
      * @param name Name
      */
     void setName(String name);
+
+    /**
+     * Return the UI element of the 'Search' button.
+     *
+     * @return the UI element of the 'Search' button
+     */
+    WebElement getSearchButton();
 
     /**
      * Click the 'Search' button.

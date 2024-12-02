@@ -2,12 +2,11 @@ package org.oagi.score.e2e.page.business_term;
 
 import org.oagi.score.e2e.obj.BusinessTermObject;
 import org.oagi.score.e2e.page.BasePage;
-import org.oagi.score.e2e.page.SearchBarPage;
 import org.openqa.selenium.WebElement;
 
 import java.time.LocalDateTime;
 
-public interface AssignBusinessTermBTPage extends BasePage, SearchBarPage {
+public interface AssignBusinessTermBTPage extends BasePage {
 
     /**
      * Return the UI element of the 'Updater' select field.
@@ -99,6 +98,13 @@ public interface AssignBusinessTermBTPage extends BasePage, SearchBarPage {
      * @return the UI element of the 'Filter by same CC' checkbox
      */
     WebElement getFilterBySameCCCheckbox();
+
+    /**
+     * Return the UI element of the 'Search' button.
+     *
+     * @return the UI element of the 'Search' button
+     */
+    WebElement getSearchButton();
 
     /**
      * Hit the 'Search' button.

@@ -171,8 +171,6 @@ public class EditBIEPageImpl extends BasePageImpl implements EditBIEPage {
                 }
             } catch (WebDriverException ignore) {
             }
-            click(getDriver().findElement(By.tagName("body"))); // To close overlay-container
-
             WebElement contextMenuIcon = getContextMenuIconByNodeName(nodeName);
             click(contextMenuIcon);
             assert visibilityOfElementLocated(getDriver(),
@@ -187,7 +185,7 @@ public class EditBIEPageImpl extends BasePageImpl implements EditBIEPage {
     }
 
     @Override
-    public void retainReusedBIEOnNode(String path) {
+    public void RetainReusedBIEOnNode(String path) {
         retry(() -> {
             WebElement node = clickOnDropDownMenuByPath(path);
             try {
@@ -235,7 +233,6 @@ public class EditBIEPageImpl extends BasePageImpl implements EditBIEPage {
                 new Actions(getDriver()).sendKeys("O").perform();
                 click(elementToBeClickable(getDriver(), ABIE_GLOBAL_EXTENSION_OPTION_LOCATOR));
             }
-            click(getDriver().findElement(By.tagName("body"))); // To close overlay-container
 
             String currentUrl = retry(() -> {
                 waitFor(ofMillis(1000L));
@@ -257,6 +254,7 @@ public class EditBIEPageImpl extends BasePageImpl implements EditBIEPage {
     public void enableChildren(String path) {
         retry(() -> {
             WebElement node = clickOnDropDownMenuByPath(path);
+
             try {
                 click(elementToBeClickable(getDriver(), ENABLE_CHILDREN_OPTION_LOCATOR));
             } catch (TimeoutException e) {
@@ -264,7 +262,6 @@ public class EditBIEPageImpl extends BasePageImpl implements EditBIEPage {
                 new Actions(getDriver()).sendKeys("O").perform();
                 click(elementToBeClickable(getDriver(), ENABLE_CHILDREN_OPTION_LOCATOR));
             }
-            click(getDriver().findElement(By.tagName("body"))); // To close overlay-container
         });
     }
 
@@ -272,6 +269,7 @@ public class EditBIEPageImpl extends BasePageImpl implements EditBIEPage {
     public void setChildrenMaxCardinalityToOne(String path) {
         retry(() -> {
             WebElement node = clickOnDropDownMenuByPath(path);
+
             try {
                 click(elementToBeClickable(getDriver(), SET_CHILDREN_MAX_CARDINALITY_TO_ONE_OPTION_LOCATOR));
             } catch (TimeoutException e) {
@@ -279,7 +277,6 @@ public class EditBIEPageImpl extends BasePageImpl implements EditBIEPage {
                 new Actions(getDriver()).sendKeys("O").perform();
                 click(elementToBeClickable(getDriver(), SET_CHILDREN_MAX_CARDINALITY_TO_ONE_OPTION_LOCATOR));
             }
-            click(getDriver().findElement(By.tagName("body"))); // To close overlay-container
         });
     }
 
@@ -294,7 +291,6 @@ public class EditBIEPageImpl extends BasePageImpl implements EditBIEPage {
                 new Actions(getDriver()).sendKeys("O").perform();
                 click(elementToBeClickable(getDriver(), ABIE_LOCAL_EXTENSION_OPTION_LOCATOR));
             }
-            click(getDriver().findElement(By.tagName("body"))); // To close overlay-container
 
             String currentUrl = retry(() -> {
                 waitFor(ofMillis(1000L));
@@ -304,7 +300,6 @@ public class EditBIEPageImpl extends BasePageImpl implements EditBIEPage {
                 }
                 throw new WebDriverException();
             });
-
             BigInteger accManifestId = new BigInteger(currentUrl.substring(currentUrl.lastIndexOf("/") + 1));
             ACCObject acc = getAPIFactory().getCoreComponentAPI().getACCByManifestId(accManifestId);
             ACCExtensionViewEditPage accExtensionViewEditPage = new ACCExtensionViewEditPageImpl(this, acc);
@@ -324,7 +319,6 @@ public class EditBIEPageImpl extends BasePageImpl implements EditBIEPage {
                 new Actions(getDriver()).sendKeys("O").perform();
                 click(elementToBeClickable(getDriver(), ABIE_LOCAL_EXTENSION_OPTION_LOCATOR));
             }
-            click(getDriver().findElement(By.tagName("body"))); // To close overlay-container
         });
     }
 
@@ -616,7 +610,7 @@ public class EditBIEPageImpl extends BasePageImpl implements EditBIEPage {
 
     private WebElement getTextAreaFieldByName(String name) {
         return visibilityOfElementLocated(getDriver(), By.xpath(
-                "//*[@placeholder = \"" + name + "\"]//ancestor::div[1]/textarea"));
+                "//*[contains(text(), \"" + name + "\")]//ancestor::div[1]/textarea"));
     }
 
     private WebElement getIconButtonByName(String iconName) {

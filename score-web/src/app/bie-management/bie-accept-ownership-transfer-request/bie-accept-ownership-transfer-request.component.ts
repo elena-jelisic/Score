@@ -1,7 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {BieListService} from '../bie-list/domain/bie-list.service';
-import {ActivatedRoute, Router} from '@angular/router';
+import {switchMap} from 'rxjs/operators';
+import {ActivatedRoute, ParamMap, Router} from '@angular/router';
 import {MatSnackBar} from '@angular/material/snack-bar';
+import {BieEditService} from '../bie-edit/domain/bie-edit.service';
 
 @Component({
   selector: 'score-bie-accept-ownership-transfer-request',

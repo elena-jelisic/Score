@@ -13,7 +13,7 @@ public class AssignedBusinessTermListRecord {
     private BigInteger bieId;
     private String bieType;
     private String den;
-    private boolean primaryIndicator;
+    private boolean primary;
     private String typeCode;
     private BigInteger businessTermId;
     private String businessTerm;

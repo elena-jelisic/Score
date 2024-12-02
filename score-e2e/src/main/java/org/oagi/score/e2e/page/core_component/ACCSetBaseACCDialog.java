@@ -1,12 +1,11 @@
 package org.oagi.score.e2e.page.core_component;
 
 import org.oagi.score.e2e.page.Dialog;
-import org.oagi.score.e2e.page.SearchBarPage;
 import org.openqa.selenium.WebElement;
 
 import java.time.LocalDateTime;
 
-public interface ACCSetBaseACCDialog extends Dialog, SearchBarPage {
+public interface ACCSetBaseACCDialog extends Dialog {
     /**
      * Return the UI element of the 'State' select field.
      *
@@ -150,6 +149,13 @@ public interface ACCSetBaseACCDialog extends Dialog, SearchBarPage {
      * @param componentType 'Base(Abstract)', 'Semantics'
      */
     void setComponentType(String componentType);
+
+    /**
+     * Return the UI element of the 'Search' button.
+     *
+     * @return the UI element of the 'Search' button
+     */
+    WebElement getSearchButton();
 
     /**
      * Hit the 'Search' button

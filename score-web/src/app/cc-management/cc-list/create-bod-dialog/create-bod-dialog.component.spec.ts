@@ -1,4 +1,4 @@
-import {ComponentFixture, fakeAsync, TestBed} from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {CreateBodDialogComponent} from './create-bod-dialog.component';
 
@@ -6,7 +6,7 @@ describe('AppendAsccDialogComponent', () => {
   let component: CreateBodDialogComponent;
   let fixture: ComponentFixture<CreateBodDialogComponent>;
 
-  beforeEach(fakeAsync(() => {
+  beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [CreateBodDialogComponent]
     })

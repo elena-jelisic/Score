@@ -1,7 +1,6 @@
 package org.oagi.score.e2e.impl.page.business_term;
 
 import org.oagi.score.e2e.impl.page.BasePageImpl;
-import org.oagi.score.e2e.impl.page.BaseSearchBarPageImpl;
 import org.oagi.score.e2e.obj.BusinessTermObject;
 import org.oagi.score.e2e.page.BasePage;
 import org.oagi.score.e2e.page.business_term.CreateBusinessTermPage;
@@ -16,7 +15,7 @@ import java.time.format.DateTimeFormatter;
 
 import static org.oagi.score.e2e.impl.PageHelper.*;
 
-public class ViewEditBusinessTermPageImpl extends BaseSearchBarPageImpl implements ViewEditBusinessTermPage {
+public class ViewEditBusinessTermPageImpl extends BasePageImpl implements ViewEditBusinessTermPage {
 
     private static final By UPDATER_SELECT_FIELD_LOCATOR =
             By.xpath("//*[contains(text(), \"Updater\")]//ancestor::div[1]/mat-select[1]");
@@ -30,12 +29,17 @@ public class ViewEditBusinessTermPageImpl extends BaseSearchBarPageImpl implemen
     private static final By UPDATED_END_DATE_FIELD_LOCATOR =
             By.xpath("//input[contains(@placeholder, \"Updated end date\")]");
 
+    private static final By TERM_FIELD_LOCATOR =
+            By.xpath("//mat-label[contains(text(), \"Term\")]//ancestor::div[1]/input");
+
     private static final By EXTERNAL_REFERENCE_URI_FIELD_LOCATOR =
             By.xpath("//mat-label[contains(text(), \"External Reference URI\")]//ancestor::div[1]/input");
 
     private static final By EXTERNAL_REFERENCE_ID_FIELD_LOCATOR =
             By.xpath("//mat-label[contains(text(), \"External Reference ID\")]//ancestor::div[1]/input");
 
+    private static final By SEARCH_BUTTON_LOCATOR =
+            By.xpath("//span[contains(text(), \"Search\")]//ancestor::button[1]");
     private static final By NEW_BUSINESS_TERM_BUTTON_LOCATOR =
             By.xpath("//span[contains(text(), \"New Business Term\")]//ancestor::button[1]");
 
@@ -106,7 +110,7 @@ public class ViewEditBusinessTermPageImpl extends BaseSearchBarPageImpl implemen
 
     @Override
     public WebElement getTermField() {
-        return getInputFieldInSearchBar();
+        return visibilityOfElementLocated(getDriver(), TERM_FIELD_LOCATOR);
     }
 
     @Override
@@ -132,6 +136,11 @@ public class ViewEditBusinessTermPageImpl extends BaseSearchBarPageImpl implemen
     @Override
     public void setExternalReferenceID(String externalReferenceID) {
         sendKeys(getExternalReferenceIDField(), externalReferenceID);
+    }
+
+    @Override
+    public WebElement getSearchButton() {
+        return elementToBeClickable(getDriver(), SEARCH_BUTTON_LOCATOR);
     }
 
     @Override

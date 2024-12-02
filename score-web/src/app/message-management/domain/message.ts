@@ -10,7 +10,6 @@ export class CountOfUnreadMessages {
 
 export class MessageListRequest {
   filters: {
-    subject: string
   };
   senderUsernameList: string[] = [];
   createdDate: {
@@ -48,7 +47,6 @@ export class MessageListRequest {
       end: (params.get('createdDateEnd')) ? new Date(params.get('createdDateEnd')) : null
     };
     this.filters = {
-      subject: params.get('subject') || '',
     };
   }
 
@@ -59,9 +57,6 @@ export class MessageListRequest {
       .set('pageIndex', '' + this.page.pageIndex)
       .set('pageSize', '' + this.page.pageSize);
 
-    if (this.filters.subject && this.filters.subject.length > 0) {
-      params = params.set('subject', '' + this.filters.subject);
-    }
     if (this.senderUsernameList && this.senderUsernameList.length > 0) {
       params = params.set('senderUsernameList', this.senderUsernameList.join(','));
     }

@@ -13,7 +13,10 @@ import org.oagi.score.e2e.page.LoginPage;
 import org.oagi.score.e2e.page.bie.EditBIEPage;
 import org.oagi.score.e2e.page.bie.ViewEditBIEPage;
 import org.oagi.score.e2e.page.core_component.ViewEditCoreComponentPage;
-import org.openqa.selenium.*;
+import org.openqa.selenium.By;
+import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.WebDriverException;
+import org.openqa.selenium.WebElement;
 
 import java.math.BigInteger;
 import java.time.Duration;
@@ -139,7 +142,7 @@ public class HomePageImpl extends BasePageImpl implements HomePage {
     @Override
     public void setBranch(String branch) {
         retry(() -> {
-            click(getDriver(), getBranchSelectField());
+            click(getBranchSelectField());
             sendKeys(visibilityOfElementLocated(getDriver(), DROPDOWN_SEARCH_FIELD_LOCATOR), branch);
             WebElement optionField = visibilityOfElementLocated(getDriver(),
                     By.xpath("//mat-option//span[text() = \"" + branch + "\"]"));
@@ -288,11 +291,7 @@ public class HomePageImpl extends BasePageImpl implements HomePage {
             String topLevelAsbiepId = href.substring(href.indexOf("/profile_bie/") + "/profile_bie/".length());
             TopLevelASBIEPObject topLevelASBIEP = getAPIFactory().getBusinessInformationEntityAPI().getTopLevelASBIEPByID(new BigInteger(topLevelAsbiepId));
 
-            try {
-                click(link);
-            } catch (ElementClickInterceptedException e) {
-                getDriver().get(href);
-            }
+            click(link);
             waitFor(ofMillis(500L));
 
             EditBIEPage editBIEPage = new EditBIEPageImpl(this.parent, topLevelASBIEP);

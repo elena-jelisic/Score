@@ -3,14 +3,13 @@ package org.oagi.score.e2e.page.code_list;
 import org.oagi.score.e2e.obj.AppUserObject;
 import org.oagi.score.e2e.obj.CodeListObject;
 import org.oagi.score.e2e.page.Page;
-import org.oagi.score.e2e.page.SearchBarPage;
 import org.oagi.score.e2e.page.release.EditReleasePage;
 import org.openqa.selenium.WebElement;
 
 /**
  * An interface of 'View/Edit Code List' page.
  */
-public interface ViewEditCodeListPage extends Page, SearchBarPage {
+public interface ViewEditCodeListPage extends Page {
 
     EditCodeListPage openCodeListViewEditPage(CodeListObject codeList);
 
@@ -39,6 +38,8 @@ public interface ViewEditCodeListPage extends Page, SearchBarPage {
     WebElement getTableRecordByValue(String value);
 
     void hitSearchButton();
+
+    WebElement getSearchButton();
 
     void setBranch(String branch);
 

@@ -1,7 +1,6 @@
 package org.oagi.score.e2e.page.business_term;
 
 import org.oagi.score.e2e.page.Page;
-import org.oagi.score.e2e.page.SearchBarPage;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 
@@ -10,7 +9,7 @@ import java.time.LocalDateTime;
 /**
  * An interface for 'View/Edit Business Term' page
  */
-public interface ViewEditBusinessTermPage extends Page, SearchBarPage {
+public interface ViewEditBusinessTermPage extends Page {
 
     /**
      * Return the UI element of the 'Updater' select field.
@@ -95,6 +94,13 @@ public interface ViewEditBusinessTermPage extends Page, SearchBarPage {
      * @param externalReferenceID External Reference ID text
      */
     void setExternalReferenceID(String externalReferenceID);
+
+    /**
+     * Return the UI element of the 'Search' button.
+     *
+     * @return the UI element of the 'Search' button
+     */
+    WebElement getSearchButton();
 
     /**
      * Hit the 'Search' button.

@@ -1,4 +1,4 @@
-import {ComponentFixture, fakeAsync, TestBed} from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {SearchOptionsDialogComponent} from './search-options-dialog.component';
 
@@ -6,7 +6,7 @@ describe('SearchOptionsDialogComponent', () => {
   let component: SearchOptionsDialogComponent;
   let fixture: ComponentFixture<SearchOptionsDialogComponent>;
 
-  beforeEach(fakeAsync(() => {
+  beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [ SearchOptionsDialogComponent ]
     })

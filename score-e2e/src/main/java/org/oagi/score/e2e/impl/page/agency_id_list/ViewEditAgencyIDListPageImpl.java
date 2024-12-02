@@ -1,7 +1,6 @@
 package org.oagi.score.e2e.impl.page.agency_id_list;
 
 import org.oagi.score.e2e.impl.page.BasePageImpl;
-import org.oagi.score.e2e.impl.page.BaseSearchBarPageImpl;
 import org.oagi.score.e2e.obj.AgencyIDListObject;
 import org.oagi.score.e2e.obj.AppUserObject;
 import org.oagi.score.e2e.page.BasePage;
@@ -20,7 +19,7 @@ import static java.time.Duration.ofMillis;
 import static java.time.Duration.ofSeconds;
 import static org.oagi.score.e2e.impl.PageHelper.*;
 
-public class ViewEditAgencyIDListPageImpl extends BaseSearchBarPageImpl implements ViewEditAgencyIDListPage {
+public class ViewEditAgencyIDListPageImpl extends BasePageImpl implements ViewEditAgencyIDListPage {
 
     private static final By NEW_AGENCY_ID_LIST_BUTTON_LOCATOR =
             By.xpath("//span[contains(text(), \"New Agency ID List\")]//ancestor::button[1]");
@@ -29,7 +28,7 @@ public class ViewEditAgencyIDListPageImpl extends BaseSearchBarPageImpl implemen
             By.xpath("//input[@aria-label=\"dropdown search\"]");
 
     private static final By BRANCH_SELECT_FIELD_LOCATOR =
-            By.xpath("//div[contains(@class, \"branch-selector\")]//mat-select[1]");
+            By.xpath("//*[contains(text(), \"Branch\")]//ancestor::mat-form-field[1]//mat-select");
 
     private static final By STATE_SELECT_FIELD_LOCATOR =
             By.xpath("//*[contains(text(), \"State\")]//ancestor::mat-form-field[1]//mat-select");
@@ -49,11 +48,17 @@ public class ViewEditAgencyIDListPageImpl extends BaseSearchBarPageImpl implemen
     private static final By UPDATED_END_DATE_FIELD_LOCATOR =
             By.xpath("//input[contains(@placeholder, \"Updated end date\")]");
 
+    private static final By NAME_FIELD_LOCATOR =
+            By.xpath("//input[contains(@placeholder, \"Name\")]");
+
     private static final By DEFINITION_FIELD_LOCATOR =
             By.xpath("//input[contains(@placeholder, \"Definition\")]");
 
     private static final By MODULE_FIELD_LOCATOR =
             By.xpath("//input[contains(@placeholder, \"Module\")]");
+
+    private static final By SEARCH_BUTTON_LOCATOR =
+            By.xpath("//span[contains(text(), \"Search\")]//ancestor::button[1]");
 
     public ViewEditAgencyIDListPageImpl(BasePage parent) {
         super(parent);
@@ -147,10 +152,10 @@ public class ViewEditAgencyIDListPageImpl extends BaseSearchBarPageImpl implemen
     @Override
     public void setBranch(String branch) {
         retry(() -> {
-            click(getDriver(), getBranchSelectField());
+            click(getBranchSelectField());
             waitFor(ofSeconds(2L));
             WebElement optionField = visibilityOfElementLocated(getDriver(),
-                    By.xpath("//div[@class = \"cdk-overlay-container\"]//mat-option//span[text() = \"" + branch + "\"]"));
+                    By.xpath("//mat-option//span[text() = \"" + branch + "\"]"));
             click(optionField);
         });
     }
@@ -237,7 +242,7 @@ public class ViewEditAgencyIDListPageImpl extends BaseSearchBarPageImpl implemen
 
     @Override
     public WebElement getNameField() {
-        return getInputFieldInSearchBar();
+        return visibilityOfElementLocated(getDriver(), NAME_FIELD_LOCATOR);
     }
 
     @Override
@@ -266,6 +271,11 @@ public class ViewEditAgencyIDListPageImpl extends BaseSearchBarPageImpl implemen
     }
 
     @Override
+    public WebElement getSearchButton() {
+        return elementToBeClickable(getDriver(), SEARCH_BUTTON_LOCATOR);
+    }
+
+    @Override
     public void hitSearchButton() {
         click(getSearchButton());
         invisibilityOfLoadingContainerElement(getDriver());
@@ -290,11 +300,11 @@ public class ViewEditAgencyIDListPageImpl extends BaseSearchBarPageImpl implemen
     public void setItemsPerPage(int items) {
         WebElement itemsPerPageField = elementToBeClickable(getDriver(),
                 By.xpath("//div[.=\" Items per page: \"]/following::mat-form-field//mat-select"));
-        click(getDriver(), itemsPerPageField);
+        click(itemsPerPageField);
         waitFor(ofMillis(500L));
         WebElement itemField = elementToBeClickable(getDriver(),
                 By.xpath("//span[contains(text(), \"" + items + "\")]//ancestor::mat-option//div[1]//preceding-sibling::span"));
-        click(getDriver(), itemField);
+        click(itemField);
         waitFor(ofMillis(500L));
     }
 

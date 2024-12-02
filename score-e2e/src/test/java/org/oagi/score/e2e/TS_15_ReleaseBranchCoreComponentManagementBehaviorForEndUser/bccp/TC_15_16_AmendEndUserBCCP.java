@@ -195,7 +195,6 @@ public class TC_15_16_AmendEndUserBCCP extends BaseTest {
         HomePage homePage = loginPage().signIn(endUser.getLoginId(), endUser.getPassword());
         CoreComponentMenu coreComponentMenu = homePage.getCoreComponentMenu();
         ViewEditCoreComponentPage viewEditCoreComponentPage = coreComponentMenu.openViewEditCoreComponentSubMenu();
-        viewEditCoreComponentPage.toggleToDevView();
         ASCCPViewEditPage asccpViewEditPage = viewEditCoreComponentPage.openASCCPViewEditPageByDenAndBranch(asccp.getDen(), branch);
         BCCPViewEditPage bccpViewEditPage = viewEditCoreComponentPage.openBCCPViewEditPageByManifestID(bccp.getBccpManifestId());
 
@@ -610,8 +609,8 @@ public class TC_15_16_AmendEndUserBCCP extends BaseTest {
         assertEquals(dataType.getDataTypeTerm(), getText(dtPanel.getDataTypeTermField()));
         assertFalse(dtPanel.getQualifierField().isEnabled());
         assertEquals(dataType.getQualifier(), getText(dtPanel.getQualifierField()));
-        assertDisabled(dtPanel.getDefinitionSourceField());
-        assertEnabled(dtPanel.getDefinitionField());
+        assertFalse(dtPanel.getDefinitionSourceField().isEnabled());
+        assertFalse(dtPanel.getDefinitionField().isEnabled());
     }
 
     @Test

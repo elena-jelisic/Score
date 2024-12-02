@@ -31,9 +31,6 @@ export class BusinessTermService {
     if (request.filters.externalReferenceId) {
       params = params.set('externalReferenceId', request.filters.externalReferenceId);
     }
-    if (request.filters.definition) {
-      params = params.set('definition', request.filters.definition);
-    }
     if (request.filters.bieId) {
       params = params.set('bieId', request.filters.bieId);
     }
@@ -48,8 +45,8 @@ export class BusinessTermService {
     if (request.filters.typeCode) {
       params = params.set('typeCode', request.filters.typeCode);
     }
-    if (request.filters.primaryIndicator) {
-      params = params.set('primaryIndicator', request.filters.primaryIndicator);
+    if (request.filters.primary) {
+      params = params.set('primary', request.filters.primary);
     }
     if (request.updaterUsernameList.length > 0) {
       params = params.set('updaterUsernameList', request.updaterUsernameList.join(','));
@@ -116,11 +113,11 @@ export class BusinessTermService {
     }
   }
 
-  assignBusinessTermToBie(businessTermId: number, biesToAssign: BieToAssign[], primaryIndicator: boolean, typeCode: string): Observable<any> {
+  assignBusinessTermToBie(businessTermId: number, biesToAssign: BieToAssign[], primary: boolean, typeCode: string): Observable<any> {
     return this.http.put('/api/business_terms/assign', {
       biesToAssign,
       businessTermId,
-      primaryIndicator,
+      primary,
       typeCode
     });
   }
@@ -161,21 +158,21 @@ export class BusinessTermService {
   }
 
   checkAssignmentUniqueness(bieId: number, bieType: string, businessTermId: number,
-                            typeCode: string, primaryIndicator: boolean): Observable<any> {
+                            typeCode: string, primary: boolean): Observable<any> {
     return this.http.post('/api/business_terms/assign/check_uniqueness', {
       biesToAssign: [{ bieId, bieType }],
       businessTermId,
       typeCode,
-      primaryIndicator
+      primary
     });
   }
 
-  findIfPrimaryExist(bieId: number, bieType: string, primaryIndicator: boolean, typeCode: string): Observable<PageResponse<AssignedBusinessTerm>> {
-    if (primaryIndicator) {
+  findIfPrimaryExist(bieId: number, bieType: string, primary: boolean, typeCode: string): Observable<PageResponse<AssignedBusinessTerm>> {
+    if (primary) {
       const req = new AssignedBtListRequest();
       req.page = new PageRequest('lastUpdateTimestamp', 'desc', 0, 10);
       req.filters.typeCode = typeCode;
-      req.filters.primaryIndicator = primaryIndicator;
+      req.filters.primary = primary;
       req.filters.searchByCC = 'true';
       req.filters.bieTypes = [bieType];
       req.filters.bieId = bieId;
@@ -188,7 +185,7 @@ export class BusinessTermService {
       bieType: assignedBusinessTerm.bieType,
       bieId: assignedBusinessTerm.bieId,
       typeCode: assignedBusinessTerm.typeCode,
-      primaryIndicator: assignedBusinessTerm.primaryIndicator
+      primary: assignedBusinessTerm.primary
     });
   }
 

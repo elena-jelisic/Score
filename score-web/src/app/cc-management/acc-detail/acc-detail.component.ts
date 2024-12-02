@@ -26,7 +26,7 @@ import {
   Base,
   CcAccNodeDetail,
   CcAsccpNodeDetail,
-  CcBccpNodeDetail,
+  CcBccpNodeDetail, CcBdtPriRestri,
   CcBdtScNodeDetail,
   CcId,
   CcNodeDetail,
@@ -67,8 +67,6 @@ import {TagService} from '../../tag-management/domain/tag.service';
 import {ShortTag, Tag} from '../../tag-management/domain/tag';
 import {EditTagsDialogComponent} from '../../tag-management/edit-tags-dialog/edit-tags-dialog.component';
 import {WebPageInfoService} from '../../basis/basis.service';
-import {PreferencesInfo} from '../../settings-management/settings-preferences/domain/preferences';
-import {SettingsPreferencesService} from '../../settings-management/settings-preferences/domain/settings-preferences.service';
 
 @Component({
   selector: 'score-acc-detail',
@@ -126,7 +124,6 @@ export class AccDetailComponent implements OnInit {
     return 1000000 * this.virtualScrollItemSize;
   }
 
-  preferencesInfo: PreferencesInfo;
   HIDE_CARDINALITY_PROPERTY_KEY = 'CC-Settings-Hide-Cardinality';
 
   get hideCardinality(): boolean {
@@ -145,7 +142,6 @@ export class AccDetailComponent implements OnInit {
               private namespaceService: NamespaceService,
               private dialog: MatDialog,
               private confirmDialogService: ConfirmDialogService,
-              private preferencesService: SettingsPreferencesService,
               private tagService: TagService,
               private location: Location,
               private router: Router,
@@ -169,16 +165,14 @@ export class AccDetailComponent implements OnInit {
           this.service.getLastPublishedRevision(this.type, this.manifestId),
           this.service.getAccNode(this.manifestId),
           this.namespaceService.getSimpleNamespaces(),
-          this.tagService.getTags(),
-          this.preferencesService.load(this.auth.getUserToken())
+          this.tagService.getTags()
         ]);
-      })).subscribe(([ccGraph, revisionResponse, rootNode, namespaces, tags, preferencesInfo]) => {
+      })).subscribe(([ccGraph, revisionResponse, rootNode, namespaces, tags]) => {
       this.lastRevision = revisionResponse;
       this.namespaces = namespaces;
       initFilter(this.namespaceListFilterCtrl, this.filteredNamespaceList,
         this.getSelectableNamespaces(), (e) => e.uri);
       this.tags = tags;
-      this.preferencesInfo = preferencesInfo;
 
       // subscribe an event
       this.stompService.watch('/topic/acc/' + this.manifestId).subscribe((message: Message) => {
@@ -287,21 +281,6 @@ export class AccDetailComponent implements OnInit {
     });
   }
 
-  copyPath(node: CcFlatNode) {
-    if (!node) {
-      return;
-    }
-
-    const delimiter = this.preferencesInfo.viewSettingsInfo.treeSettings.delimiter;
-    let queryPath = node.queryPath;
-    queryPath = queryPath.replaceAll('/', delimiter);
-
-    this.clipboard.copy(queryPath);
-    this.snackBar.open('Copied to clipboard', '', {
-      duration: 3000
-    });
-  }
-
   copyLink(node: CcFlatNode, $event?) {
     if ($event) {
       $event.preventDefault();
@@ -318,7 +297,7 @@ export class AccDetailComponent implements OnInit {
     const queryPath = url.substring(0, idIdx + manifestId.length) + '/' + node.queryPath;
 
     this.clipboard.copy(queryPath);
-    this.snackBar.open('Copied to clipboard', '', {
+    this.snackBar.open('Link copied', '', {
       duration: 3000
     });
   }
@@ -408,7 +387,7 @@ export class AccDetailComponent implements OnInit {
   }
 
   isExtension() {
-    return this.rootNode && this.rootNode.accNode.componentType === 'Extension';
+    return this.rootNode  && this.rootNode.accNode.componentType === 'Extension';
   }
 
   isAbstract(node: CcFlatNode): boolean {
@@ -562,23 +541,12 @@ export class AccDetailComponent implements OnInit {
     return true;
   }
 
-  openInNewTab(url: string) {
-    window.open(url, '_blank');
-  }
-
-  copyToDefinition(text: string) {
-    this.asAccDetail(this.rootNode).definition = text;
-    this.snackBar.open('Copied to definition', '', {
-      duration: 3000
-    });
-  }
-
   _updateDetails(details: CcFlatNode[]) {
     this.isUpdating = true;
     this.service.updateDetails(this.manifestId, details)
       .pipe(finalize(() => {
-        this.isUpdating = false;
-      }))
+          this.isUpdating = false;
+        }))
       .subscribe(_ => {
         if (this.entityTypeChanged.size > 0) {
           this.reload('Updated');
@@ -684,8 +652,7 @@ export class AccDetailComponent implements OnInit {
       autoFocus: false
     });
 
-    dialogRef.afterClosed().subscribe(_ => {
-    });
+    dialogRef.afterClosed().subscribe(_ => {});
   }
 
   pos(node: CcFlatNode): number {
@@ -725,43 +692,18 @@ export class AccDetailComponent implements OnInit {
         return;
       }
 
-      this.service.verifyAppendAssociation(
+      this.isUpdating = true;
+      this.service.appendAssociation(
+        this.rootNode.releaseId,
         this.rootNode.manifestId,
-        association.manifestId, association.type).subscribe(verifyRes => {
-        if (verifyRes.warn) {
-          const dialogConfig = this.confirmDialogService.newConfig();
-          dialogConfig.data.header = ((pos === -1) ? 'Append' : 'Insert') + ' association';
-          dialogConfig.data.content = [verifyRes.message, 'Do you still want to proceed?'];
-          dialogConfig.data.action = 'Proceed anyway';
-
-          this.confirmDialogService.open(dialogConfig).afterClosed()
-            .subscribe(result => {
-              if (!result) {
-                this.isUpdating = false;
-                return;
-              }
-
-              this._doAppendAssociation(association, pos);
-            });
-        } else {
-          this._doAppendAssociation(association, pos);
-        }
+        association.manifestId,
+        association.type,
+        (this.asAccDetail(this.rootNode).oagisComponentType === AttributeGroup.value) ? true : false,
+        pos !== -1 && this.hasBasedAcc ? pos - 1 : pos).subscribe(_ => {
+        this.reload((pos === -1) ? 'Appended' : 'Inserted');
+      }, err => {
+        this.isUpdating = false;
       });
-    });
-  }
-
-  _doAppendAssociation(association: CcList, pos: number) {
-    this.isUpdating = true;
-    this.service.appendAssociation(
-      this.rootNode.releaseId,
-      this.rootNode.manifestId,
-      association.manifestId,
-      association.type,
-      (this.asAccDetail(this.rootNode).oagisComponentType === AttributeGroup.value) ? true : false,
-      pos !== -1 && this.hasBasedAcc ? pos - 1 : pos).subscribe(_ => {
-      this.reload((pos === -1) ? 'Appended' : 'Inserted');
-    }, err => {
-      this.isUpdating = false;
     });
   }
 
@@ -840,92 +782,41 @@ export class AccDetailComponent implements OnInit {
       }
 
       this.isUpdating = true;
-      this.service.verifySetBasedAcc(
-        this.rootNode.manifestId, basedAccManifestId).subscribe(verifyRes => {
-        if (verifyRes.warn) {
-          const dialogConfig = this.confirmDialogService.newConfig();
-          dialogConfig.data.header = 'Set Based ACC';
-          dialogConfig.data.content = [verifyRes.message, 'Do you still want to proceed?'];
-          dialogConfig.data.action = 'Proceed anyway';
-
-          this.confirmDialogService.open(dialogConfig).afterClosed()
-            .subscribe(result => {
-              if (!result) {
-                this.isUpdating = false;
-                return;
-              }
-
-              this._doSetBasedAcc(basedAccManifestId);
-            });
-        } else {
-          this._doSetBasedAcc(basedAccManifestId);
+      this.service.setBasedAcc(this.rootNode.manifestId, basedAccManifestId).subscribe(_ => {
+        this.hasBasedAcc = true;
+        this.reload('Updated');
+        if (!this.dataSource.isExpanded(this.dataSource.data[0])) {
+          this.dataSource.expand(this.dataSource.data[0]);
         }
+        this.isUpdating = false;
+      }, err => {
+        this.isUpdating = false;
       });
-    });
-  }
-
-  _doSetBasedAcc(basedAccManifestId: number) {
-    this.service.setBasedAcc(this.rootNode.manifestId, basedAccManifestId).subscribe(_ => {
-      this.hasBasedAcc = true;
-      this.reload('Updated');
-      if (!this.dataSource.isExpanded(this.dataSource.data[0])) {
-        this.dataSource.expand(this.dataSource.data[0]);
-      }
-      this.isUpdating = false;
-    }, err => {
-      this.isUpdating = false;
     });
   }
 
   createExtensionComponent() {
     this.isUpdating = true;
+    const dialogConfig = this.confirmDialogService.newConfig();
+    dialogConfig.data.header = 'Create Extension Component';
+    dialogConfig.data.content = ['Are you sure you want to create Extension Component?'];
+    dialogConfig.data.action = 'Create';
 
-    this.service.verifyCreateExtensionComponent(
-      this.rootNode.manifestId).subscribe(verifyRes => {
-      if (verifyRes.warn) {
-        const dialogConfig = this.confirmDialogService.newConfig();
-        dialogConfig.data.header = 'Create Extension Component';
-        dialogConfig.data.content = [verifyRes.message, 'Do you still want to proceed?'];
-        dialogConfig.data.action = 'Proceed anyway';
-
-        this.confirmDialogService.open(dialogConfig).afterClosed()
-          .subscribe(result => {
-            if (!result) {
-              this.isUpdating = false;
-              return;
-            }
-
-            this._doCreateExtensionComponent();
+    this.confirmDialogService.open(dialogConfig).afterClosed()
+      .pipe(
+        finalize(() => {
+          this.isUpdating = false;
+        })
+      )
+      .subscribe(result => {
+        if (!result) {
+          return;
+        }
+        this.service.createExtensionComponent(this.rootNode.manifestId)
+          .subscribe(resp => {
+            this.reload('Extension component created');
+          }, err => {
           });
-      } else {
-        const dialogConfig = this.confirmDialogService.newConfig();
-        dialogConfig.data.header = 'Create Extension Component';
-        dialogConfig.data.content = ['Are you sure you want to create Extension Component?'];
-        dialogConfig.data.action = 'Create';
-
-        this.confirmDialogService.open(dialogConfig).afterClosed()
-          .subscribe(result => {
-            if (!result) {
-              this.isUpdating = false;
-              return;
-            }
-
-            this._doCreateExtensionComponent();
-          });
-      }
-    }, err => {
-      this.isUpdating = false;
-      throw err;
-    });
-  }
-
-  _doCreateExtensionComponent() {
-    this.isUpdating = true;
-    this.service.createExtensionComponent(this.rootNode.manifestId)
-      .subscribe(resp => {
-        this.reload('Extension component created');
-      }, err => {
-        this.isUpdating = false;
       });
   }
 
@@ -1016,16 +907,16 @@ export class AccDetailComponent implements OnInit {
             this.isUpdating = false;
           })
         ).subscribe(resp => {
-          this.manifestId = resp.manifestId;
-          this.afterStateChanged(resp.state, resp.access);
-          this.service.getLastPublishedRevision(this.type, this.manifestId).subscribe(revision => {
-            this.lastRevision = revision;
-            this.snackBar.open((isDeveloper) ? 'Revised' : 'Amended', '', {
-              duration: 3000,
+            this.manifestId = resp.manifestId;
+            this.afterStateChanged(resp.state, resp.access);
+            this.service.getLastPublishedRevision(this.type, this.manifestId).subscribe(revision => {
+              this.lastRevision = revision;
+              this.snackBar.open((isDeveloper) ? 'Revised' : 'Amended', '', {
+                duration: 3000,
+              });
             });
+            this.reload();
           });
-          this.reload();
-        });
       });
   }
 
@@ -1528,6 +1419,8 @@ export class AccDetailComponent implements OnInit {
 
   openEditTags() {
     const dialogRef = this.dialog.open(EditTagsDialogComponent, {
+      width: '90%',
+      maxWidth: '90%',
       autoFocus: false
     });
     dialogRef.afterClosed().subscribe(_ => {
@@ -1565,8 +1458,7 @@ export class AccDetailComponent implements OnInit {
       autoFocus: false
     });
 
-    dialogRef.afterClosed().subscribe(_ => {
-    });
+    dialogRef.afterClosed().subscribe(_ => {});
   }
 
   openComments(type: string, node?: CcFlatNode) {
@@ -1788,7 +1680,7 @@ export class AccDetailComponent implements OnInit {
 
       dialogRef.afterClosed().subscribe(accManifestId => {
         if (accManifestId) {
-          this.reload('Refactored.');
+            this.reload('Refactored.');
         }
       });
     }

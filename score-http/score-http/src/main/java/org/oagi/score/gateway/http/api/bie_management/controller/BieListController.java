@@ -162,8 +162,6 @@ public class BieListController {
                                                              @RequestParam(name = "ownerLoginIds", required = false) String ownerLoginIds,
                                                              @RequestParam(name = "updaterLoginIds", required = false) String updaterLoginIds,
                                                              @RequestParam(name = "businessContext", required = false) String businessContext,
-                                                             @RequestParam(name = "version", required = false) String version,
-                                                             @RequestParam(name = "remark", required = false) String remark,
                                                              @RequestParam(name = "den", required = false) String den,
                                                              @RequestParam(name = "types", required = false) String types,
                                                              @RequestParam(name = "access", required = false) String access,
@@ -183,8 +181,6 @@ public class BieListController {
 
         request.setPropertyTerm(topLevelAsccpPropertyTerm);
         request.setBusinessContext(businessContext);
-        request.setVersion(version);
-        request.setRemark(remark);
         request.setAsccBccDen(den);
         request.setBieId(bieId);
         request.setTypes(StringUtils.hasLength(types) ? Arrays.asList(types.split(",")) : Collections.emptyList());

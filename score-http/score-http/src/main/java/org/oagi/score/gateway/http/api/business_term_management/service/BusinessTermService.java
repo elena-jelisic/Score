@@ -318,7 +318,7 @@ public class BusinessTermService {
                     .getBusinessContextList(getBusinessContextListRequest, false);
 
             assignedBt.setBusinessContexts(getBusinessContextListResponse.getResults());
-            assignedBt.setPrimaryIndicator(assignedBt.isPrimaryIndicator());
+            assignedBt.setPrimary(assignedBt.isPrimary());
         });
 
         PageResponse<AssignedBusinessTermListRecord> response = new PageResponse();

@@ -448,7 +448,6 @@ public class TC_38_1_DTAccess extends BaseTest {
 
         HomePage homePage = loginPage().signIn(developerA.getLoginId(), developerA.getPassword());
         ViewEditCoreComponentPage viewEditCoreComponentPage = homePage.getCoreComponentMenu().openViewEditCoreComponentSubMenu();
-        viewEditCoreComponentPage.showAdvancedSearchPanel();
         for (String typeToBeDeselected : Arrays.asList("ACC", "ASCCP", "BCCP", "CDT")) {
             viewEditCoreComponentPage.setTypeSelect(typeToBeDeselected);
         }
@@ -493,7 +492,6 @@ public class TC_38_1_DTAccess extends BaseTest {
 
         HomePage homePage = loginPage().signIn(developerA.getLoginId(), developerA.getPassword());
         ViewEditCoreComponentPage viewEditCoreComponentPage = homePage.getCoreComponentMenu().openViewEditCoreComponentSubMenu();
-        viewEditCoreComponentPage.showAdvancedSearchPanel();
         for (String typeToBeDeselected : Arrays.asList("ACC", "ASCCP", "BCCP", "CDT")) {
             viewEditCoreComponentPage.setTypeSelect(typeToBeDeselected);
         }
@@ -538,7 +536,6 @@ public class TC_38_1_DTAccess extends BaseTest {
 
         HomePage homePage = loginPage().signIn(developerA.getLoginId(), developerA.getPassword());
         ViewEditCoreComponentPage viewEditCoreComponentPage = homePage.getCoreComponentMenu().openViewEditCoreComponentSubMenu();
-        viewEditCoreComponentPage.showAdvancedSearchPanel();
         for (String typeToBeDeselected : Arrays.asList("ACC", "ASCCP", "BCCP", "CDT")) {
             viewEditCoreComponentPage.setTypeSelect(typeToBeDeselected);
         }
@@ -583,7 +580,6 @@ public class TC_38_1_DTAccess extends BaseTest {
 
         HomePage homePage = loginPage().signIn(developerA.getLoginId(), developerA.getPassword());
         ViewEditCoreComponentPage viewEditCoreComponentPage = homePage.getCoreComponentMenu().openViewEditCoreComponentSubMenu();
-        viewEditCoreComponentPage.showAdvancedSearchPanel();
         for (String typeToBeDeselected : Arrays.asList("ACC", "ASCCP", "BCCP", "CDT")) {
             viewEditCoreComponentPage.setTypeSelect(typeToBeDeselected);
         }
@@ -626,7 +622,6 @@ public class TC_38_1_DTAccess extends BaseTest {
 
         HomePage homePage = loginPage().signIn(developerA.getLoginId(), developerA.getPassword());
         ViewEditCoreComponentPage viewEditCoreComponentPage = homePage.getCoreComponentMenu().openViewEditCoreComponentSubMenu();
-        viewEditCoreComponentPage.showAdvancedSearchPanel();
         for (String typeToBeDeselected : Arrays.asList("ACC", "ASCCP", "BCCP", "CDT")) {
             viewEditCoreComponentPage.setTypeSelect(typeToBeDeselected);
         }
@@ -672,7 +667,6 @@ public class TC_38_1_DTAccess extends BaseTest {
 
         HomePage homePage = loginPage().signIn(developerA.getLoginId(), developerA.getPassword());
         ViewEditCoreComponentPage viewEditCoreComponentPage = homePage.getCoreComponentMenu().openViewEditCoreComponentSubMenu();
-        viewEditCoreComponentPage.showAdvancedSearchPanel();
         for (String typeToBeDeselected : Arrays.asList("ACC", "ASCCP", "BCCP", "CDT")) {
             viewEditCoreComponentPage.setTypeSelect(typeToBeDeselected);
         }

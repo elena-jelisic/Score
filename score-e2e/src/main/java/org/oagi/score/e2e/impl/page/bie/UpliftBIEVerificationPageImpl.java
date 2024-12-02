@@ -85,10 +85,12 @@ public class UpliftBIEVerificationPageImpl extends BasePageImpl implements Uplif
             if (!nodePath.equals(getText(ele))) {
                 throw new WebDriverException();
             }
-            for (int i = 0; i < 6; ++i) {
-                e.sendKeys(Keys.ENTER);
-                waitFor(ofMillis(500L));
-            };
+            e.sendKeys(Keys.ENTER);
+            e.sendKeys(Keys.ENTER);
+            e.sendKeys(Keys.ENTER);
+            e.sendKeys(Keys.ENTER);
+            e.sendKeys(Keys.ENTER);
+            e.sendKeys(Keys.ENTER);
         });
 
         String[] nodes = nodePath.split("/");
@@ -112,10 +114,12 @@ public class UpliftBIEVerificationPageImpl extends BasePageImpl implements Uplif
             if (!nodePath.equals(getText(ele))) {
                 throw new WebDriverException();
             }
-            for (int i = 0; i < 6; ++i) {
-                e.sendKeys(Keys.ENTER);
-                waitFor(ofMillis(500L));
-            };
+            e.sendKeys(Keys.ENTER);
+            e.sendKeys(Keys.ENTER);
+            e.sendKeys(Keys.ENTER);
+            e.sendKeys(Keys.ENTER);
+            e.sendKeys(Keys.ENTER);
+            e.sendKeys(Keys.ENTER);
         });
 
         String[] nodes = nodePath.split("/");

@@ -123,7 +123,6 @@ public class TC_5_6_OAGISDeveloperAuthorizedAccessToBIEExpressionGeneration exte
 
         HomePage homePage = loginPage().signIn(developer.getLoginId(), developer.getPassword());
         ExpressBIEPage expressBIEPage = homePage.getBIEMenu().openExpressBIESubMenu();
-        expressBIEPage.showAdvancedSearchPanel();
         expressBIEPage.setBranch(nonLatestRelease.getReleaseNumber());
         expressBIEPage.setOwner(developer.getLoginId());
         expressBIEPage.hitSearchButton();
@@ -132,7 +131,6 @@ public class TC_5_6_OAGISDeveloperAuthorizedAccessToBIEExpressionGeneration exte
         assertThrows(TimeoutException.class, () -> expressBIEPage.getTableRecordByValue(topLevelASBIEP_latest.getPropertyTerm()));
 
         expressBIEPage.openPage();
-        expressBIEPage.showAdvancedSearchPanel();
         expressBIEPage.setBranch(latestRelease.getReleaseNumber());
         expressBIEPage.setOwner(developer.getLoginId());
         expressBIEPage.hitSearchButton();
@@ -159,7 +157,6 @@ public class TC_5_6_OAGISDeveloperAuthorizedAccessToBIEExpressionGeneration exte
 
         HomePage homePage = loginPage().signIn(developer.getLoginId(), developer.getPassword());
         ExpressBIEPage expressBIEPage = homePage.getBIEMenu().openExpressBIESubMenu();
-        expressBIEPage.showAdvancedSearchPanel();
         expressBIEPage.setBranch(nonLatestRelease.getReleaseNumber());
         expressBIEPage.setOwner(anotherDeveloper.getLoginId());
         expressBIEPage.hitSearchButton();
@@ -185,7 +182,6 @@ public class TC_5_6_OAGISDeveloperAuthorizedAccessToBIEExpressionGeneration exte
 
         HomePage homePage = loginPage().signIn(developer.getLoginId(), developer.getPassword());
         ExpressBIEPage expressBIEPage = homePage.getBIEMenu().openExpressBIESubMenu();
-        expressBIEPage.showAdvancedSearchPanel();
         expressBIEPage.setBranch(nonLatestRelease.getReleaseNumber());
         expressBIEPage.setOwner(endUser.getLoginId());
         expressBIEPage.hitSearchButton();
@@ -907,7 +903,6 @@ public class TC_5_6_OAGISDeveloperAuthorizedAccessToBIEExpressionGeneration exte
 
         HomePage homePage = loginPage().signIn(developer.getLoginId(), developer.getPassword());
         ExpressBIEPage expressBIEPage = homePage.getBIEMenu().openExpressBIESubMenu();
-        expressBIEPage.showAdvancedSearchPanel();
         expressBIEPage.setBranch(nonLatestRelease.getReleaseNumber());
         expressBIEPage.setOwner(developer.getLoginId());
         expressBIEPage.hitSearchButton();

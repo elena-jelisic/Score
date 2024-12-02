@@ -2,13 +2,11 @@ package org.oagi.score.e2e.page.bie;
 
 import org.oagi.score.e2e.obj.TopLevelASBIEPObject;
 import org.oagi.score.e2e.page.Dialog;
-import org.oagi.score.e2e.page.SearchBarPage;
 import org.openqa.selenium.WebElement;
 
 import java.time.LocalDateTime;
 
-public interface SelectProfileBIEToReuseDialog extends Dialog, SearchBarPage {
-
+public interface SelectProfileBIEToReuseDialog extends Dialog {
     WebElement getOwnerSelectField();
 
     void setOwner(String owner);
@@ -24,6 +22,8 @@ public interface SelectProfileBIEToReuseDialog extends Dialog, SearchBarPage {
     WebElement getUpdatedEndDateField();
 
     void setUpdatedEndDate(LocalDateTime updatedEndDate);
+
+    WebElement getSearchButton();
 
     void hitSearchButton();
 

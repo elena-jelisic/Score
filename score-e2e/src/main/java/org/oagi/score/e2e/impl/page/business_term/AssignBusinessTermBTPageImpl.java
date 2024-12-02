@@ -1,7 +1,6 @@
 package org.oagi.score.e2e.impl.page.business_term;
 
 import org.oagi.score.e2e.impl.page.BasePageImpl;
-import org.oagi.score.e2e.impl.page.BaseSearchBarPageImpl;
 import org.oagi.score.e2e.obj.BusinessTermObject;
 import org.oagi.score.e2e.page.BasePage;
 import org.oagi.score.e2e.page.business_term.AssignBusinessTermBTPage;
@@ -18,7 +17,7 @@ import java.util.stream.Collectors;
 
 import static org.oagi.score.e2e.impl.PageHelper.*;
 
-public class AssignBusinessTermBTPageImpl extends BaseSearchBarPageImpl implements AssignBusinessTermBTPage {
+public class AssignBusinessTermBTPageImpl extends BasePageImpl implements AssignBusinessTermBTPage {
 
     private static final By UPDATER_SELECT_FIELD_LOCATOR = By.xpath("//*[contains(text(), \"Updater\")]//ancestor::div[1]/mat-select[1]");
 
@@ -28,11 +27,15 @@ public class AssignBusinessTermBTPageImpl extends BaseSearchBarPageImpl implemen
 
     private static final By UPDATED_END_DATE_FIELD_LOCATOR = By.xpath("//input[contains(@placeholder, \"Updated end date\")]");
 
+    private static final By BUSINESS_TERM_FIELD_LOCATOR = By.xpath("//mat-label[contains(text(), \"Business Term\")]//ancestor::div[1]/input");
+
     private static final By EXTERNAL_REFERENCE_URI_FIELD_LOCATOR = By.xpath("//mat-label[contains(text(), \"External Reference URI\")]//ancestor::div[1]/input");
 
     private static final By EXTERNAL_REFERENCE_ID_FIELD_LOCATOR = By.xpath("//mat-label[contains(text(), \"External Reference ID\")]//ancestor::div[1]/input");
 
     private static final By FILTER_BY_SAME_CC_CHECKBOX_LOCATOR = By.xpath("//label[contains(text(), \"Filter by same CC\")]//ancestor::mat-checkbox[1]");
+
+    private static final By SEARCH_BUTTON_LOCATOR = By.xpath("//span[contains(text(), \"Search\")]//ancestor::button[1]");
 
     private static final By TYPE_CODE_FIELD_LOCATOR = By.xpath("//mat-label[contains(text(), \"Type Code\")]//ancestor::div[1]/input");
 
@@ -122,7 +125,7 @@ public class AssignBusinessTermBTPageImpl extends BaseSearchBarPageImpl implemen
 
     @Override
     public WebElement getBusinessTermField() {
-        return getInputFieldInSearchBar();
+        return visibilityOfElementLocated(getDriver(), BUSINESS_TERM_FIELD_LOCATOR);
     }
 
     @Override
@@ -153,6 +156,11 @@ public class AssignBusinessTermBTPageImpl extends BaseSearchBarPageImpl implemen
     @Override
     public WebElement getFilterBySameCCCheckbox() {
         return visibilityOfElementLocated(getDriver(), FILTER_BY_SAME_CC_CHECKBOX_LOCATOR);
+    }
+
+    @Override
+    public WebElement getSearchButton() {
+        return elementToBeClickable(getDriver(), SEARCH_BUTTON_LOCATOR);
     }
 
     @Override

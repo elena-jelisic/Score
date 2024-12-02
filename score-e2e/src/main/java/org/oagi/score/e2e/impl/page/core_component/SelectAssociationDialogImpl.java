@@ -1,7 +1,6 @@
 package org.oagi.score.e2e.impl.page.core_component;
 
 import org.oagi.score.e2e.impl.page.BasePageImpl;
-import org.oagi.score.e2e.impl.page.SearchBarPageImpl;
 import org.oagi.score.e2e.page.core_component.SelectAssociationDialog;
 import org.openqa.selenium.*;
 
@@ -11,7 +10,7 @@ import java.time.format.DateTimeFormatter;
 import static java.time.Duration.ofMillis;
 import static org.oagi.score.e2e.impl.PageHelper.*;
 
-public class SelectAssociationDialogImpl extends SearchBarPageImpl implements SelectAssociationDialog {
+public class SelectAssociationDialogImpl implements SelectAssociationDialog {
 
     private static final By TYPE_SELECT_FIELD_LOCATOR =
             By.xpath("//mat-dialog-container//*[contains(text(), \"Type\")]//ancestor::div[1]/mat-select[1]");
@@ -37,11 +36,17 @@ public class SelectAssociationDialogImpl extends SearchBarPageImpl implements Se
     private static final By UPDATED_END_DATE_FIELD_LOCATOR =
             By.xpath("//mat-dialog-container//input[contains(@placeholder, \"Updated end date\")]");
 
+    private static final By DEN_FIELD_LOCATOR =
+            By.xpath("//mat-dialog-container//input[contains(@placeholder, \"DEN\")]");
+
     private static final By DEFINITION_FIELD_LOCATOR =
             By.xpath("//mat-dialog-container//input[contains(@placeholder, \"Definition\")]");
 
     private static final By MODULE_FIELD_LOCATOR =
             By.xpath("//mat-dialog-container//input[contains(@placeholder, \"Module\")]");
+
+    private static final By SEARCH_BUTTON_LOCATOR =
+            By.xpath("//mat-dialog-container//span[contains(text(), \"Search\")]//ancestor::button[1]");
 
     private static final By INSERT_BUTTON_LOCATOR =
             By.xpath("//mat-dialog-container//span[contains(text(), \"Insert\")]//ancestor::button[1]");
@@ -63,9 +68,12 @@ public class SelectAssociationDialogImpl extends SearchBarPageImpl implements Se
     private final String contextMenuName;
 
     public SelectAssociationDialogImpl(BasePageImpl parent, String contextMenuName) {
-        super(parent.getDriver(), "//mat-dialog-container");
         this.parent = parent;
         this.contextMenuName = contextMenuName;
+    }
+
+    private WebDriver getDriver() {
+        return this.parent.getDriver();
     }
 
     @Override
@@ -189,7 +197,7 @@ public class SelectAssociationDialogImpl extends SearchBarPageImpl implements Se
 
     @Override
     public WebElement getDENField() {
-        return getInputFieldInSearchBar();
+        return visibilityOfElementLocated(getDriver(), DEN_FIELD_LOCATOR);
     }
 
     @Override
@@ -228,6 +236,11 @@ public class SelectAssociationDialogImpl extends SearchBarPageImpl implements Se
     }
 
     @Override
+    public WebElement getSearchButton() {
+        return elementToBeClickable(getDriver(), SEARCH_BUTTON_LOCATOR);
+    }
+
+    @Override
     public void hitSearchButton() {
         click(getSearchButton());
         waitFor(ofMillis(500L));
@@ -252,11 +265,11 @@ public class SelectAssociationDialogImpl extends SearchBarPageImpl implements Se
     public void setItemsPerPage(int items) {
         WebElement itemsPerPageField = elementToBeClickable(getDriver(),
                 By.xpath("//mat-dialog-container//div[.=\" Items per page: \"]/following::mat-form-field//mat-select"));
-        click(getDriver(), itemsPerPageField);
+        click(itemsPerPageField);
         waitFor(ofMillis(500L));
         WebElement itemField = elementToBeClickable(getDriver(),
                 By.xpath("//mat-dialog-container//span[contains(text(), \"" + items + "\")]//ancestor::mat-option//div[1]//preceding-sibling::span"));
-        click(getDriver(), itemField);
+        click(itemField);
         waitFor(ofMillis(500L));
     }
 

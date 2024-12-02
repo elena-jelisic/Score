@@ -158,20 +158,8 @@ public class JooqBusinessTermReadRepository
                 field = BUSINESS_TERM.BUSINESS_TERM_;
                 break;
 
-            case "externalreferenceuri":
-                field = BUSINESS_TERM.EXTERNAL_REF_URI;
-                break;
-
-            case "externalreferenceid":
-                field = BUSINESS_TERM.EXTERNAL_REF_ID;
-                break;
-
-            case "definition":
-                field = BUSINESS_TERM.DEFINITION;
-                break;
-
             case "comment":
-                field = BUSINESS_TERM.COMMENT;
+                field = BUSINESS_TERM.DEFINITION;
                 break;
 
             case "lastupdatetimestamp":
@@ -227,16 +215,16 @@ public class JooqBusinessTermReadRepository
         if (request.getAssignedBies() != null && !request.getAssignedBies().isEmpty()) {
             List<BieToAssign> byAssignedAsbies = request.getAssignedBies().stream()
                     .filter(bieToAssign -> bieToAssign.getBieType().equals("ASBIE")).collect(Collectors.toList());
-            if (!byAssignedAsbies.isEmpty()) {
+            if(!byAssignedAsbies.isEmpty()){
                 Collection<Condition> conditionsAsbie = getConditions(request);
                 conditionsAsbie.add(ASBIE_BIZTERM.ASBIE_ID.in(byAssignedAsbies.stream()
-                        .map(bieToAssign -> bieToAssign.getBieId()).collect(Collectors.toList())));
+                                .map(bieToAssign -> bieToAssign.getBieId()).collect(Collectors.toList())));
                 select = (select != null) ? select.union(getBusinessTermByAssignedAsbie(conditionsAsbie)) :
                         getBusinessTermByAssignedAsbie(conditionsAsbie);
             }
             List<BieToAssign> byAssignedBbies = request.getAssignedBies().stream()
                     .filter(bieToAssign -> bieToAssign.getBieType().equals("BBIE")).collect(Collectors.toList());
-            if (!byAssignedBbies.isEmpty()) {
+            if(!byAssignedBbies.isEmpty()){
                 Collection<Condition> conditionsBbie = getConditions(request);
                 conditionsBbie.add(BBIE_BIZTERM.BBIE_ID.in(byAssignedBbies.stream()
                         .map(bieToAssign -> bieToAssign.getBieId()).collect(Collectors.toList())));
@@ -284,11 +272,9 @@ public class JooqBusinessTermReadRepository
                         APP_USER.as("creator").APP_USER_ID.as("creator_user_id"),
                         APP_USER.as("creator").LOGIN_ID.as("creator_login_id"),
                         APP_USER.as("creator").IS_DEVELOPER.as("creator_is_developer"),
-                        APP_USER.as("creator").NAME.as("creator_name"),
                         APP_USER.as("updater").APP_USER_ID.as("updater_user_id"),
                         APP_USER.as("updater").LOGIN_ID.as("updater_login_id"),
                         APP_USER.as("updater").IS_DEVELOPER.as("updater_is_developer"),
-                        APP_USER.as("updater").NAME.as("updater_name"),
                         BUSINESS_TERM.CREATION_TIMESTAMP,
                         BUSINESS_TERM.LAST_UPDATE_TIMESTAMP
                 )
@@ -312,11 +298,9 @@ public class JooqBusinessTermReadRepository
                         APP_USER.as("creator").APP_USER_ID.as("creator_user_id"),
                         APP_USER.as("creator").LOGIN_ID.as("creator_login_id"),
                         APP_USER.as("creator").IS_DEVELOPER.as("creator_is_developer"),
-                        APP_USER.as("creator").NAME.as("creator_name"),
                         APP_USER.as("updater").APP_USER_ID.as("updater_user_id"),
                         APP_USER.as("updater").LOGIN_ID.as("updater_login_id"),
                         APP_USER.as("updater").IS_DEVELOPER.as("updater_is_developer"),
-                        APP_USER.as("updater").NAME.as("updater_name"),
                         BUSINESS_TERM.CREATION_TIMESTAMP,
                         BUSINESS_TERM.LAST_UPDATE_TIMESTAMP
                 )

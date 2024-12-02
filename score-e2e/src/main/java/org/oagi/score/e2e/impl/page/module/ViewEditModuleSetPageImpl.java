@@ -1,6 +1,6 @@
 package org.oagi.score.e2e.impl.page.module;
 
-import org.oagi.score.e2e.impl.page.BaseSearchBarPageImpl;
+import org.oagi.score.e2e.impl.page.BasePageImpl;
 import org.oagi.score.e2e.obj.ModuleSetObject;
 import org.oagi.score.e2e.page.BasePage;
 import org.oagi.score.e2e.page.module.CreateModuleSetPage;
@@ -15,10 +15,13 @@ import org.openqa.selenium.interactions.Actions;
 import static java.time.Duration.ofMillis;
 import static org.oagi.score.e2e.impl.PageHelper.*;
 
-public class ViewEditModuleSetPageImpl extends BaseSearchBarPageImpl implements ViewEditModuleSetPage {
-
+public class ViewEditModuleSetPageImpl extends BasePageImpl implements ViewEditModuleSetPage {
     private static final By NEW_MODULE_SET_BUTTON_LOCATOR =
             By.xpath("//span[contains(text(), \"New Module Set\")]//ancestor::button[1]");
+    private static final By SEARCH_BUTTON_LOCATOR =
+            By.xpath("//span[contains(text(), \"Search\")]//ancestor::button[1]");
+    private static final By NAME_FIELD_LOCATOR =
+            By.xpath("//mat-label[contains(text(), \"Name\")]//ancestor::mat-form-field//input");
     private static final By DISCARD_MODULE_SET_OPTION_LOCATOR =
             By.xpath("//span[contains(text(), \"Discard\")]");
     private static final By CONTINUE_TO_DISCARD_BUTTON_IN_DIALOG_LOCATOR =
@@ -94,29 +97,30 @@ public class ViewEditModuleSetPageImpl extends BaseSearchBarPageImpl implements 
     }
 
     @Override
+    public WebElement getSearchButton() {
+        return elementToBeClickable(getDriver(), SEARCH_BUTTON_LOCATOR);
+    }
+
+    @Override
     public void hitSearchButton() {
         click(getSearchButton());
         waitFor(ofMillis(500L));
     }
-
     @Override
     public WebElement getTableRecordAtIndex(int idx) {
         return visibilityOfElementLocated(getDriver(), By.xpath("//tbody/tr[" + idx + "]"));
     }
-
     @Override
     public WebElement getColumnByName(WebElement tableRecord, String columnName) {
         return tableRecord.findElement(By.className("mat-column-" + columnName));
     }
-
     @Override
     public void setName(String name) {
         sendKeys(getNameField(), name);
     }
-
     @Override
     public WebElement getNameField() {
-        return getInputFieldInSearchBar();
+        return visibilityOfElementLocated(getDriver(), NAME_FIELD_LOCATOR);
     }
 
     @Override
@@ -152,7 +156,6 @@ public class ViewEditModuleSetPageImpl extends BaseSearchBarPageImpl implements 
         assert "Discarded".equals(getSnackBarMessage(getDriver()));
 
     }
-
     @Override
     public WebElement clickOnDropDownMenu(WebElement element) {
         return element.findElement(By.xpath("//mat-icon[contains(text(), \"more_vert\")]//ancestor::button[1]"));

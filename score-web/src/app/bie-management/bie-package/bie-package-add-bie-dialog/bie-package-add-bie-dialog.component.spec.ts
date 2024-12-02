@@ -5,7 +5,7 @@ describe('BiePackageAddBieDialogComponent', () => {
   let component: BiePackageAddBieDialogComponent;
   let fixture: ComponentFixture<BiePackageAddBieDialogComponent>;
 
-  beforeEach(fakeAsync () => {
+  beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [BiePackageAddBieDialogComponent]
     })

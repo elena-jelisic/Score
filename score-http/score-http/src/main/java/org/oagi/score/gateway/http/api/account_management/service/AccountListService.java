@@ -151,7 +151,41 @@ public class AccountListService {
         SelectConditionStep<Record6<ULong, String, String, Byte, String, ULong>> conditionStep = step.where(conditions);
 
         PageRequest pageRequest = request.getPageRequest();
-        SortField sortField = getSortField(pageRequest);
+        String sortDirection = pageRequest.getSortDirection();
+        SortField sortField = null;
+        switch (pageRequest.getSortActive()) {
+            case "loginId":
+                if ("asc".equals(sortDirection)) {
+                    sortField = APP_USER.LOGIN_ID.asc();
+                } else if ("desc".equals(sortDirection)) {
+                    sortField = APP_USER.LOGIN_ID.desc();
+                }
+                break;
+
+            case "name":
+                if ("asc".equals(sortDirection)) {
+                    sortField = APP_USER.NAME.asc();
+                } else if ("desc".equals(sortDirection)) {
+                    sortField = APP_USER.NAME.desc();
+                }
+                break;
+
+            case "organization":
+                if ("asc".equals(sortDirection)) {
+                    sortField = APP_USER.ORGANIZATION.asc();
+                } else if ("desc".equals(sortDirection)) {
+                    sortField = APP_USER.ORGANIZATION.desc();
+                }
+                break;
+
+            case "status":
+                if ("asc".equals(sortDirection)) {
+                    sortField = APP_USER.IS_ENABLED.desc(); // 1 (Enable) to 0 (Disable)
+                } else if ("desc".equals(sortDirection)) {
+                    sortField = APP_USER.IS_ENABLED.asc(); // 0 (Disable) to 1 (Enable)
+                }
+                break;
+        }
 
         SelectWithTiesAfterOffsetStep<Record6<ULong, String, String, Byte, String, ULong>> offsetStep = null;
 
@@ -176,43 +210,6 @@ public class AccountListService {
         response.setLength(pageCount);
 
         return response;
-    }
-    private SortField getSortField(PageRequest pageRequest) {
-        Field field = null;
-        SortField sortField = null;
-        String sortDirection = pageRequest.getSortDirection();
-        if (StringUtils.hasLength(pageRequest.getSortActive())) {
-            switch (pageRequest.getSortActive()) {
-                case "loginId":
-                    field = APP_USER.LOGIN_ID;
-                    break;
-
-                case "role":
-                    field = APP_USER.IS_DEVELOPER;
-                    break;
-
-                case "name":
-                    field = APP_USER.NAME;
-                    break;
-
-                case "organization":
-                    field = APP_USER.ORGANIZATION;
-                    break;
-
-                case "status":
-                    field = APP_USER.IS_ENABLED;
-                    break;
-            }
-        }
-
-        if (field != null) {
-            if ("asc".equals(sortDirection)) {
-                sortField = field.asc();
-            } else if ("desc".equals(sortDirection)) {
-                sortField = field.desc();
-            }
-        }
-        return sortField;
     }
 
     public AppUser getAccountById(BigInteger appUserId) {
@@ -366,18 +363,11 @@ public class AccountListService {
         requester.setEmailAddress(request.getEmail());
         requester.setEmailVerified(false);
 
-        try {
-            sendEmailValidationRequest(requester, request);
-        } catch (IllegalStateException ignore) {
-        }
+        sendEmailValidationRequest(requester, request);
     }
 
     @Transactional
     public void sendEmailValidationRequest(ScoreUser requester, AccountUpdateRequest request) {
-        if (!configService.isFunctionsRequiringEmailTransmissionEnabled()) {
-            throw new IllegalStateException("The 'Functions requiring email transmission' feature is disabled. Please check the 'Application Settings'.");
-        }
-
         AppUserRecord appUserRecord = dslContext.selectFrom(APP_USER)
                 .where(APP_USER.APP_USER_ID.eq(ULong.valueOf(requester.getUserId())))
                 .fetchOne();

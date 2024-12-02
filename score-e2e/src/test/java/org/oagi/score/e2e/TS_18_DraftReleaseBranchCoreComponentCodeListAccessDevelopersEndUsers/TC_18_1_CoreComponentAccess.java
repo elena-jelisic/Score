@@ -93,7 +93,6 @@ public class TC_18_1_CoreComponentAccess extends BaseTest {
         createReleasePage.setReleaseNamespace(namespace);
         createReleasePage.hitCreateButton();
         viewEditReleasePage.openPage();
-        viewEditReleasePage.showAdvancedSearchPanel();
         viewEditReleasePage.setState("Draft");
         viewEditReleasePage.hitSearchButton();
         long timeout = Duration.ofSeconds(300L).toMillis();
@@ -217,7 +216,6 @@ public class TC_18_1_CoreComponentAccess extends BaseTest {
         ccStates.add("Production");
         ccStates.add("Deleted");
         viewEditCoreComponentPage.setBranch(existingReleaseNum);
-        viewEditCoreComponentPage.showAdvancedSearchPanel();
 
         for (String state : ccStates) {
             viewEditCoreComponentPage.setState(state);
@@ -265,7 +263,6 @@ public class TC_18_1_CoreComponentAccess extends BaseTest {
         ccStates.add("Production");
         ccStates.add("Deleted");
         viewEditCoreComponentPage.setBranch(existingReleaseNum);
-        viewEditCoreComponentPage.showAdvancedSearchPanel();
 
         for (String state : ccStates) {
             viewEditCoreComponentPage.setState(state);

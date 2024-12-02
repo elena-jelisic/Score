@@ -1,4 +1,4 @@
-import {ComponentFixture, fakeAsync, TestBed} from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {ModuleSetCreateComponent} from './module-set-create.component';
 
@@ -6,7 +6,7 @@ describe('ModuleSetCreateComponent', () => {
   let component: ModuleSetCreateComponent;
   let fixture: ComponentFixture<ModuleSetCreateComponent>;
 
-  beforeEach(fakeAsync(() => {
+  beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [ModuleSetCreateComponent]
     })

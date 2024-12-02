@@ -188,9 +188,6 @@ public class JooqModuleSetReadRepository
         if (StringUtils.hasLength(request.getName())) {
             conditions.addAll(contains(request.getName(), MODULE_SET.NAME));
         }
-        if (StringUtils.hasLength(request.getDescription())) {
-            conditions.addAll(contains(request.getDescription(), MODULE_SET.DESCRIPTION));
-        }
 
         if (!request.getUpdaterUsernameList().isEmpty()) {
             conditions.add(APP_USER.as("updater").LOGIN_ID.in(
@@ -217,10 +214,6 @@ public class JooqModuleSetReadRepository
         switch (trim(request.getSortActive()).toLowerCase()) {
             case "name":
                 field = MODULE_SET.NAME;
-                break;
-
-            case "description":
-                field = MODULE_SET.DESCRIPTION;
                 break;
 
             case "lastupdatetimestamp":

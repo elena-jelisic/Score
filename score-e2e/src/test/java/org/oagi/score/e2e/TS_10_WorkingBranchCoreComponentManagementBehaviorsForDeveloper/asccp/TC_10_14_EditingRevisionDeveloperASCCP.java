@@ -526,7 +526,7 @@ public class TC_10_14_EditingRevisionDeveloperASCCP extends BaseTest {
         assertDisabled(accPanel.getComponentTypeSelectField());
         assertDisabled(accPanel.getNamespaceSelectField());
         assertFalse(accPanel.getDefinitionSourceField().isEnabled());
-        assertEquals("true", accPanel.getDefinitionField().getAttribute("readonly"));
+        assertFalse(accPanel.getDefinitionField().isEnabled());
 
         //BCCP node cannot be changed
         //reload the page
@@ -548,7 +548,7 @@ public class TC_10_14_EditingRevisionDeveloperASCCP extends BaseTest {
         assertDisabled(bccpPanel.getValueConstraintSelectField());
         assertDisabled(bccpPanel.getNamespaceSelectField());
         assertFalse(bccpPanel.getDefinitionSourceField().isEnabled());
-        assertEquals("true", bccpPanel.getDefinitionField().getAttribute("readonly"));
+        assertFalse(bccpPanel.getDefinitionField().isEnabled());
 
     }
 

@@ -244,8 +244,8 @@ public class TC_15_11_EditingBrandNewEndUserASCCP extends BaseTest {
         assertFalse(accPanel.getObjectClassTermField().isEnabled());
         assertDisabled(accPanel.getComponentTypeSelectField());
         assertDisabled(accPanel.getNamespaceSelectField());
-        assertDisabled(accPanel.getDefinitionSourceField());
-        assertEnabled(accPanel.getDefinitionField());
+        assertFalse(accPanel.getDefinitionSourceField().isEnabled());
+        assertFalse(accPanel.getDefinitionField().isEnabled());
 
         //BCCP node cannot be changed
         WebElement bccNode = asccpViewEditPage.getNodeByPath("/" + asccp.getPropertyTerm() + "/" + acc.getDen() + "/" + bccp.getPropertyTerm());
@@ -264,8 +264,8 @@ public class TC_15_11_EditingBrandNewEndUserASCCP extends BaseTest {
         assertDisabled(bccpPanel.getDeprecatedCheckbox());
         assertDisabled(bccpPanel.getValueConstraintSelectField());
         assertDisabled(bccpPanel.getNamespaceSelectField());
-        assertDisabled(bccpPanel.getDefinitionSourceField());
-        assertEnabled(bccpPanel.getDefinitionField());
+        assertFalse(bccpPanel.getDefinitionSourceField().isEnabled());
+        assertFalse(bccpPanel.getDefinitionField().isEnabled());
 
     }
 
@@ -392,7 +392,7 @@ public class TC_15_11_EditingBrandNewEndUserASCCP extends BaseTest {
             viewEditCoreComponentPage.hitSearchButton();
 
             WebElement tr = viewEditCoreComponentPage.getTableRecordByValue(den);
-            WebElement td = viewEditCoreComponentPage.getColumnByName(tr, "owner");
+            WebElement td = viewEditCoreComponentPage.getColumnByName(tr, "transferOwnership");
             assertTrue(td.findElement(By.className("mat-icon")).isEnabled());
 
             TransferCCOwnershipDialog transferCCOwnershipDialog =
@@ -418,7 +418,7 @@ public class TC_15_11_EditingBrandNewEndUserASCCP extends BaseTest {
             viewEditCoreComponentPage.hitSearchButton();
 
             WebElement tr = viewEditCoreComponentPage.getTableRecordByValue(den);
-            WebElement td = viewEditCoreComponentPage.getColumnByName(tr, "owner");
+            WebElement td = viewEditCoreComponentPage.getColumnByName(tr, "transferOwnership");
             assertTrue(td.findElement(By.className("mat-icon")).isEnabled());
 
             TransferCCOwnershipDialog transferCCOwnershipDialog =

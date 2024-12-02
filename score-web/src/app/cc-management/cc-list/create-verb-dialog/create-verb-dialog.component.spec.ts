@@ -1,4 +1,4 @@
-import {ComponentFixture, fakeAsync, TestBed} from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {CreateVerbDialogComponent} from './create-verb-dialog.component';
 
@@ -6,7 +6,7 @@ describe('CreateVerbDialogComponent', () => {
   let component: CreateVerbDialogComponent;
   let fixture: ComponentFixture<CreateVerbDialogComponent>;
 
-  beforeEach(fakeAsync(() => {
+  beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [ CreateVerbDialogComponent ]
     })

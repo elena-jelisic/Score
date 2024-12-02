@@ -6,29 +6,24 @@
 
     <groupId>org.oagi.score.e2e</groupId>
     <artifactId>score-e2e</artifactId>
-    <version>3.3.3</version>
+    <version>3.2.0</version>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <selenium.version>4.25.0</selenium.version>
-        <junit.version>5.11.3</junit.version>
-        <junit.platform.version>1.11.3</junit.platform.version>
-        <slf4j.version>2.0.16</slf4j.version>
-        <log4j.version>2.24.1</log4j.version>
-        <jackson.version>2.18.0</jackson.version>
-        <commons.lang3.version>3.17.0</commons.lang3.version>
+        <selenium.version>4.18.1</selenium.version>
+        <junit.version>5.10.1</junit.version>
+        <junit.platform.version>1.10.1</junit.platform.version>
+        <slf4j.version>2.0.9</slf4j.version>
+        <log4j.version>2.22.0</log4j.version>
+        <commons.lang3.version>3.14.0</commons.lang3.version>
         <commons.math3.version>3.6.1</commons.math3.version>
-        <commons.io.version>2.17.0</commons.io.version>
-        <commons.csv.version>1.12.0</commons.csv.version>
-        <lombok.version>1.18.34</lombok.version>
-        <awaitility.version>4.2.2</awaitility.version>
-        <snakeyaml.version>2.3</snakeyaml.version>
-        <mariadb-client.version>3.5.0</mariadb-client.version>
+        <lombok.version>1.18.30</lombok.version>
+        <mariadb-client.version>3.3.3</mariadb-client.version>
         <hikariCP.version>5.1.0</hikariCP.version>
-        <jOOQ.version>3.19.14</jOOQ.version>
+        <jOOQ.version>3.19.6</jOOQ.version>
         <jOOQ.configuration.skip>true</jOOQ.configuration.skip>
     </properties>
 
@@ -51,7 +46,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-csv</artifactId>
-            <version>${commons.csv.version}</version>
+            <version>1.10.0</version>
         </dependency>
         <dependency>
             <groupId>org.mariadb.jdbc</groupId>
@@ -106,7 +101,7 @@
         <dependency>
             <groupId>org.awaitility</groupId>
             <artifactId>awaitility</artifactId>
-            <version>${awaitility.version}</version>
+            <version>4.2.0</version>
         </dependency>
         <dependency>
             <groupId>org.json</groupId>
@@ -116,12 +111,12 @@
         <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
-            <version>${snakeyaml.version}</version>
+            <version>2.0</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>${commons.io.version}</version>
+            <version>2.11.0</version>
         </dependency>
 
         <!-- Logging -->
@@ -134,8 +129,8 @@
         <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-databind</artifactId>
-            <version>${jackson.version}</version>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.14.2</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

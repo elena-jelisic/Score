@@ -2,7 +2,6 @@ package org.oagi.score.e2e.page.bie;
 
 import org.oagi.score.e2e.obj.TopLevelASBIEPObject;
 import org.oagi.score.e2e.page.Page;
-import org.oagi.score.e2e.page.SearchBarPage;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 
@@ -11,7 +10,7 @@ import java.time.LocalDateTime;
 /**
  * An interface of 'View/Edit BIE' page.
  */
-public interface ViewEditBIEPage extends Page, SearchBarPage {
+public interface ViewEditBIEPage extends Page {
 
     /**
      * Return the UI element of the 'Branch' select field.
@@ -124,6 +123,13 @@ public interface ViewEditBIEPage extends Page, SearchBarPage {
      * @param updatedEndDate Updated End Date
      */
     void setUpdatedEndDate(LocalDateTime updatedEndDate);
+
+    /**
+     * Return the UI element of the 'Search' button.
+     *
+     * @return the UI element of the 'Search' button
+     */
+    WebElement getSearchButton();
 
     /**
      * Hit the 'Search' button

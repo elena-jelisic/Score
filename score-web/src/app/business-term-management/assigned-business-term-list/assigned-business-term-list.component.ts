@@ -1,4 +1,4 @@
-import {Component, OnInit, QueryList, ViewChild, ViewChildren} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {AssignedBtListRequest, AssignedBusinessTerm, BieToAssign} from '../domain/business-term';
 import {BusinessTermService} from '../domain/business-term.service';
 import {MatDialog} from '@angular/material/dialog';
@@ -20,10 +20,6 @@ import {ConfirmDialogService} from '../../common/confirm-dialog/confirm-dialog.s
 import {AuthService} from '../../authentication/auth.service';
 import {AsbieBbieList} from '../../bie-management/bie-list/domain/bie-list';
 import {BieListService} from '../../bie-management/bie-list/domain/bie-list.service';
-import {PreferencesInfo, TableColumnsInfo, TableColumnsProperty} from '../../settings-management/settings-preferences/domain/preferences';
-import {SettingsPreferencesService} from '../../settings-management/settings-preferences/domain/settings-preferences.service';
-import {ScoreTableColumnResizeDirective} from '../../common/score-table-column-resize/score-table-column-resize.directive';
-import {SearchBarComponent} from '../../common/search-bar/search-bar.component';
 
 @Component({
   selector: 'score-assigned-business-term',
@@ -35,121 +31,10 @@ export class AssignedBusinessTermListComponent implements OnInit {
   bieId: number;
 
   title = 'Business Term Assignment';
-
-  get columns(): TableColumnsProperty[] {
-    if (!this.preferencesInfo) {
-      return [];
-    }
-    return this.preferencesInfo.tableColumnsInfo.columnsOfAssignedBusinessTermPage;
-  }
-
-  set columns(columns: TableColumnsProperty[]) {
-    if (!this.preferencesInfo) {
-      return;
-    }
-
-    this.preferencesInfo.tableColumnsInfo.columnsOfAssignedBusinessTermPage = columns;
-    this.updateTableColumnsForAssignedBusinessTermPage();
-  }
-
-  updateTableColumnsForAssignedBusinessTermPage() {
-    this.preferencesService.updateTableColumnsForAssignedBusinessTermPage(this.auth.getUserToken(), this.preferencesInfo).subscribe(_ => {
-    });
-  }
-
-  onColumnsReset() {
-    const defaultTableColumnInfo = new TableColumnsInfo();
-    this.columns = defaultTableColumnInfo.columnsOfAssignedBusinessTermPage;
-  }
-
-  onColumnsChange(updatedColumns: { name: string; selected: boolean }[]) {
-    const updatedColumnsWithWidth = updatedColumns.map(column => ({
-      name: column.name,
-      selected: column.selected,
-      width: this.width(column.name)
-    }));
-
-    this.columns = updatedColumnsWithWidth;
-  }
-
-  onResizeWidth($event) {
-    switch ($event.name) {
-      case 'Updated on':
-        this.setWidth('Updated On', $event.width);
-        break;
-
-      default:
-        this.setWidth($event.name, $event.width);
-        break;
-    }
-  }
-
-  setWidth(name: string, width: number | string) {
-    const matched = this.columns.find(c => c.name === name);
-    if (matched) {
-      matched.width = width;
-      this.updateTableColumnsForAssignedBusinessTermPage();
-    }
-  }
-
-  width(name: string): number | string {
-    if (!this.preferencesInfo) {
-      return 0;
-    }
-    return this.columns.find(c => c.name === name)?.width;
-  }
-
-  get displayedColumns(): string[] {
-    let displayedColumns = ['select'];
-    if (this.preferencesInfo) {
-      for (const column of this.columns) {
-        switch (column.name) {
-          case 'BIE DEN':
-            if (column.selected) {
-              displayedColumns.push('bieDen');
-            }
-            break;
-          case 'Business Term':
-            if (column.selected) {
-              displayedColumns.push('businessTerm');
-            }
-            break;
-          case 'Preferred Business Term':
-            if (column.selected) {
-              displayedColumns.push('primaryIndicator');
-            }
-            break;
-          case 'External Reference URI':
-            if (column.selected) {
-              displayedColumns.push('externalReferenceUri');
-            }
-            break;
-          case 'External Reference ID':
-            if (column.selected) {
-              displayedColumns.push('externalReferenceId');
-            }
-            break;
-          case 'Type Code':
-            if (column.selected) {
-              displayedColumns.push('typeCode');
-            }
-            break;
-          case 'BIE Type':
-            if (column.selected) {
-              displayedColumns.push('bieType');
-            }
-            break;
-          case 'Updated On':
-            if (column.selected) {
-              displayedColumns.push('lastUpdateTimestamp');
-            }
-            break;
-        }
-      }
-    }
-    return displayedColumns;
-  }
-
+  displayedColumns: string[] = [
+    'select', 'bieDen', 'businessTerm', 'primary', 'externalReferenceUri',
+    'typeCode', 'bieType', 'lastUpdateTimestamp'
+  ];
   dataSource = new MatTableDataSource<AssignedBusinessTerm>();
   selection = new SelectionModel<AssignedBusinessTerm>(true, []);
   loading = false;
@@ -158,22 +43,18 @@ export class AssignedBusinessTermListComponent implements OnInit {
   updaterIdListFilterCtrl: FormControl = new FormControl();
   filteredUpdaterIdList: ReplaySubject<string[]> = new ReplaySubject<string[]>(1);
   request: AssignedBtListRequest;
-  preferencesInfo: PreferencesInfo;
   typeList: string[] = ['BBIE', 'ASBIE'];
 
   @ViewChild('dateStart', {static: true}) dateStart: MatDatepicker<any>;
   @ViewChild('dateEnd', {static: true}) dateEnd: MatDatepicker<any>;
   @ViewChild(MatSort, {static: true}) sort: MatSort;
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
-  @ViewChildren(ScoreTableColumnResizeDirective) tableColumnResizeDirectives: QueryList<ScoreTableColumnResizeDirective>;
-  @ViewChild(SearchBarComponent, {static: true}) searchBar: SearchBarComponent;
 
   constructor(private service: BusinessTermService,
               private accountService: AccountListService,
               private auth: AuthService,
               private dialog: MatDialog,
               private confirmDialogService: ConfirmDialogService,
-              private preferencesService: SettingsPreferencesService,
               private location: Location,
               private router: Router,
               private route: ActivatedRoute,
@@ -186,61 +67,46 @@ export class AssignedBusinessTermListComponent implements OnInit {
       new PageRequest('lastUpdateTimestamp', 'desc', 0, 10));
     this.request.filters.bieTypes = ['BBIE', 'ASBIE'];
 
-    this.searchBar.showAdvancedSearch =
-      (this.route.snapshot.queryParamMap && this.route.snapshot.queryParamMap.get('adv_ser') === 'true');
-
     this.paginator.pageIndex = this.request.page.pageIndex;
     this.paginator.pageSize = this.request.page.pageSize;
     this.paginator.length = 0;
 
     this.sort.active = this.request.page.sortActive;
     this.sort.direction = this.request.page.sortDirection as SortDirection;
-    // Prevent the sorting event from being triggered if any columns are currently resizing.
-    const originalSort = this.sort.sort;
-    this.sort.sort = (sortChange) => {
-      if (this.tableColumnResizeDirectives &&
-        this.tableColumnResizeDirectives.filter(e => e.resizing).length > 0) {
-        return;
-      }
-      originalSort.apply(this.sort, [sortChange]);
-    };
     this.sort.sortChange.subscribe(() => {
-      this.onSearch();
+      this.paginator.pageIndex = 0;
+      this.loadAssignedBusinessTermList();
     });
 
     forkJoin([
       this.accountService.getAccountNames(),
-      this.preferencesService.load(this.auth.getUserToken())
-    ]).subscribe(([loginIds, preferencesInfo] ) => {
-      this.preferencesInfo = preferencesInfo;
-
+    ]).subscribe(([loginIds] ) => {
       this.loginIdList.push(...loginIds);
       initFilter(this.updaterIdListFilterCtrl, this.filteredUpdaterIdList, this.loginIdList);
-
-      // Load BIE ID
-      const bieId = this.route.snapshot.queryParamMap.get('bieId');
-      const bieType = this.route.snapshot.queryParamMap.get('bieType');
-      if (bieId !== null && bieId !== '' && bieType !== null && bieType !== '') {
-        const bie = new BieToAssign();
-        bie.bieId = Number(bieId);
-        bie.bieType = bieType;
-        this.request.filters.bieId = Number(bieId);
-        this.request.filters.bieTypes = [bieType];
-        this.bieListService.confirmAsbieBbieListByIdAndType([bie])
-          .subscribe((resp: PageResponse<AsbieBbieList>) => {
-            if (resp === null || resp.list.length !== 1) {
-              this.router.navigateByUrl('/business_term_management/assign_business_term/create');
-            } else {
-              const bieResp = resp.list[0];
-              this.request.filters.bieId = bieResp.bieId;
-              this.request.filters.bieTypes = [bieResp.type];
-              this.request.filters.bieDen = bieResp.den;
-            }
-          });
-      }
-
-      this.loadAssignedBusinessTermList(true);
     });
+
+    // Load BIE ID
+    const bieId = this.route.snapshot.queryParamMap.get('bieId');
+    const bieType = this.route.snapshot.queryParamMap.get('bieType');
+    if (bieId !== null && bieId !== '' && bieType !== null && bieType !== '') {
+      const bie = new BieToAssign();
+      bie.bieId = Number(bieId);
+      bie.bieType = bieType;
+      this.request.filters.bieId = Number(bieId);
+      this.request.filters.bieTypes = [bieType];
+      this.bieListService.confirmAsbieBbieListByIdAndType([bie])
+        .subscribe((resp: PageResponse<AsbieBbieList>) => {
+          if (resp === null || resp.list.length !== 1) {
+            this.router.navigateByUrl('/business_term_management/assign_business_term/create');
+          } else {
+            const bieResp = resp.list[0];
+            this.request.filters.bieId = bieResp.bieId;
+            this.request.filters.bieTypes = [bieResp.type];
+            this.request.filters.bieDen = bieResp.den;
+          }
+        });
+    }
+    this.loadAssignedBusinessTermList(true);
   }
 
   onPageChange(event: PageEvent) {
@@ -300,11 +166,6 @@ export class AssignedBusinessTermListComponent implements OnInit {
     }
   }
 
-  onSearch() {
-    this.paginator.pageIndex = 0;
-    this.loadAssignedBusinessTermList();
-  }
-
   loadAssignedBusinessTermList(isInit?: boolean) {
     this.loading = true;
 
@@ -323,8 +184,7 @@ export class AssignedBusinessTermListComponent implements OnInit {
         return elm;
       });
       if (!isInit) {
-        this.location.replaceState(this.router.url.split('?')[0],
-          this.request.toQuery() + '&adv_ser=' + (this.searchBar.showAdvancedSearch));
+        this.location.replaceState(this.router.url.split('?')[0], this.request.toQuery());
       }
     }, error => {
       this.dataSource.data = [];
@@ -387,7 +247,7 @@ export class AssignedBusinessTermListComponent implements OnInit {
   }
 
   openMakeAsPrimaryDialog(assignedBusinessTerm: AssignedBusinessTerm, $event) {
-    if (assignedBusinessTerm.primaryIndicator) {
+    if (assignedBusinessTerm.primary) {
       return;
     }
 

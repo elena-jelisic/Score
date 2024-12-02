@@ -15,6 +15,7 @@ import {
 import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 import {AboutService} from '../about/domain/about.service';
 import {WebPageInfoService} from '../basis.service';
+import {WebPageInfo} from "../about/domain/about";
 
 @Component({
   selector: 'score-navbar',

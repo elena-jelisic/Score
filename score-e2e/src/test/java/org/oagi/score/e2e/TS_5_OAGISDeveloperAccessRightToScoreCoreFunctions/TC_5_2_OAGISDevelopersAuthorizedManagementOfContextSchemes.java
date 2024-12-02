@@ -1078,7 +1078,6 @@ public class TC_5_2_OAGISDevelopersAuthorizedManagementOfContextSchemes extends 
         // Test 'Updater' field
         contextMenu = homePage.getContextMenu();
         viewEditContextSchemePage = contextMenu.openViewEditContextSchemeSubMenu();
-        viewEditContextSchemePage.showAdvancedSearchPanel();
         viewEditContextSchemePage.setUpdater(appUser.getLoginId());
         viewEditContextSchemePage.hitSearchButton();
         assertContextSchemeNameInTheSearchResultsAtFirst(
@@ -1100,7 +1099,6 @@ public class TC_5_2_OAGISDevelopersAuthorizedManagementOfContextSchemes extends 
         // Test 'Name' field
         contextMenu = homePage.getContextMenu();
         viewEditContextSchemePage = contextMenu.openViewEditContextSchemeSubMenu();
-        viewEditContextSchemePage.showAdvancedSearchPanel();
         viewEditContextSchemePage.setName(randomContextScheme.getSchemeName());
         viewEditContextSchemePage.hitSearchButton();
         assertContextSchemeNameInTheSearchResultsAtFirst(

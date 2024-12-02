@@ -1,7 +1,6 @@
 package org.oagi.score.e2e.page.business_term;
 
 import org.oagi.score.e2e.page.BasePage;
-import org.oagi.score.e2e.page.SearchBarPage;
 import org.openqa.selenium.WebElement;
 
 import java.time.LocalDateTime;
@@ -9,7 +8,7 @@ import java.time.LocalDateTime;
 /**
  * An interface for 'Assign Business Term' page
  */
-public interface AssignBusinessTermBIEPage extends BasePage, SearchBarPage {
+public interface AssignBusinessTermBIEPage extends BasePage {
 
     /**
      * Return the UI element of the 'Branch' select field.
@@ -83,6 +82,20 @@ public interface AssignBusinessTermBIEPage extends BasePage, SearchBarPage {
     void setBIEDenField(String bieDen);
 
     /**
+     * Return the UI element of the 'Top Level BIE' field
+     *
+     * @return the UI element of the 'Top Level BIE' field
+     */
+    WebElement getTopLevelBIEField();
+
+    /**
+     * Set the 'Top Level BIE' field with the given Top Level BIE
+     *
+     * @param topLevelBIE Top Level BIE
+     */
+    void setTopLevelBIE(String topLevelBIE);
+
+    /**
      * Return the UI element of the 'Type' field.
      *
      * @return the UI element of the 'Type' field
@@ -144,6 +157,13 @@ public interface AssignBusinessTermBIEPage extends BasePage, SearchBarPage {
      * @param updatedEndDate Updated End Date
      */
     void setUpdatedEndDate(LocalDateTime updatedEndDate);
+
+    /**
+     * Return the UI element of the 'Search' button.
+     *
+     * @return the UI element of the 'Search' button
+     */
+    WebElement getSearchButton();
 
     /**
      * Hit the 'Search' button.

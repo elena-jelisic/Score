@@ -15,7 +15,7 @@ public class AssignedBusinessTermListRequest {
     private BigInteger releaseId;
     private List<String> bieTypes;
     private String bieDen;
-    private boolean primaryIndicator;
+    private boolean primary;
     private String typeCode;
     private String businessTerm;
     private String externalReferenceUri;

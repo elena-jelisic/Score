@@ -257,13 +257,8 @@ export class BieListInBiePackageRequest {
     return params;
   }
 
-  toQuery(extras?): string {
-    let params = this.toParams();
-    if (extras) {
-      Object.keys(extras).forEach(key => {
-        params = params.set(key.toString(), extras[key]);
-      });
-    }
+  toQuery(): string {
+    const params = this.toParams();
     const str = base64Encode(params.toString());
     return (str) ? 'q=' + str : undefined;
   }

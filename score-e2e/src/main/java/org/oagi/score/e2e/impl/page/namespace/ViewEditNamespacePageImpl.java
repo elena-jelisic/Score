@@ -1,7 +1,6 @@
 package org.oagi.score.e2e.impl.page.namespace;
 
 import org.oagi.score.e2e.impl.page.BasePageImpl;
-import org.oagi.score.e2e.impl.page.BaseSearchBarPageImpl;
 import org.oagi.score.e2e.obj.NamespaceObject;
 import org.oagi.score.e2e.page.BasePage;
 import org.oagi.score.e2e.page.namespace.CreateNamespacePage;
@@ -20,7 +19,7 @@ import java.time.format.DateTimeFormatter;
 import static java.time.Duration.ofMillis;
 import static org.oagi.score.e2e.impl.PageHelper.*;
 
-public class ViewEditNamespacePageImpl extends BaseSearchBarPageImpl implements ViewEditNamespacePage {
+public class ViewEditNamespacePageImpl extends BasePageImpl implements ViewEditNamespacePage {
 
     private static final By OWNER_SELECT_FIELD_LOCATOR =
             By.xpath("//*[contains(text(), \"Owner\")]//ancestor::div[1]/mat-select[1]");
@@ -40,8 +39,13 @@ public class ViewEditNamespacePageImpl extends BaseSearchBarPageImpl implements 
     private static final By UPDATED_END_DATE_FIELD_LOCATOR =
             By.xpath("//input[contains(@placeholder, \"Updated end date\")]");
 
+    private static final By URI_FIELD_LOCATOR =
+            By.xpath("//mat-label[contains(text(), \"URI\")]//ancestor::div[1]/input");
+
     private static final By PREFIX_FIELD_LOCATOR =
             By.xpath("//mat-label[contains(text(), \"Prefix\")]//ancestor::div[1]/input");
+    private static final By SEARCH_BUTTON_LOCATOR =
+            By.xpath("//span[contains(text(), \"Search\")]//ancestor::button[1]");
     private static final By NEW_NAMESPACE_BUTTON_LOCATOR =
             By.xpath("//span[contains(text(), \"New Namespace\")]//ancestor::button[1]");
 
@@ -97,7 +101,7 @@ public class ViewEditNamespacePageImpl extends BaseSearchBarPageImpl implements 
 
     @Override
     public WebElement getURIField() {
-        return getInputFieldInSearchBar();
+        return visibilityOfElementLocated(getDriver(), URI_FIELD_LOCATOR);
     }
 
     @Override
@@ -178,6 +182,11 @@ public class ViewEditNamespacePageImpl extends BaseSearchBarPageImpl implements 
     }
 
     @Override
+    public WebElement getSearchButton() {
+        return elementToBeClickable(getDriver(), SEARCH_BUTTON_LOCATOR);
+    }
+
+    @Override
     public WebElement getNewNamespaceButton() {
         return elementToBeClickable(getDriver(), NEW_NAMESPACE_BUTTON_LOCATOR);
     }
@@ -194,7 +203,6 @@ public class ViewEditNamespacePageImpl extends BaseSearchBarPageImpl implements 
 
     @Override
     public EditNamespacePage openNamespaceByURIAndOwner(String uri, String owner) {
-        showAdvancedSearchPanel();
         setOwner(owner);
         openNamespaceByURI(uri);
         NamespaceObject namespace = getAPIFactory().getNamespaceAPI().getNamespaceByURI(uri);
@@ -235,7 +243,7 @@ public class ViewEditNamespacePageImpl extends BaseSearchBarPageImpl implements 
 
     @Override
     public TransferNamespaceOwershipDialog openTransferNamespaceOwnershipDialog(WebElement tr) {
-        WebElement td = getColumnByName(tr, "owner");
+        WebElement td = getColumnByName(tr, "transferOwnership");
         click(td.findElement(By.className("mat-icon")));
 
         TransferNamespaceOwershipDialog transferNamespaceOwershipDialog =

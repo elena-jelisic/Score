@@ -1,6 +1,6 @@
 package org.oagi.score.e2e.impl.page.admin;
 
-import org.oagi.score.e2e.impl.page.BaseSearchBarPageImpl;
+import org.oagi.score.e2e.impl.page.BasePageImpl;
 import org.oagi.score.e2e.obj.AppUserObject;
 import org.oagi.score.e2e.page.BasePage;
 import org.oagi.score.e2e.page.admin.AccountsPage;
@@ -13,10 +13,13 @@ import org.openqa.selenium.WebElement;
 
 import static org.oagi.score.e2e.impl.PageHelper.*;
 
-public class AccountsPageImpl extends BaseSearchBarPageImpl implements AccountsPage {
+public class AccountsPageImpl extends BasePageImpl implements AccountsPage {
 
     private static final By NEW_ACCOUNT_BUTTON_LOCATOR =
             By.xpath("//span[contains(text(), \"New Account\")]//ancestor::button[1]");
+
+    private static final By LOGIN_ID_FIELD_LOCATOR =
+            By.xpath("//input[@placeholder=\"Login ID\"]");
 
     private static final By NAME_FIELD_LOCATOR =
             By.xpath("//span[contains(text(), \"Name\")]//ancestor::div[1]/input");
@@ -26,6 +29,9 @@ public class AccountsPageImpl extends BaseSearchBarPageImpl implements AccountsP
 
     private static final By STATUS_SELECT_FIELD_LOCATOR =
             By.xpath("//mat-label[contains(text(), \"Status\")]//ancestor::div[1]/mat-select");
+
+    private static final By SEARCH_BUTTON_LOCATOR =
+            By.xpath("//span[contains(text(), \"Search\")]//ancestor::button[1]");
 
     public AccountsPageImpl(BasePage parent) {
         super(parent);
@@ -49,7 +55,7 @@ public class AccountsPageImpl extends BaseSearchBarPageImpl implements AccountsP
 
     @Override
     public WebElement getLoginIDField() {
-        return getInputFieldInSearchBar();
+        return visibilityOfElementLocated(getDriver(), LOGIN_ID_FIELD_LOCATOR);
     }
 
     @Override
@@ -65,6 +71,11 @@ public class AccountsPageImpl extends BaseSearchBarPageImpl implements AccountsP
     @Override
     public WebElement getStatusSelectField() {
         return visibilityOfElementLocated(getDriver(), STATUS_SELECT_FIELD_LOCATOR);
+    }
+
+    @Override
+    public WebElement getSearchButton() {
+        return visibilityOfElementLocated(getDriver(), SEARCH_BUTTON_LOCATOR);
     }
 
     @Override

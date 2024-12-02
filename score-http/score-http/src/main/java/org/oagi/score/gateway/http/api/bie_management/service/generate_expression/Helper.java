@@ -7,12 +7,9 @@ import org.springframework.util.StringUtils;
 
 import java.math.BigInteger;
 import java.util.Arrays;
-import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-public class Helper {
+class Helper {
 
     private static final String CODE_LIST_NAME_PREFIX = "cl";
 
@@ -21,7 +18,7 @@ public class Helper {
     private Helper() {
     }
 
-    public static boolean isAnyProperty(ASBIE asbie,
+    static boolean isAnyProperty(ASBIE asbie,
                                  GenerationContext generationContext) {
         ASBIEP asbiep = generationContext.queryAssocToASBIEP(asbie);
         BigInteger asccpManifestId = asbiep.getBasedAsccpManifestId();
@@ -35,14 +32,14 @@ public class Helper {
         return OagisComponentType.Embedded.getValue() == acc.getOagisComponentType();
     }
 
-    public static CodeList getCodeList(GenerationContext generationContext, BBIE bbie, DT bdt) {
+    static CodeList getCodeList(GenerationContext generationContext, BBIE bbie, DT bdt) {
         if (bbie == null) {
             return null;
         }
         return generationContext.findCodeList(bbie.getCodeListManifestId());
     }
 
-    public static Xbt getXbt(GenerationContext generationContext,
+    static Xbt getXbt(GenerationContext generationContext,
                       BdtPriRestri bdtPriRestri) {
         CdtAwdPriXpsTypeMap cdtAwdPriXpsTypeMap =
                 generationContext.findCdtAwdPriXpsTypeMap(bdtPriRestri.getCdtAwdPriXpsTypeMapId());
@@ -50,7 +47,7 @@ public class Helper {
         return xbt;
     }
 
-    public static String getCodeListTypeName(CodeList codeList, AgencyIdListValue agencyIdListValue) {
+    static String getCodeListTypeName(CodeList codeList, AgencyIdListValue agencyIdListValue) {
         StringBuilder sb = new StringBuilder();
 
         sb.append(CODE_LIST_NAME_PREFIX);
@@ -69,7 +66,7 @@ public class Helper {
         return sb.toString().replaceAll(" ", "_");
     }
 
-    public static String getAgencyListTypeName(AgencyIdList agencyIdList, AgencyIdListValue agencyIdListValue) {
+    static String getAgencyListTypeName(AgencyIdList agencyIdList, AgencyIdListValue agencyIdListValue) {
         StringBuilder sb = new StringBuilder();
 
         sb.append(AGENCY_ID_LIST_NAME_PREFIX);
@@ -126,27 +123,4 @@ public class Helper {
                 facetRestrictionsAware.getFacetMaxLength() != null ||
                 StringUtils.hasLength(facetRestrictionsAware.getFacetPattern());
     }
-
-    public static String toName(String propertyTerm, String representationTerm,
-                                Function<String, String> representationTermMapper,
-                                boolean includedAbbr) {
-        if (!StringUtils.hasLength(propertyTerm) || !StringUtils.hasLength(representationTerm)) {
-            throw new IllegalArgumentException();
-        }
-
-        representationTerm = representationTermMapper.apply(representationTerm);
-
-        List<String> s = Stream.concat(
-                Stream.of(propertyTerm.split(" ")),
-                Stream.of(representationTerm.split(" "))
-        ).distinct().collect(Collectors.toList());
-        s.set(0, s.get(0).toLowerCase());
-        if (s.size() > 1) {
-            for (int i = 1, len = s.size(); i < len; ++i) {
-                s.set(i, Utility.camelCase(s.get(i), includedAbbr));
-            }
-        }
-        return String.join("", s);
-    }
-
 }

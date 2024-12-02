@@ -1,8 +1,8 @@
-import {Component, Inject, OnInit, ViewChild} from '@angular/core';
+import {Component, HostListener, Inject, OnInit, ViewChild} from '@angular/core';
 import {SelectionModel} from '@angular/cdk/collections';
 import {FormControl} from '@angular/forms';
 import {forkJoin, ReplaySubject} from 'rxjs';
-import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
+import {MAT_DIALOG_DATA, MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material/dialog';
 import {Location} from '@angular/common';
 import {ActivatedRoute, Router} from '@angular/router';
 import {MatPaginator, PageEvent} from '@angular/material/paginator';
@@ -15,12 +15,17 @@ import {ReleaseService} from '../../../release-management/domain/release.service
 import {AuthService} from '../../../authentication/auth.service';
 import {WebPageInfoService} from '../../../basis/basis.service';
 import {PageRequest} from '../../../basis/basis';
-import {initFilter, saveBranch} from '../../../common/utility';
+import {initFilter, loadBranch, saveBranch} from '../../../common/utility';
 import {MatMultiSort, MatMultiSortTableDataSource, TableData} from 'ngx-mat-multi-sort';
-import {BieList} from '../../bie-list/domain/bie-list';
+import {BieList, BieListRequest} from '../../bie-list/domain/bie-list';
+import {BieListService} from '../../bie-list/domain/bie-list.service';
+import {BieEditService} from '../../bie-edit/domain/bie-edit.service';
+import {MailService} from '../../../common/score-mail.service';
 import {ConfirmDialogService} from '../../../common/confirm-dialog/confirm-dialog.service';
+import {UserToken} from '../../../authentication/domain/auth';
 import {BieListInBiePackageRequest, BiePackage} from '../domain/bie-package';
 import {BiePackageService} from '../domain/bie-package.service';
+import {BiePackageAddBieDialogComponent} from '../bie-package-add-bie-dialog/bie-package-add-bie-dialog.component';
 
 @Component({
   selector: 'score-bie-package-uplift-dialog',
@@ -125,6 +130,9 @@ export class BiePackageUpliftDialogComponent implements OnInit {
       }
 
       this.loadBieListInBiePackage();
+
+      initFilter(this.sourceReleaseListFilterCtrl, this.sourceReleaseFilteredList, ((this.sourceRelease) ? [this.sourceRelease] : []), (e) => e.releaseNum);
+      initFilter(this.targetReleaseListFilterCtrl, this.targetReleaseFilteredList, this.targetReleaseList, (e) => e.releaseNum);
     }, error => {
       this.loading = false;
       let errorMessage;
@@ -179,22 +187,9 @@ export class BiePackageUpliftDialogComponent implements OnInit {
         elm.lastUpdateTimestamp = new Date(elm.lastUpdateTimestamp);
         return elm;
       });
-
-      const releaseNums = new Set(resp.list.map(e => e.releaseNum));
-      const sourceReleases = this.releases.filter(e => releaseNums.has(e.releaseNum));
-      if (sourceReleases.length === 1) {
-        this.setSourceRelease(sourceReleases[0]);
-      }
     }, error => {
       this.table.dataSource.data = [];
     });
-  }
-
-  setSourceRelease(sourceRelease: SimpleRelease) {
-    this.sourceRelease = sourceRelease;
-
-    initFilter(this.sourceReleaseListFilterCtrl, this.sourceReleaseFilteredList, ((this.sourceRelease) ? [this.sourceRelease] : []), (e) => e.releaseNum);
-    initFilter(this.targetReleaseListFilterCtrl, this.targetReleaseFilteredList, this.targetReleaseList, (e) => e.releaseNum);
   }
 
   onPageChange(event: PageEvent) {

@@ -6,7 +6,7 @@ describe('BieEditTestComponent', () => {
   let component: BieEditComponent;
   let fixture: ComponentFixture<BieEditComponent>;
 
-  beforeEach(fakeAsync () => {
+  beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ BieEditComponent ]
     })
